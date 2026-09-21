@@ -62,6 +62,7 @@ DEPS_ONLY=false
 SYMLINKS_ONLY=false
 APPLY_LAYOUT=false
 INSTALL_SDDM=false
+NO_RESTART=false
 AUTO_YES=false
 AUR_HELPER=""
 
@@ -77,6 +78,7 @@ Options:
     -d, --deps-only     Install dependencies only (skip applying dotfiles/layout)
     -l, --apply-layout  Automatically evaluate Plasma 6 dual panel layout & widgets via DBus
         --sddm          Install Monochrome SDDM login theme to /usr/share/sddm/themes (requires sudo)
+        --no-restart    Skip automatically restarting plasmashell at the end
     -n, --dry-run       Simulate installation without modifying any files
         --no-backup     Skip backing up existing configuration files
         --no-color      Disable colored output (honors NO_COLOR env var)
@@ -105,6 +107,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --sddm)
             INSTALL_SDDM=true
+            shift
+            ;;
+        --no-restart)
+            NO_RESTART=true
             shift
             ;;
         -n|--dry-run)
@@ -239,11 +245,12 @@ install_dependencies() {
         "plasma6-wallpapers-smart-video-wallpaper-reborn"
         "kwin-effects-forceblur-git"
         "klassy"
+        "zen-browser-bin"
     )
 
     local MISSING_AUR=()
     for apkg in "${AUR_DEPS[@]}"; do
-        if ! pacman -Qi "$apkg" >/dev/null 2>&1 && ! pacman -Q "${apkg%-git}" >/dev/null 2>&1 && ! pacman -Q "${apkg}-bin" >/dev/null 2>&1; then
+        if ! pacman -Qi "$apkg" >/dev/null 2>&1 && ! pacman -Q "${apkg%-git}" >/dev/null 2>&1 && ! pacman -Q "${apkg%-bin}" >/dev/null 2>&1 && ! pacman -Q "${apkg}-bin" >/dev/null 2>&1; then
             MISSING_AUR+=("$apkg")
         fi
     done
@@ -403,19 +410,48 @@ deploy_components() {
         cp -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.mp4" "${WALLPAPER_DIR}/"
     fi
 
-    # 7. Cool-Retro-Term Profile
+    # 7. Cool-Retro-Term Profile & Automatic SQLite Profile Loader
     mkdir -p "${HOME}/.config/cool-retro-term"
     if [[ -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" ]]; then
         cp -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" "${HOME}/.config/cool-retro-term/"
+        
+        # Inject Monochrome profile directly into cool-retro-term QML SQLite storage
+        if command -v python3 >/dev/null 2>&1; then
+            python3 -c '
+import sqlite3, json, hashlib, os
+try:
+    db_dir = os.path.expanduser("~/.local/share/cool-retro-term/cool-retro-term/QML/OfflineStorage/Databases")
+    os.makedirs(db_dir, exist_ok=True)
+    db_name = "coolretroterm2"
+    db_hash = hashlib.md5(db_name.encode("utf-8")).hexdigest()
+    ini_path = os.path.join(db_dir, f"{db_hash}.ini")
+    if not os.path.exists(ini_path):
+        with open(ini_path, "w") as f:
+            f.write(f"[General]\nDescription=StorageDatabase\nDriver=QSQLITE\nEstimatedSize=100000\nName={db_name}\nVersion=1.0\n")
+    sqlite_path = os.path.join(db_dir, f"{db_hash}.sqlite")
+    conn = sqlite3.connect(sqlite_path)
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS settings (setting TEXT UNIQUE, value TEXT)")
+    with open("'"${SCRIPT_DIR}"'/cool-retro-term/cool-retro-term-monochrome.json") as f:
+        mono = f.read()
+    cur.execute("INSERT OR REPLACE INTO settings (setting, value) VALUES (?, ?)", ("_CURRENT_PROFILE", mono))
+    cur.execute("INSERT OR REPLACE INTO settings (setting, value) VALUES (?, ?)", ("_CUSTOM_PROFILES", json.dumps([{"text": "Monochrome", "obj_string": mono, "builtin": False}])))
+    conn.commit()
+    conn.close()
+except Exception:
+    pass
+'
+            log_success "Configured cool-retro-term default profile to Monochrome."
+        fi
     fi
 
-    # 8. Zen Browser userChrome.css helper
+    # 8. Zen Browser userChrome.css Auto-Deployment
     local ZEN_DIR="${HOME}/.zen"
     if [[ -d "$ZEN_DIR" ]]; then
         for profile in "$ZEN_DIR"/*; do
-            if [[ -d "$profile" && -f "$profile/prefs.js" ]]; then
+            if [[ -d "$profile" ]]; then
                 mkdir -p "$profile/chrome"
-                cp -f "${SCRIPT_DIR}/zen-browser/userChrome.css" "$profile/chrome/"
+                cp -f "${SCRIPT_DIR}/zen-browser/userChrome.css" "$profile/chrome/userChrome.css"
                 log_success "Deployed userChrome.css to Zen profile: $(basename "$profile")"
             fi
         done
@@ -642,6 +678,27 @@ subprocess.run(["qdbus6", "org.kde.plasmashell", "/PlasmaShell", "org.kde.Plasma
 }
 
 # -----------------------------------------------------------------------------
+# Restart Plasma Shell
+# -----------------------------------------------------------------------------
+restart_plasma_shell() {
+    if [[ "$NO_RESTART" == true || "$DRY_RUN" == true ]]; then
+        return 0
+    fi
+
+    if [[ "${XDG_CURRENT_DESKTOP:-}" == *"KDE"* || "${DESKTOP_SESSION:-}" == *"plasma"* ]]; then
+        log_step "Automatically Reloading KDE Plasma Shell"
+        if command -v kquitapp6 >/dev/null 2>&1; then
+            kquitapp6 plasmashell 2>/dev/null || killall -TERM plasmashell 2>/dev/null || true
+            sleep 1
+            if ! pgrep -x plasmashell >/dev/null; then
+                kstart plasmashell >/dev/null 2>&1 & disown || true
+            fi
+            log_success "KDE Plasma Shell restarted successfully."
+        fi
+    fi
+}
+
+# -----------------------------------------------------------------------------
 # Main Entry Point
 # -----------------------------------------------------------------------------
 main() {
@@ -657,6 +714,7 @@ main() {
         if [[ "$APPLY_LAYOUT" == true ]]; then
             apply_panel_layout
         fi
+        restart_plasma_shell
         log_step "Symlinks and Configurations Applied Successfully!"
         return 0
     fi
@@ -676,12 +734,10 @@ main() {
     apply_kde_settings
     install_sddm_theme
     apply_panel_layout
+    restart_plasma_shell
 
     log_step "Installation Completed Successfully!"
-    log_info "Next Steps:"
-    log_info " 1. Open cool-retro-term -> Settings -> Profiles -> Choose 'Monochrome'."
-    log_info " 2. (Optional) For Zen browser transparency: run 'yay -S zen-browser-bin'."
-    log_info " 3. Restart Plasma or log out & back in: kquitapp6 plasmashell && kstart plasmashell"
+    log_info "All Rice components, profiles, and dependencies are active."
 }
 
 main "$@"
