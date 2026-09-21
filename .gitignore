@@ -1,0 +1,74 @@
+# ==============================================================================
+# Git Hygiene & Ignore Rules for petrolal-kde-rice
+# ==============================================================================
+
+# KDE Wallet & Credential Storage (CRITICAL SECURITY)
+*kwalletrc*
+*kwallet*
+*wallet*
+*secrets*
+*credentials*
+*private_key*
+*id_rsa*
+*id_ed25519*
+*.pem
+*.key
+*.token
+
+# Shell & Command History
+.zsh_history*
+.bash_history*
+.histfile*
+.python_history
+.node_repl_history
+
+# Temporary, Backup, and Swap Files
+*.swp
+*.swo
+*~
+*.bak
+*.old
+*.orig
+*.tmp
+*.temp
+*.rej
+.#*
+#*#
+
+# KDE / Qt Transient Runtime Caches and Logs
+*.log
+*.kcrash
+*kactivitymanagerd-statsrc*
+*kactivitymanagerdrc*
+*kconf_updaterc*
+*ktimezonedrc*
+*ksmserverrc*
+*plasma-localerc*
+*plasma-welcomerc*
+*xembedsniproxyrc*
+*kwinoutputconfig.json*
+*screenMapping*
+cache/
+.cache/
+*.cache
+
+# Build Artifacts & Source Dumps
+build/
+bin/
+pkg/
+src/
+*.tar.gz
+*.tar.xz
+*.tar.zst
+*.deb
+*.rpm
+*.pkg.tar.*
+
+# OS & Editor Metadata
+.directory
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

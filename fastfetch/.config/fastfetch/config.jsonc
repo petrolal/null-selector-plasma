@@ -1,0 +1,105 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "auto",
+    "padding": {
+      "top": 1,
+      "left": 2,
+      "right": 3
+    }
+  },
+  "display": {
+    "separator": " 󰄾 "
+  },
+  "modules": [
+    "title",
+    "separator",
+    {
+      "type": "os",
+      "key": "󰣇 OS",
+      "keyColor": "34"
+    },
+    {
+      "type": "host",
+      "key": "󰌢 Host",
+      "keyColor": "34"
+    },
+    {
+      "type": "kernel",
+      "key": "󰒋 Kernel",
+      "keyColor": "34"
+    },
+    {
+      "type": "uptime",
+      "key": "󰔚 Uptime",
+      "keyColor": "34"
+    },
+    {
+      "type": "packages",
+      "key": "󰏖 Packages",
+      "keyColor": "34"
+    },
+    {
+      "type": "shell",
+      "key": "󰞷 Shell",
+      "keyColor": "35"
+    },
+    {
+      "type": "display",
+      "key": "󰍹 Display",
+      "keyColor": "35"
+    },
+    {
+      "type": "de",
+      "key": "󰧨 DE",
+      "keyColor": "35"
+    },
+    {
+      "type": "wm",
+      "key": "󱂬 WM",
+      "keyColor": "35"
+    },
+    {
+      "type": "wmtheme",
+      "key": "󰉼 Decoration",
+      "keyColor": "36"
+    },
+    {
+      "type": "theme",
+      "key": "󰉼 Theme",
+      "keyColor": "36"
+    },
+    {
+      "type": "icons",
+      "key": "󰀻 Icons",
+      "keyColor": "36"
+    },
+    {
+      "type": "font",
+      "key": "󰛖 Font",
+      "keyColor": "36"
+    },
+    {
+      "type": "terminal",
+      "key": "󰆍 Terminal",
+      "keyColor": "36"
+    },
+    {
+      "type": "cpu",
+      "key": "󰍛 CPU",
+      "keyColor": "33"
+    },
+    {
+      "type": "gpu",
+      "key": "󰢮 GPU",
+      "keyColor": "33"
+    },
+    {
+      "type": "memory",
+      "key": "󰑭 Memory",
+      "keyColor": "33"
+    },
+    "break",
+    "colors"
+  ]
+}
