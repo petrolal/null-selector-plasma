@@ -8,6 +8,7 @@
 #
 # Automated Non-Destructive Installer & Deployment Script for KDE Plasma 6
 # Rice: plasma-mono-rice (Cyberpunk / NieR Monochrome Aesthetic)
+# Inspired by: agridyne/dotfiles-dt
 # Author: petrolal
 # License: MIT
 # ==============================================================================
@@ -57,23 +58,29 @@ BACKUP_DIR="${HOME}/.config_backup_mono_${TIMESTAMP}"
 DRY_RUN=false
 SKIP_BACKUP=false
 SKIP_DEPS=false
+DEPS_ONLY=false
+SYMLINKS_ONLY=false
 APPLY_LAYOUT=false
+INSTALL_SDDM=false
 AUTO_YES=false
+AUR_HELPER=""
 
 print_help() {
     cat <<EOF
 Usage: $(basename "$0") [OPTIONS]
 
-Automated non-destructive deployment script for Plasma Monochrome Rice.
+Automated installer and dotfiles bootstrap script for Plasma Monochrome Rice.
 
 Options:
     -h, --help          Show this help message and exit
-    -n, --dry-run       Simulate the installation without writing any files
-    --no-backup         Skip backing up existing configuration files
-    --skip-deps         Skip checking and installing dependencies
-    --apply-layout      Automatically apply the Plasma 6 dual panel layout via DBus
-    --no-color          Disable colored output (honors NO_COLOR env var)
-    -y, --yes           Non-interactive mode; answer yes to all confirmation prompts
+    -s, --symlinks-only Apply symlinks, configs, plasmoids and themes only (skip pkg manager)
+    -d, --deps-only     Install dependencies only (skip applying dotfiles/layout)
+    -l, --apply-layout  Automatically evaluate Plasma 6 dual panel layout & widgets via DBus
+        --sddm          Install Monochrome SDDM login theme to /usr/share/sddm/themes (requires sudo)
+    -n, --dry-run       Simulate installation without modifying any files
+        --no-backup     Skip backing up existing configuration files
+        --no-color      Disable colored output (honors NO_COLOR env var)
+    -y, --yes           Non-interactive mode (answer yes to all confirmation prompts)
 EOF
 }
 
@@ -82,6 +89,23 @@ while [[ $# -gt 0 ]]; do
         -h|--help)
             print_help
             exit 0
+            ;;
+        -s|--symlinks-only)
+            SYMLINKS_ONLY=true
+            SKIP_DEPS=true
+            shift
+            ;;
+        -d|--deps-only)
+            DEPS_ONLY=true
+            shift
+            ;;
+        -l|--apply-layout)
+            APPLY_LAYOUT=true
+            shift
+            ;;
+        --sddm)
+            INSTALL_SDDM=true
+            shift
             ;;
         -n|--dry-run)
             DRY_RUN=true
@@ -97,10 +121,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --skip-deps)
             SKIP_DEPS=true
-            shift
-            ;;
-        --apply-layout)
-            APPLY_LAYOUT=true
             shift
             ;;
         -y|--yes)
@@ -147,7 +167,7 @@ check_system() {
     fi
 
     if [[ "${XDG_CURRENT_DESKTOP:-}" != *"KDE"* && "${DESKTOP_SESSION:-}" != *"plasma"* ]]; then
-        log_warn "Current desktop does not appear to be KDE Plasma."
+        log_warn "Current desktop is not running KDE Plasma."
     else
         log_success "KDE Plasma session active."
     fi
@@ -172,7 +192,7 @@ install_dependencies() {
         return 0
     fi
 
-    log_step "Resolving Core Dependencies"
+    log_step "Resolving Core Official Pacman Dependencies"
     detect_aur_helper
 
     local PACMAN_DEPS=(
@@ -218,11 +238,12 @@ install_dependencies() {
         "plasma6-applets-kde-control-station"
         "plasma6-wallpapers-smart-video-wallpaper-reborn"
         "kwin-effects-forceblur-git"
+        "klassy"
     )
 
     local MISSING_AUR=()
     for apkg in "${AUR_DEPS[@]}"; do
-        if ! pacman -Qi "$apkg" >/dev/null 2>&1; then
+        if ! pacman -Qi "$apkg" >/dev/null 2>&1 && ! pacman -Q "${apkg%-git}" >/dev/null 2>&1 && ! pacman -Q "${apkg}-bin" >/dev/null 2>&1; then
             MISSING_AUR+=("$apkg")
         fi
     done
@@ -233,13 +254,13 @@ install_dependencies() {
             log_info "[DRY-RUN] Would install via AUR helper: ${MISSING_AUR[*]}"
         else
             if [[ -n "$AUR_HELPER" ]]; then
-                "$AUR_HELPER" -S --needed --noconfirm "${MISSING_AUR[@]}" || log_warn "Some AUR packages failed to install automatically."
+                "$AUR_HELPER" -S --needed --noconfirm "${MISSING_AUR[@]}" || log_warn "Some AUR packages may need manual confirmation."
             else
-                log_warn "No AUR helper found. Please install: ${MISSING_AUR[*]}"
+                log_warn "No AUR helper found (yay/paru). Please install: ${MISSING_AUR[*]}"
             fi
         fi
     else
-        log_success "All recommended AUR enhancements are installed."
+        log_success "All AUR enhancements & Plasma extensions are installed."
     fi
 }
 
@@ -257,11 +278,11 @@ backup_configs() {
         "${HOME}/.config/kdeglobals"
         "${HOME}/.config/kwinrc"
         "${HOME}/.config/plasmashellrc"
-        "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
         "${HOME}/.config/panel-colorizer"
         "${HOME}/.config/Kvantum"
         "${HOME}/.config/fastfetch"
         "${HOME}/.config/starship.toml"
+        "${HOME}/.zshrc"
     )
 
     if [[ "$DRY_RUN" == true ]]; then
@@ -271,11 +292,11 @@ backup_configs() {
 
     mkdir -p "$BACKUP_DIR"
     for target in "${TARGETS[@]}"; do
-        if [[ -e "$target" ]]; then
+        if [[ -e "$target" && ! -L "$target" ]]; then
             local rel_path="${target#${HOME}/}"
             local dest="${BACKUP_DIR}/${rel_path}"
             mkdir -p "$(dirname "$dest")"
-            cp -rL "$target" "$dest"
+            cp -r "$target" "$dest"
             log_info "Backed up: $rel_path"
         fi
     done
@@ -283,57 +304,118 @@ backup_configs() {
 }
 
 # -----------------------------------------------------------------------------
+# Clean Broken Symlinks
+# -----------------------------------------------------------------------------
+clean_broken_symlinks() {
+    log_step "Cleaning Legacy / Broken Symlinks"
+    if [[ "$DRY_RUN" == true ]]; then
+        log_info "[DRY-RUN] Would check and remove broken symlinks in ~/.config and ~/.local/share"
+        return 0
+    fi
+
+    find "${HOME}/.config" "${HOME}/.local/share" "${HOME}" -maxdepth 3 -xtype l 2>/dev/null | while read -r broken_link; do
+        # Do not touch runtime browser/steam sockets
+        if [[ "$broken_link" != *"SingletonLock"* && "$broken_link" != *"SingletonCookie"* && "$broken_link" != *".steampath"* ]]; then
+            log_info "Removing dangling symlink: $broken_link"
+            rm -f "$broken_link"
+        fi
+    done
+    log_success "Broken symlinks cleaned."
+}
+
+# -----------------------------------------------------------------------------
 # Deploy Themes, Plasmoids, Presets & Wallpapers
 # -----------------------------------------------------------------------------
 deploy_components() {
-    log_step "Deploying Monochrome Components & Plasmoids"
+    log_step "Deploying Rice Components, Plasmoids & Themes"
 
     local PLASMOIDS_DIR="${HOME}/.local/share/plasma/plasmoids"
     local COLOR_DIR="${HOME}/.local/share/color-schemes"
     local THEME_DIR="${HOME}/.local/share/plasma/desktoptheme"
     local AURORAE_DIR="${HOME}/.local/share/aurorae/themes"
+    local LOOK_FEEL_DIR="${HOME}/.local/share/plasma/look-and-feel"
     local PRESETS_DIR="${HOME}/.config/panel-colorizer/presets"
     local WALLPAPER_DIR="${HOME}/.local/share/wallpapers"
+    local ICONS_DIR="${HOME}/.local/share/icons"
 
     if [[ "$DRY_RUN" == true ]]; then
         log_info "[DRY-RUN] Would deploy plasmoids, themes, presets, and wallpapers."
         return 0
     fi
 
-    mkdir -p "$PLASMOIDS_DIR" "$COLOR_DIR" "$THEME_DIR" "$AURORAE_DIR" "$PRESETS_DIR" "$WALLPAPER_DIR"
-
-    # 1. Bundled Plasmoids
-    log_info "Installing bundled plasmoids (YoRHa HUD, CatWalk Enhanced, Thermal Monitor, ClearClock)..."
-    for plasmoid in "${SCRIPT_DIR}/plasma/.local/share/plasma/plasmoids/"*; do
-        if [[ -d "$plasmoid" ]]; then
-            local p_name="$(basename "$plasmoid")"
-            rm -rf "${PLASMOIDS_DIR:?}/${p_name}"
-            cp -r "$plasmoid" "${PLASMOIDS_DIR}/"
-            log_success "Installed plasmoid: $p_name"
-        fi
+    # Ensure directories exist (replace any old symlinked folder with real dir)
+    for d in "$PLASMOIDS_DIR" "$COLOR_DIR" "$THEME_DIR" "$AURORAE_DIR" "$LOOK_FEEL_DIR" "$PRESETS_DIR" "$WALLPAPER_DIR" "$ICONS_DIR"; do
+        if [[ -L "$d" ]]; then rm -f "$d"; fi
+        mkdir -p "$d"
     done
 
+    # 1. Bundled Plasmoids
+    log_info "Deploying Plasmoids (YoRHa HUD, CatWalk Enhanced, Thermal Monitor, ClearClock, Kurve)..."
+    if [[ -d "${SCRIPT_DIR}/plasma/.local/share/plasma/plasmoids" ]]; then
+        for plasmoid in "${SCRIPT_DIR}/plasma/.local/share/plasma/plasmoids/"*; do
+            if [[ -d "$plasmoid" ]]; then
+                local p_name="$(basename "$plasmoid")"
+                rm -rf "${PLASMOIDS_DIR:?}/${p_name}"
+                cp -r "$plasmoid" "${PLASMOIDS_DIR}/"
+                log_success "Installed plasmoid: $p_name"
+            fi
+        done
+    fi
+
     # 2. Monochrome Color Scheme & Desktop Theme
-    log_info "Installing Monochrome colors and Plasma style..."
-    cp "${SCRIPT_DIR}/plasma/.local/share/color-schemes/"* "$COLOR_DIR/" 2>/dev/null || true
-    cp -r "${SCRIPT_DIR}/plasma/.local/share/plasma/desktoptheme/"* "$THEME_DIR/" 2>/dev/null || true
-    cp -r "${SCRIPT_DIR}/plasma/.local/share/aurorae/themes/"* "$AURORAE_DIR/" 2>/dev/null || true
+    log_info "Installing Monochrome colors and Plasma styles..."
+    if [[ -d "${SCRIPT_DIR}/plasma/.local/share/color-schemes" ]]; then
+        cp -f "${SCRIPT_DIR}/plasma/.local/share/color-schemes/"* "$COLOR_DIR/" 2>/dev/null || true
+    fi
+    if [[ -d "${SCRIPT_DIR}/plasma/.local/share/plasma/desktoptheme" ]]; then
+        cp -rf "${SCRIPT_DIR}/plasma/.local/share/plasma/desktoptheme/"* "$THEME_DIR/" 2>/dev/null || true
+    fi
+    if [[ -d "${SCRIPT_DIR}/plasma/.local/share/aurorae/themes" ]]; then
+        cp -rf "${SCRIPT_DIR}/plasma/.local/share/aurorae/themes/"* "$AURORAE_DIR/" 2>/dev/null || true
+    fi
 
-    # 3. Panel Colorizer Presets
+    # 3. Splash Screen (Kuro the cat)
+    if [[ ! -d "${LOOK_FEEL_DIR}/a2n.kuro" ]]; then
+        log_info "Downloading Kuro the cat splash screen..."
+        rm -rf /tmp/kuro_splash
+        git clone --depth 1 https://github.com/bouteillerAlan/kuro.git /tmp/kuro_splash 2>/dev/null && \
+            cp -r /tmp/kuro_splash/a2n.kuro* "$LOOK_FEEL_DIR/" 2>/dev/null || log_warn "Could not download Kuro splash automatically."
+        rm -rf /tmp/kuro_splash
+    fi
+
+    # 4. Icon Symlink Fallback (YAMIS)
+    if [[ -d /usr/share/icons/yet-another-monochrome-icon-set ]]; then
+        ln -sfn /usr/share/icons/yet-another-monochrome-icon-set "${ICONS_DIR}/YAMIS"
+        ln -sfn /usr/share/icons/yet-another-monochrome-icon-set "${ICONS_DIR}/yet-another-monochrome-icon-set"
+    fi
+
+    # 5. Panel Colorizer Presets
     log_info "Installing Panel Colorizer presets ('Main Setup' & 'Main Blur')..."
-    cp -r "${SCRIPT_DIR}/plasma/.config/panel-colorizer/presets/"* "$PRESETS_DIR/"
+    if [[ -d "${SCRIPT_DIR}/plasma/.config/panel-colorizer/presets" ]]; then
+        cp -rf "${SCRIPT_DIR}/plasma/.config/panel-colorizer/presets/"* "$PRESETS_DIR/"
+    fi
 
-    # 4. Wallpaper
-    log_info "Installing static wallpaper frame to ${WALLPAPER_DIR}/digital-gaze.png..."
-    cp "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.png" "${WALLPAPER_DIR}/"
+    # 6. Wallpaper (Static 4K frame & Video)
+    if [[ -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.png" ]]; then
+        cp -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.png" "${WALLPAPER_DIR}/"
+    fi
+    if [[ -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.mp4" ]]; then
+        cp -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.mp4" "${WALLPAPER_DIR}/"
+    fi
 
-    # 5. Zen Browser userChrome.css helper
+    # 7. Cool-Retro-Term Profile
+    mkdir -p "${HOME}/.config/cool-retro-term"
+    if [[ -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" ]]; then
+        cp -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" "${HOME}/.config/cool-retro-term/"
+    fi
+
+    # 8. Zen Browser userChrome.css helper
     local ZEN_DIR="${HOME}/.zen"
     if [[ -d "$ZEN_DIR" ]]; then
         for profile in "$ZEN_DIR"/*; do
             if [[ -d "$profile" && -f "$profile/prefs.js" ]]; then
                 mkdir -p "$profile/chrome"
-                cp "${SCRIPT_DIR}/zen-browser/userChrome.css" "$profile/chrome/"
+                cp -f "${SCRIPT_DIR}/zen-browser/userChrome.css" "$profile/chrome/"
                 log_success "Deployed userChrome.css to Zen profile: $(basename "$profile")"
             fi
         done
@@ -341,37 +423,55 @@ deploy_components() {
 }
 
 # -----------------------------------------------------------------------------
-# Dotfiles Stowing & Configuration Linking
+# Apply Dotfile Symlinks (Modular GNU Stow / ln -sfn fallback)
 # -----------------------------------------------------------------------------
-stow_configurations() {
-    log_step "Deploying Configuration Packages via GNU Stow"
+apply_symlinks() {
+    log_step "Deploying Modular Configuration Symlinks"
 
-    local PACKAGES=(
-        "fastfetch"
-        "starship"
-        "kvantum"
-        "zsh"
-    )
-
-    if command -v stow >/dev/null 2>&1; then
-        for pkg in "${PACKAGES[@]}"; do
-            if [[ -d "${SCRIPT_DIR}/${pkg}" ]]; then
-                log_info "Stowing package: $pkg"
-                if [[ "$DRY_RUN" == true ]]; then
-                    log_info "[DRY-RUN] Would run: stow -v -R -t \"$HOME\" \"$pkg\""
-                else
-                    stow -R -t "$HOME" -d "$SCRIPT_DIR" "$pkg" || log_warn "Stow had non-fatal warnings for $pkg"
-                fi
-            fi
-        done
-    else
-        log_warn "GNU Stow not available; falling back to manual copy."
-        for pkg in "${PACKAGES[@]}"; do
-            if [[ -d "${SCRIPT_DIR}/${pkg}" ]]; then
-                cp -r "${SCRIPT_DIR}/${pkg}/." "$HOME/"
-            fi
-        done
+    if [[ "$DRY_RUN" == true ]]; then
+        log_info "[DRY-RUN] Would create symlinks for plasma, starship, fastfetch, kvantum, and zsh."
+        return 0
     fi
+
+    mkdir -p "${HOME}/.config/klassy" "${HOME}/.config/fastfetch" "${HOME}/.config/zsh" "${HOME}/.config/Kvantum" "${HOME}/.config/plasma-workspace/env"
+
+    # Core Plasma configs
+    ln -sfn "${SCRIPT_DIR}/plasma/.config/kdeglobals" "${HOME}/.config/kdeglobals"
+    ln -sfn "${SCRIPT_DIR}/plasma/.config/kglobalshortcutsrc" "${HOME}/.config/kglobalshortcutsrc"
+    ln -sfn "${SCRIPT_DIR}/plasma/.config/kwinrc" "${HOME}/.config/kwinrc"
+    ln -sfn "${SCRIPT_DIR}/plasma/.config/plasmashellrc" "${HOME}/.config/plasmashellrc"
+    if [[ -f "${SCRIPT_DIR}/plasma/.config/klassy/klassyrc" ]]; then
+        ln -sfn "${SCRIPT_DIR}/plasma/.config/klassy/klassyrc" "${HOME}/.config/klassy/klassyrc"
+    fi
+    if [[ -f "${SCRIPT_DIR}/plasma/.config/plasma-workspace/env/rice-env.sh" ]]; then
+        ln -sfn "${SCRIPT_DIR}/plasma/.config/plasma-workspace/env/rice-env.sh" "${HOME}/.config/plasma-workspace/env/rice-env.sh"
+    fi
+    ln -sfn "${SCRIPT_DIR}/plasma/layout.js" "${HOME}/layout.js"
+
+    # Fastfetch
+    if [[ -f "${SCRIPT_DIR}/fastfetch/.config/fastfetch/config.jsonc" ]]; then
+        ln -sfn "${SCRIPT_DIR}/fastfetch/.config/fastfetch/config.jsonc" "${HOME}/.config/fastfetch/config.jsonc"
+    fi
+
+    # Starship
+    if [[ -f "${SCRIPT_DIR}/starship/.config/starship.toml" ]]; then
+        ln -sfn "${SCRIPT_DIR}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
+    fi
+
+    # Zsh
+    if [[ -f "${SCRIPT_DIR}/zsh/.zshrc" ]]; then
+        ln -sfn "${SCRIPT_DIR}/zsh/.zshrc" "${HOME}/.zshrc"
+    fi
+    if [[ -f "${SCRIPT_DIR}/zsh/.config/zsh/aliases.zsh" ]]; then
+        ln -sfn "${SCRIPT_DIR}/zsh/.config/zsh/aliases.zsh" "${HOME}/.config/zsh/aliases.zsh"
+    fi
+
+    # Kvantum
+    if [[ -d "${SCRIPT_DIR}/kvantum/.config/Kvantum" ]]; then
+        cp -rf "${SCRIPT_DIR}/kvantum/.config/Kvantum/"* "${HOME}/.config/Kvantum/"
+    fi
+
+    log_success "All configuration symlinks applied successfully."
 }
 
 # -----------------------------------------------------------------------------
@@ -381,15 +481,25 @@ apply_kde_settings() {
     log_step "Applying KDE Plasma Look-and-Feel Settings"
 
     if [[ "$DRY_RUN" == true ]]; then
-        log_info "[DRY-RUN] Would invoke kwriteconfig6 for colors, icons, fonts, and kwin."
+        log_info "[DRY-RUN] Would apply color scheme, icons, fonts, cursor, and kwin force blur."
         return 0
+    fi
+
+    # Apply Colors & Cursor
+    if command -v plasma-apply-colorscheme >/dev/null 2>&1; then
+        plasma-apply-colorscheme Monochrome 2>/dev/null || log_warn "Could not apply color scheme via plasma-apply-colorscheme"
+    fi
+    if command -v plasma-apply-cursortheme >/dev/null 2>&1; then
+        plasma-apply-cursortheme Bibata-Modern-Ice 2>/dev/null || log_warn "Could not apply cursor via plasma-apply-cursortheme"
     fi
 
     if command -v kwriteconfig6 >/dev/null 2>&1; then
         # Color Scheme & Icons
         kwriteconfig6 --file kdeglobals --group General --key ColorScheme "Monochrome"
-        kwriteconfig6 --file kdeglobals --group Icons --key Theme "YAMIS"
+        kwriteconfig6 --file kdeglobals --group General --key Name "Monochrome"
+        kwriteconfig6 --file kdeglobals --group Icons --key Theme "yet-another-monochrome-icon-set"
         kwriteconfig6 --file kdeglobals --group Mouse --key cursorTheme "Bibata-Modern-Ice"
+        kwriteconfig6 --file ksplashrc --group KSplash --key Theme "a2n.kuro"
 
         # JetBrainsMono Nerd Font
         kwriteconfig6 --file kdeglobals --group General --key font "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
@@ -398,6 +508,10 @@ apply_kde_settings() {
         kwriteconfig6 --file kdeglobals --group General --key smallestReadableFont "JetBrainsMono Nerd Font,8,-1,5,50,0,0,0,0,0"
         kwriteconfig6 --file kdeglobals --group General --key toolBarFont "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
         kwriteconfig6 --file kdeglobals --group General --key windowTitleFont "JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold"
+
+        # Terminal Preference
+        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication "cool-retro-term"
+        kwriteconfig6 --file kdeglobals --group General --key TerminalService "cool-retro-term.desktop"
 
         # KWin Force Blur for Zen Browser
         kwriteconfig6 --file kwinrc --group Plugins --key forceblurEnabled true
@@ -408,24 +522,49 @@ apply_kde_settings() {
         kwriteconfig6 --file kwinrc --group Effect-forceblur --key Saturation "0"
         kwriteconfig6 --file kwinrc --group Effect-forceblur --key Contrast "105"
 
-        # Terminal Preference
-        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication "cool-retro-term"
-        kwriteconfig6 --file kdeglobals --group General --key TerminalService "cool-retro-term.desktop"
+        # Reconfigure KWin
+        if command -v qdbus6 >/dev/null 2>&1; then
+            qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || true
+        fi
 
-        log_success "KDE system settings registered."
+        log_success "KDE system settings registered and active."
     fi
 }
 
 # -----------------------------------------------------------------------------
-# Apply Dual Panel Layout (Optional / Flagged)
+# Optional SDDM Theme Installation
 # -----------------------------------------------------------------------------
-apply_panel_layout() {
-    if [[ "$APPLY_LAYOUT" != true ]]; then
-        log_info "Skipping automatic panel reset. Use --apply-layout to reset and configure panels."
+install_sddm_theme() {
+    if [[ "$INSTALL_SDDM" != true ]]; then
         return 0
     fi
 
-    log_step "Applying Plasma 6 Dual Panel Layout via DBus"
+    log_step "Installing Monochrome SDDM Login Theme (Requires sudo)"
+    if [[ "$DRY_RUN" == true ]]; then
+        log_info "[DRY-RUN] Would install SDDM theme to /usr/share/sddm/themes/monochrome"
+        return 0
+    fi
+
+    if [[ -d "${SCRIPT_DIR}/assets/sddm-theme" ]]; then
+        sudo mkdir -p /usr/share/sddm/themes/monochrome
+        sudo cp -rf "${SCRIPT_DIR}/assets/sddm-theme/"* /usr/share/sddm/themes/monochrome/
+        sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current monochrome 2>/dev/null || true
+        log_success "SDDM Monochrome theme installed."
+    else
+        log_warn "SDDM theme directory not found at assets/sddm-theme"
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# Apply Dual Panel Layout & Widgets via DBus
+# -----------------------------------------------------------------------------
+apply_panel_layout() {
+    if [[ "$APPLY_LAYOUT" != true ]]; then
+        log_info "Skipping panel layout evaluation. (Use --apply-layout to reset & reconfigure panels)"
+        return 0
+    fi
+
+    log_step "Applying Plasma 6 Dual Panel Layout & Widgets via DBus"
     if [[ "$DRY_RUN" == true ]]; then
         log_info "[DRY-RUN] Would evaluate layout.js via qdbus6."
         return 0
@@ -434,7 +573,69 @@ apply_panel_layout() {
     if command -v qdbus6 >/dev/null 2>&1; then
         log_info "Evaluating layout.js..."
         qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(< "${SCRIPT_DIR}/plasma/layout.js")" || log_warn "Panel layout script returned a non-zero exit code."
-        log_success "Panel layout evaluated."
+
+        # Configure Kurve and Panel Colorizer on live widgets
+        if command -v python3 >/dev/null 2>&1; then
+            python3 -c '
+import json, subprocess
+
+preset_file = "'"${HOME}"'/.config/panel-colorizer/presets/Main Setup/settings.json"
+try:
+    with open(preset_file) as f:
+        d = json.load(f)
+    gs = json.dumps(d["globalSettings"])
+except Exception:
+    gs = "{}"
+
+js = f"""
+// Configure Kurve
+var d = desktops()[0];
+for (var w of d.widgets()) {{
+    if (w.type === "luisbocanegra.audio.visualizer") {{
+        w.currentConfigGroup = ["General"];
+        w.writeConfig("visualizerStyle", 2);
+        w.writeConfig("orientation", 2);
+        w.writeConfig("roundedBars", true);
+        w.writeConfig("barWidth", 4);
+        w.writeConfig("barGap", 5);
+        w.writeConfig("blockHeight", 5);
+        w.writeConfig("blockSpacing", 4);
+        w.writeConfig("drawInactiveBlocks", false);
+        w.writeConfig("centeredBars", false);
+        w.writeConfig("desktopWidgetBg", 1);
+        w.writeConfig("hideWhenIdle", false);
+        var barColors = {{
+            "enabled": true,
+            "lightness": 1.0,
+            "lightnessEnabled": true,
+            "saturation": 0.5,
+            "saturationEnabled": false,
+            "alpha": 1.0,
+            "systemColor": "highlightColor",
+            "systemColorSet": "Window",
+            "sourceType": 1,
+            "reverseList": false
+        }};
+        w.writeConfig("barColors", JSON.stringify(barColors));
+        w.reloadConfig();
+    }}
+}}
+
+// Configure Panel Colorizer on both panels
+for (var p of panels()) {{
+    for (var w of p.widgets()) {{
+        if (w.type === "luisbocanegra.panel.colorizer") {{
+            w.currentConfigGroup = ["General"];
+            w.writeConfig("globalSettings", {json.dumps(gs)});
+            w.reloadConfig();
+        }}
+    }}
+}}
+"""
+subprocess.run(["qdbus6", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell.evaluateScript", js], capture_output=True)
+'
+        fi
+        log_success "Panel layout and widget parameters evaluated."
     else
         log_warn "qdbus6 command not found; could not evaluate layout.js automatically."
     fi
@@ -444,20 +645,42 @@ apply_panel_layout() {
 # Main Entry Point
 # -----------------------------------------------------------------------------
 main() {
-    log_info "Starting deployment of plasma-mono-rice..."
+    log_step "Starting Deployment of Plasma Monochrome Rice"
 
     check_system
+
+    if [[ "$SYMLINKS_ONLY" == true ]]; then
+        clean_broken_symlinks
+        deploy_components
+        apply_symlinks
+        apply_kde_settings
+        if [[ "$APPLY_LAYOUT" == true ]]; then
+            apply_panel_layout
+        fi
+        log_step "Symlinks and Configurations Applied Successfully!"
+        return 0
+    fi
+
+    if [[ "$DEPS_ONLY" == true ]]; then
+        install_dependencies
+        log_step "Dependencies Installed Successfully!"
+        return 0
+    fi
+
+    # Full Installation Workflow
     install_dependencies
     backup_configs
+    clean_broken_symlinks
     deploy_components
-    stow_configurations
+    apply_symlinks
     apply_kde_settings
+    install_sddm_theme
     apply_panel_layout
 
     log_step "Installation Completed Successfully!"
     log_info "Next Steps:"
-    log_info " 1. Open cool-retro-term -> Settings -> Profiles -> Import: ${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json"
-    log_info " 2. (Optional) For video wallpaper: Download 4K video using assets/wallpapers/wallpapers.md"
+    log_info " 1. Open cool-retro-term -> Settings -> Profiles -> Choose 'Monochrome'."
+    log_info " 2. (Optional) For Zen browser transparency: run 'yay -S zen-browser-bin'."
     log_info " 3. Restart Plasma or log out & back in: kquitapp6 plasmashell && kstart plasmashell"
 }
 
