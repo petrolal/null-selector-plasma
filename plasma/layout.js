@@ -6,8 +6,8 @@
 // ==============================================================================
 
 var homeDir = "/home/petrolal";
-var videoFile = "file://" + homeDir + "/.local/share/wallpapers/digital-gaze.mp4";
-var imageFile = "file://" + homeDir + "/.local/share/wallpapers/digital-gaze.png";
+var videoFile = "file://" + homeDir + "/.local/share/wallpapers/synthwave-dreamwave-girl.mp4";
+var imageFile = "file://" + homeDir + "/.local/share/wallpapers/synthwave-dreamwave-girl.png";
 
 var videoConfigObj = [
     {
