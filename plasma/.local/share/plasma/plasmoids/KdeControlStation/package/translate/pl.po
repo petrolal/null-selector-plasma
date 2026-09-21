@@ -1,0 +1,1033 @@
+# Translation of KdeControlStation in Polish
+# Copyright (C) 2025
+# This file is distributed under the same license as the KdeControlStation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: KdeControlStation\n"
+"Report-Msgid-Bugs-To: https://github.com/EliverLara/kde-control-station/tree/plasma6\n"
+"POT-Creation-Date: 2026-01-22 17:26-0600\n"
+"PO-Revision-Date: 2025-09-27 00:00+0000\n"
+"Last-Translator: Rygorr Mortis <EMAIL@ADDRESS>\n"
+"Language-Team: Polish <pl@li.org>\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ../metadata.json
+msgid "KDE control station"
+msgstr "Stacja kontroli KDE"
+
+#: ../metadata.json
+msgid "A modern control station for plasma based on the awesome work of prayag2!"
+msgstr "Nowoczesna stacja kontroli dla Plasma oparta na wspaniałej pracy prayag2!"
+
+#: ../contents/config/config.qml ../contents/ui/layouts/components/ControlCenter/LeftColumn.qml
+msgid "Appearance"
+msgstr "Wygląd"
+
+#: ../contents/config/config.qml
+msgid "Color schemes"
+msgstr "Schematy kolorów"
+
+#: ../contents/config/config.qml ../contents/ui/components/ScreenshotBtn.qml
+msgid "Screenshot"
+msgstr "Zrzut ekranu"
+
+#: ../contents/config/config.qml
+msgid "Support"
+msgstr "Wsparcie"
+
+#: ../contents/ui/components/Battery.qml ../contents/ui/pages/components/battery/BatteryItem.qml
+msgctxt "Placeholder is battery percentage"
+msgid "%1%"
+msgstr "%1%"
+
+#: ../contents/ui/components/ColorSchemeSwitcher.qml
+msgid "Dark Theme"
+msgstr "Ciemny motyw"
+
+#: ../contents/ui/components/DndButton.qml
+msgid "Do Not Disturb"
+msgstr "Nie przeszkadzać"
+
+#: ../contents/ui/components/KDEConnect.qml
+msgid "KDE Connect"
+msgstr "KDE Connect"
+
+#: ../contents/ui/components/MediaPlayer.qml ../contents/ui/pages/components/mediaPlayer/AlbumArtStackView.qml
+msgid "No title"
+msgstr "Brak tytułu"
+
+#: ../contents/ui/components/MediaPlayer.qml ../contents/ui/pages/components/mediaPlayer/AlbumArtStackView.qml
+msgid "No media playing"
+msgstr "Brak odtwarzanego multimedium"
+
+#: ../contents/ui/components/NetworkBtn.qml
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: ../contents/ui/components/NetworkBtn.qml
+msgid "Airplane mode"
+msgstr "Tryb samolotowy"
+
+#: ../contents/ui/components/NetworkBtn.qml ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Network"
+msgstr "Sieć"
+
+#: ../contents/ui/components/NightLight.qml ../contents/ui/pages/NightLightPage.qml
+msgid "Night Light"
+msgstr "Światło nocne"
+
+#: ../contents/ui/components/RedShift.qml
+msgid "Night Color"
+msgstr "Kolor nocny"
+
+#: ../contents/ui/components/SystemActions.qml
+msgid "Power Off"
+msgstr "Wyłącz"
+
+#: ../contents/ui/components/UserAvatar.qml
+msgid "%1@%2"
+msgstr "%1@%2"
+
+#: ../contents/ui/components/Volume.qml
+msgid "Volume"
+msgstr "Głośność"
+
+#: ../contents/ui/config/components/ColorChooser.qml
+msgid "Please choose a color"
+msgstr "Proszę wybrać kolor"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Icon:"
+msgstr "Ikona:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgctxt "@item:inmenu Open icon chooser dialog"
+msgid "Choose…"
+msgstr "Wybierz…"
+
+#: ../contents/ui/config/configAppearance.qml
+msgctxt "@item:inmenu Reset icon to default"
+msgid "Clear Icon"
+msgstr "Wyczyść ikonę"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Scale:"
+msgstr "Skala:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Layout:"
+msgstr "Układ:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "KDE Control Station (Default)"
+msgstr "Stacja kontroli KDE (domyślna)"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Control Center"
+msgstr "Centrum kontroli"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Flat"
+msgstr "Płaski"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Tahoe"
+msgstr "Tahoe"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Custom"
+msgstr "Niestandardowy"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "General:"
+msgstr "Ogólne:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Show volume/brightness percentage"
+msgstr "Pokaż procent głośności/jasności"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Enable animations (Experimental)"
+msgstr "Włącz animacje (eksperymentalne)"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Enable transparency"
+msgstr "Włącz przezroczystość"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Transparency level of widgets (%1%):"
+msgstr "Poziom przezroczystości widżetów (%1%):"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Show borders aroud components"
+msgstr "Pokaż obramowania wokół komponentów"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Toggle buttons and sliders"
+msgstr "Przełączniki i suwaki"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Toggle buttons"
+msgstr "Przełączniki"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Highlight color: "
+msgstr "Kolor podświetlenia: "
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Icon color: "
+msgstr "Kolor ikony: "
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Sliders controls style"
+msgstr "Styl suwaków"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Sliders color: "
+msgstr "Kolor suwaków: "
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Show quick toggle buttons:"
+msgstr "Pokaż szybkie przyciski przełączania:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Name:"
+msgstr "Nazwa:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Command:"
+msgstr "Polecenie:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Show other components:"
+msgstr "Pokaż inne komponenty:"
+
+#: ../contents/ui/config/configColorscheme.qml
+msgid "Change global theme instead of just changing color scheme"
+msgstr "Zmień globalny motyw zamiast tylko schematu kolorów"
+
+#: ../contents/ui/config/configColorscheme.qml
+msgid "Light color"
+msgstr "Jasny kolor"
+
+#: ../contents/ui/config/configColorscheme.qml
+msgid "Dark color"
+msgstr "Ciemny kolor"
+
+#: ../contents/ui/config/configScreenshot.qml
+msgid "Hide widget before screenshotting:"
+msgstr ""
+
+#: ../contents/ui/config/configScreenshot.qml
+msgid "Screenshot Command (default is 'spectacle'):"
+msgstr ""
+
+#: ../contents/ui/config/configSupport.qml
+msgid "I'd be very thankful if you like to support the development of this applet by donating or by simply spreading the word, TIA! :)"
+msgstr "Będę bardzo wdzięczny, jeśli wesprzesz rozwój tego apletu poprzez darowiznę lub po prostu rozpowszechnianie informacji, dziękuję! :)"
+
+#: ../contents/ui/js/funcs.js
+msgid "Disabled"
+msgstr "Wyłączone"
+
+#: ../contents/ui/js/funcs.js
+msgid "Unavailable"
+msgstr "Niedostępne"
+
+#: ../contents/ui/js/funcs.js
+msgid "Offline"
+msgstr "Offline"
+
+#: ../contents/ui/js/funcs.js
+msgid "Not Connected"
+msgstr "Nie połączono"
+
+#: ../contents/ui/js/funcs.js
+msgid "On"
+msgstr "Włączone"
+
+#: ../contents/ui/js/funcs.js ../contents/ui/pages/components/bluetooth/DeviceItem.qml ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Connected"
+msgstr "Połączono"
+
+#: ../contents/ui/js/funcs.js
+msgid "Disconnected"
+msgstr "Rozłączono"
+
+#: ../contents/ui/layouts/components/ControlCenter/LeftColumn.qml ../contents/ui/pages/BluetoothPage.qml
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: ../contents/ui/pages/BatteryPage.qml
+msgid "The battery applet has enabled suppressing sleep and screen locking"
+msgstr "Aplet baterii włączył blokowanie uśpienia i blokady ekranu"
+
+#: ../contents/ui/pages/BatteryPage.qml
+msgid "Power and Battery"
+msgstr "Zasilanie i bateria"
+
+#: ../contents/ui/pages/BatteryPage.qml ../contents/ui/pages/components/battery/PowerManagementItem.qml ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Power Management"
+msgstr "Zarządzanie energią"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "Enable"
+msgstr "Włącz"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "Pair Device…"
+msgstr "Paruj urządzenie…"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "No Bluetooth adapters available"
+msgstr "Brak dostępnych adapterów Bluetooth"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "Bluetooth is disabled"
+msgstr "Bluetooth jest wyłączony"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "No devices paired"
+msgstr "Brak sparowanych urządzeń"
+
+#: ../contents/ui/pages/BrightnessControlPage.qml
+msgid "Brightness Control"
+msgstr "Kontrola jasności"
+
+#: ../contents/ui/pages/BrightnessControlPage.qml
+msgid "Keyboard Backlight"
+msgstr "Podświetlenie klawiatury"
+
+#: ../contents/ui/pages/BrightnessControlPage.qml
+msgid "Keyboard Color"
+msgstr "Kolor klawiatury"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Charging"
+msgstr "Ładowanie"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Discharging"
+msgstr "Rozładowywanie"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Fully Charged"
+msgstr "Pełne naładowanie"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Not Charging"
+msgstr "Nie ładuje"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgctxt "Battery is currently not present in the bay"
+msgid "Not present"
+msgstr "Nieobecna"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "This battery's health is at only %1% and it should be replaced. Contact the manufacturer."
+msgstr "Stan tej baterii to tylko %1% i powinna być wymieniona. Skontaktuj się z producentem."
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Time To Full:"
+msgstr "Czas do pełnego naładowania:"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Remaining Time:"
+msgstr "Pozostały czas:"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgctxt "@info"
+msgid "Estimating…"
+msgstr "Szacowanie…"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Battery Health:"
+msgstr "Stan baterii:"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgctxt "Placeholder is battery health percentage"
+msgid "%1%"
+msgstr "%1%"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Battery is configured to charge up to approximately %1%."
+msgstr "Bateria jest skonfigurowana do ładowania do około %1%."
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "@title:group"
+msgid "Sleep and Screen Locking after Inactivity"
+msgstr "Uśpienie i blokada ekranu po braku aktywności"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Sleep and Screen Locking after Inactivity"
+msgid "Blocked"
+msgstr "Zablokowane"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Sleep and Screen Locking after Inactivity"
+msgid "Automatic"
+msgstr "Automatyczne"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "@option:check Manually block sleep and screen locking after inactivity"
+msgid "Manually block"
+msgstr "Ręcznie blokuj"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "Failed to unblock automatic sleep and screen locking"
+msgstr "Nie udało się odblokować automatycznego uśpienia i blokady ekranu"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "Failed to block automatic sleep and screen locking"
+msgstr "Nie udało się zablokować automatycznego uśpienia i blokady ekranu"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Minimize the length of this string as much as possible"
+msgid "Your laptop is configured not to sleep when closing the lid while an external monitor is connected."
+msgstr "Twój laptop jest skonfigurowany, aby nie usypiać po zamknięciu pokrywy, gdy podłączony jest monitor zewnętrzny."
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "%1 application is currently blocking sleep and screen locking:"
+msgid_plural "%1 applications are currently blocking sleep and screen locking:"
+msgstr[0] "%1 aplikacja blokuje obecnie uśpienie i blokadę ekranu:"
+msgstr[1] "%1 aplikacje blokują obecnie uśpienie i blokadę ekranu:"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "%1 is currently blocking sleep and screen locking (%2)"
+msgstr "%1 blokuje obecnie uśpienie i blokadę ekranu (%2)"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "%1 is currently blocking sleep and screen locking (unknown reason)"
+msgstr "%1 blokuje obecnie uśpienie i blokadę ekranu (nieznany powód)"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "An application is currently blocking sleep and screen locking (%1)"
+msgstr "Aplikacja blokuje obecnie uśpienie i blokadę ekranu (%1)"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "An application is currently blocking sleep and screen locking (unknown reason)"
+msgstr "Aplikacja blokuje obecnie uśpienie i blokadę ekranu (nieznany powód)"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Application name: reason for preventing sleep and screen locking"
+msgid "%1: %2"
+msgstr "%1: %2"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Application name: reason for preventing sleep and screen locking"
+msgid "%1: unknown reason"
+msgstr "%1: nieznany powód"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Application name: reason for preventing sleep and screen locking"
+msgid "Unknown application: %1"
+msgstr "Nieznana aplikacja: %1"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Application name: reason for preventing sleep and screen locking"
+msgid "Unknown application: unknown reason"
+msgstr "Nieznana aplikacja: nieznany powód"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Power Save"
+msgstr "Oszczędzanie energii"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Balanced"
+msgstr "Zrównoważony"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance"
+msgstr "Wydajność"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Power Profile"
+msgstr "Profil zasilania"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgctxt "Power profile"
+msgid "Not available"
+msgstr "Niedostępny"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Failed to activate %1 mode"
+msgstr "Nie udało się aktywować trybu %1"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance mode has been disabled to reduce heat generation because the computer has detected that it may be sitting on your lap."
+msgstr "Tryb wydajności został wyłączony, aby zmniejszyć generowanie ciepła, ponieważ komputer wykrył, że może znajdować się na twoich kolanach."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance mode is unavailable because the computer is running too hot."
+msgstr "Tryb wydajności jest niedostępny, ponieważ komputer jest zbyt gorący."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance mode is unavailable."
+msgstr "Tryb wydajności jest niedostępny."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance may be lowered to reduce heat generation because the computer has detected that it may be sitting on your lap."
+msgstr "Wydajność może być obniżona, aby zmniejszyć generowanie ciepła, ponieważ komputer wykrył, że może znajdować się na twoich kolanach."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance may be reduced because the computer is running too hot."
+msgstr "Wydajność może być obniżona, ponieważ komputer jest zbyt gorący."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance may be reduced."
+msgstr "Wydajność może być obniżona."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "One application has requested activating %2:"
+msgid_plural "%1 applications have requested activating %2:"
+msgstr[0] "Jedna aplikacja zażądała aktywacji %2:"
+msgstr[1] "%1 aplikacje zażądały aktywacji %2:"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgctxt "%1 is the name of the application, %2 is the reason provided by it for activating performance mode"
+msgid "%1: %2"
+msgstr "%1: %2"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Power profiles may be supported on your device.<nl/>Try installing the <command>power-profiles-daemon</command> package using your distribution's package manager and restarting the system."
+msgstr "Profile zasilania mogą być obsługiwane na twoim urządzeniu.<nl/>Spróbuj zainstalować pakiet <command>power-profiles-daemon</command> za pomocą menedżera pakietów twojej dystrybucji i zrestartuj system."
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Disconnect"
+msgstr "Rozłącz"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Connect"
+msgstr "Połącz"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Browse Files"
+msgstr "Przeglądaj pliki"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Send File"
+msgstr "Wyślij plik"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml ../contents/ui/pages/components/network/DetailsText.qml
+msgid "Copy"
+msgstr "Kopiuj"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Yes"
+msgstr "Tak"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "No"
+msgstr "Nie"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgctxt "@label %1 is human-readable adapter name, %2 is HCI"
+msgid "%1 (%2)"
+msgstr "%1 (%2)"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Remote Name"
+msgstr "Nazwa zdalna"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Address"
+msgstr "Adres"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Paired"
+msgstr "Sparowane"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Trusted"
+msgstr "Zaufane"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Adapter"
+msgstr "Adapter"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Disconnecting"
+msgstr "Rozłączanie"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Connecting"
+msgstr "Łączenie"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Connection failed"
+msgstr "Połączenie nieudane"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Audio device"
+msgstr "Urządzenie audio"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Input device"
+msgstr "Urządzenie wejściowe"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Phone"
+msgstr "Telefon"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "File transfer"
+msgstr "Transfer plików"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Send file"
+msgstr "Wyślij plik"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Input"
+msgstr "Wejście"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Audio"
+msgstr "Audio"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Other device"
+msgstr "Inne urządzenie"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "%1% Battery"
+msgstr "%1% baterii"
+
+#: ../contents/ui/pages/components/bluetooth/Header.qml
+msgid "Configure Bluetooth"
+msgstr "Konfiguruj Bluetooth"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Backlight on or off"
+msgid "Off"
+msgstr "Wyłączone"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Brightness level"
+msgid "Low"
+msgstr "Niski"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Brightness level"
+msgid "Medium"
+msgstr "Średni"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Brightness level"
+msgid "High"
+msgstr "Wysoki"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Backlight on or off"
+msgid "On"
+msgstr "Włączone"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Placeholder is brightness percentage"
+msgid "%1%"
+msgstr "%1%"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Display brightness"
+msgid "Brightness"
+msgstr "Jasność"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Placeholder is display name"
+msgid "Display Brightness - %1"
+msgstr "Jasność wyświetlacza - %1"
+
+#: ../contents/ui/pages/components/brightness/KeyboardColorItem.qml
+msgid "Follow accent color"
+msgstr "Podążaj za kolorem akcentu"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Remaining time for song e.g -5:42"
+msgid "-%1"
+msgstr "-%1"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "@action:button"
+msgid "Shuffle"
+msgstr "Losowo"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Play previous track"
+msgid "Previous Track"
+msgstr "Poprzedni utwór"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Pause playback"
+msgid "Pause"
+msgstr "Pauza"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Start playback"
+msgid "Play"
+msgstr "Odtwarzaj"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Play next track"
+msgid "Next Track"
+msgstr "Następny utwór"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgid "Repeat Track"
+msgstr "Powtórz utwór"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgid "Repeat"
+msgstr "Powtórz"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Show Network's QR Code"
+msgstr "Pokaż kod QR sieci"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml ../contents/ui/pages/NightLightPage.qml
+msgid "Configure…"
+msgstr "Konfiguruj…"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Speed"
+msgstr "Prędkość"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Details"
+msgstr "Szczegóły"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgctxt "@info:tooltip"
+msgid "Current download speed is %1 kibibytes per second; current upload speed is %2 kibibytes per second"
+msgstr "Aktualna prędkość pobierania to %1 kibibajtów na sekundę; aktualna prędkość wysyłania to %2 kibibajtów na sekundę"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Connected, ⬇ %1/s, ⬆ %2/s"
+msgstr "Połączono, ⬇ %1/s, ⬆ %2/s"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "You need to log in to this network"
+msgstr "Musisz zalogować się do tej sieci"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgctxt "@action:button"
+msgid "Log in"
+msgstr "Zaloguj się"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "Airplane mode is enabled"
+msgstr "Tryb samolotowy jest włączony"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "Wireless and mobile networks are deactivated"
+msgstr "Sieci bezprzewodowe i mobilne są wyłączone"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "Wireless is deactivated"
+msgstr "Sieć bezprzewodowa jest wyłączona"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "Mobile network is deactivated"
+msgstr "Sieć mobilna jest wyłączona"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "No matches"
+msgstr "Brak dopasowań"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "No available connections"
+msgstr "Brak dostępnych połączeń"
+
+#: ../contents/ui/pages/components/network/ShareNetworkQrCodePage.qml
+msgid "Scan this QR code with another device to connect to the \"%1\" network."
+msgstr "Zeskanuj ten kod QR innym urządzeniem, aby połączyć się z siecią \"%1\"."
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Enable Wi-Fi"
+msgstr "Włącz Wi-Fi"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Enable mobile network"
+msgstr "Włącz sieć mobilną"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgctxt "@info"
+msgid "Disable airplane mode<nl/><nl/>This will enable Wi-Fi and Bluetooth"
+msgstr "Wyłącz tryb samolotowy<nl/><nl/>To włączy Wi-Fi i Bluetooth"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgctxt "@info"
+msgid "Enable airplane mode<nl/><nl/>This will disable Wi-Fi and Bluetooth"
+msgstr "Włącz tryb samolotowy<nl/><nl/>To wyłączy Wi-Fi i Bluetooth"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Hotspot"
+msgstr "Hotspot"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Disable Hotspot"
+msgstr "Wyłącz hotspot"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Create Hotspot"
+msgstr "Utwórz hotspot"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Configure network connections…"
+msgstr "Konfiguruj połączenia sieciowe…"
+
+#: ../contents/ui/pages/components/network/TrafficMonitor.qml
+msgid "/s"
+msgstr "/s"
+
+#: ../contents/ui/pages/components/network/TrafficMonitor.qml
+msgid "Upload"
+msgstr "Wysyłanie"
+
+#: ../contents/ui/pages/components/network/TrafficMonitor.qml
+msgid "Download"
+msgstr "Pobieranie"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Currently not recording"
+msgstr "Aktualnie nie nagrywa"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Currently not playing"
+msgstr "Aktualnie nie odtwarza"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "@action:button"
+msgid "Additional Options"
+msgstr "Dodatkowe opcje"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Show additional options for %1"
+msgstr "Pokaż dodatkowe opcje dla %1"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "@action:button"
+msgid "Unmute"
+msgstr "Wyłącz wyciszenie"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "@action:button"
+msgid "Mute"
+msgstr "Wycisz"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Unmute %1"
+msgstr "Wyłącz wyciszenie %1"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Mute %1"
+msgstr "Wycisz %1"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "Accessibility data on volume slider"
+msgid "Adjust volume for %1"
+msgstr "Dostosuj głośność dla %1"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "volume percentage"
+msgid "%1%"
+msgstr "%1%"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "only used for sizing, should be widest possible string"
+msgid "100%"
+msgstr "100%"
+
+#: ../contents/ui/pages/components/volume/StreamListItem.qml
+msgid "Stream name not found"
+msgstr "Nazwa strumienia nie znaleziona"
+
+#: ../contents/ui/pages/MediaPlayerPage.qml
+msgid "Media Player"
+msgstr "Odtwarzacz multimediów"
+
+#: ../contents/ui/pages/NetworkPage.qml
+msgid "Networks"
+msgstr "Sieci"
+
+#: ../contents/ui/pages/NetworkPage.qml
+msgctxt "@action:button"
+msgid "Return to Network Connections"
+msgstr "Powrót do połączeń sieciowych"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgid "Night light status"
+msgstr "Status światła nocnego"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "Suspended"
+msgstr "Zawieszone"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "Unavailable"
+msgstr "Niedostępne"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "Not enabled"
+msgstr "Nie włączone"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "Not running"
+msgstr "Nie uruchomione"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "On"
+msgstr "Włączone"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light phase"
+msgid "Morning Transition"
+msgstr "Przejście poranne"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light phase"
+msgid "Day"
+msgstr "Dzień"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light phase"
+msgid "Evening Transition"
+msgstr "Przejście wieczorne"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light phase"
+msgid "Night"
+msgstr "Noc"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Placeholder is screen color temperature"
+msgid "%1K"
+msgstr "%1K"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "@action:button Night Light"
+msgid "Suspend"
+msgstr "Zawieś"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgid "Enable and Configure…"
+msgstr "Włącz i konfiguruj…"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Label for a time"
+msgid "Transition to day complete by:"
+msgstr "Przejście do dnia zakończone do:"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Label for a time"
+msgid "Transition to night scheduled for:"
+msgstr "Przejście do nocy zaplanowane na:"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Label for a time"
+msgid "Transition to night complete by:"
+msgstr "Przejście do nocy zakończone do:"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Label for a time"
+msgid "Transition to day scheduled for:"
+msgstr "Przejście do dnia zaplanowane na:"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Session Actions"
+msgstr "Akcje sesji"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Suspend"
+msgstr "Uśpij"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Restart"
+msgstr "Uruchom ponownie"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Shutdown"
+msgstr "Wyłącz"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Hibernate"
+msgstr "Hibernuj"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Lock Screen"
+msgstr "Zablokuj ekran"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Log Out"
+msgstr "Wyloguj"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Switch User"
+msgstr "Przełącz użytkownika"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Audio Volume"
+msgstr "Głośność audio"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "No output or input devices found"
+msgstr "Nie znaleziono urządzeń wyjścia lub wejścia"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Device name not found"
+msgstr "Nazwa urządzenia nie znaleziona"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Devices"
+msgstr "Urządzenia"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Applications"
+msgstr "Aplikacje"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Force mute all playback devices"
+msgstr "Wymuś wyciszenie wszystkich urządzeń odtwarzania"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Configure Audio Devices"
+msgstr "Konfiguruj urządzenia audio"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "No applications playing or recording audio"
+msgstr "Brak aplikacji odtwarzających lub nagrywających audio"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgctxt "@info"
+msgid "Prolonged use of this feature will damage the device's speakers. Only use it temporarily to make quiet media audible."
+msgstr ""
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Raise maximum volume"
+msgstr ""
+
+#~ msgid "Behaviour"
+#~ msgstr "Zachowanie"
+
+#~ msgid "Highlight color"
+#~ msgstr "Kolor podświetlenia"
+
+#~ msgid "Toggle buttons color"
+#~ msgstr "Kolor przycisków przełączania"
+
+#~ msgid "Sliders color"
+#~ msgstr "Kolor suwaków"
+
+#~ msgid "Volume:"
+#~ msgstr "Głośność:"

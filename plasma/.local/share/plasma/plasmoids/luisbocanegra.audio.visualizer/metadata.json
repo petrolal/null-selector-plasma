@@ -1,0 +1,27 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "luisbocanegra17b@gmail.com",
+                "Name": "Luis Bocanegra"
+            }
+        ],
+        "BugReportUrl": "https://github.com/luisbocanegra/plasma-audio-visualizer/issues",
+        "Category": "System Information",
+        "Description": "Audio visualizer powered by CAVA",
+        "Description[fr]": "Visualiseur audio propulsé par CAVA",
+        "Description[nl]": "Audiovisualisatie, gebaseerd op CAVA",
+        "Description[ru]": "Аудио-визуализатор на базе CAVA",
+        "Description[sv]": "Ljudvisualisering som använder CAVA",
+        "Description[zh_CN]": "基于CAVA的音频可视化器",
+        "EnabledByDefault": false,
+        "Icon": "waveform-symbolic",
+        "Id": "luisbocanegra.audio.visualizer",
+        "License": "GPL-3.0",
+        "Name": "Plasma Audio Visualizer",
+        "Version": "3.6.1",
+        "Website": "https://github.com/luisbocanegra/plasma-audio-visualizer"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

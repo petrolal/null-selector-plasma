@@ -132,7 +132,7 @@ widgetStyle=kvantum-dark
 windowTitleFont=JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold
 
 [Icons]
-Theme=YAMIS
+Theme=yet-another-monochrome-icon-set
 
 [KDE]
 LookAndFeelPackage=klassy-dark

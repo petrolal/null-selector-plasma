@@ -5,22 +5,21 @@
 // qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(< layout.js)"
 // ==============================================================================
 
-var wallpaperPath = (function() {
-    var home = userDataPath();
-    // Default to repo or stow location
-    return home + "/.local/share/wallpapers/digital-gaze.png";
-})();
+var videoFile = "file://" + userDataPath() + "/.local/share/wallpapers/digital-gaze.mp4";
+var imageFile = "file://" + userDataPath() + "/.local/share/wallpapers/digital-gaze.png";
 
 // -----------------------------------------------------------------------------
-// 1. Multi-Screen Wallpaper Application
+// 1. Multi-Screen Wallpaper Application (Smart Video Wallpaper)
 // -----------------------------------------------------------------------------
 var allDesktops = desktops();
 for (var d = 0; d < allDesktops.length; d++) {
     var desk = allDesktops[d];
-    desk.wallpaperPlugin = "org.kde.image";
-    desk.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
-    desk.writeConfig("Image", "file://" + wallpaperPath);
-    desk.writeConfig("FillMode", 2); // Crop/Fill
+    desk.wallpaperPlugin = "luisbocanegra.smart.video.wallpaper.reborn";
+    desk.currentConfigGroup = ["Wallpaper", "luisbocanegra.smart.video.wallpaper.reborn", "General"];
+    desk.writeConfig("VideoUrls", JSON.stringify([videoFile]));
+    desk.writeConfig("LastVideo", videoFile);
+    desk.writeConfig("FillMode", 2);
+    desk.writeConfig("MuteMode", 5);
     desk.reloadConfig();
 }
 
@@ -45,7 +44,7 @@ topPanel.floating = true;
 topPanel.opacity = "translucent";
 
 // Left: System Monitors
-var cpuMon = topPanel.addWidget("org.kde.plasma.systemmonitor.cpus");
+var cpuMon = topPanel.addWidget("org.kde.plasma.systemmonitor.cpu");
 var memMon = topPanel.addWidget("org.kde.plasma.systemmonitor.memory");
 var netMon = topPanel.addWidget("org.kde.plasma.systemmonitor.net");
 
@@ -54,7 +53,7 @@ topPanel.addWidget("org.kde.plasma.panelspacer");
 
 // Right: CatWalk, Control Station, Clock, Panel Colorizer
 topPanel.addWidget("org.kde.plasma.catwalkEnhanced");
-topPanel.addWidget("com.github.prayag2.controlstation");
+topPanel.addWidget("KdeControlStation");
 
 var clock = topPanel.addWidget("org.kde.plasma.digitalclock");
 if (clock) {
@@ -126,7 +125,7 @@ if (allDesktops.length > 0) {
     primaryDesk.addWidget("org.kde.plasma.clearclock");
 
     // Left Desktop: Kurve Audio Visualizer (CAVA)
-    primaryDesk.addWidget("org.kde.plasma.kurve");
+    primaryDesk.addWidget("luisbocanegra.audio.visualizer");
 
     // Right Desktop: YoRHa HUD (NieR: Automata Telemetry)
     primaryDesk.addWidget("com.axzoros.yorhahud");

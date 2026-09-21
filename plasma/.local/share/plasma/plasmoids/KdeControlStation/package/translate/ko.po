@@ -1,0 +1,1078 @@
+# Translation of KdeControlStation in ko
+# Copyright (C) 2025
+# This file is distributed under the same license as the KdeControlStation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: KdeControlStation\n"
+"Report-Msgid-Bugs-To: https://github.com/EliverLara/kde-control-station/tree/"
+"plasma6\n"
+"POT-Creation-Date: 2026-01-22 17:26-0600\n"
+"PO-Revision-Date: 2025-08-27 23:11+0900\n"
+"Last-Translator: Hyeonwol123 <hyeonwol12345@kakao.com>\n"
+"Language-Team: \n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#: ../metadata.json
+msgid "KDE control station"
+msgstr "KDE 제어 센터"
+
+#: ../metadata.json
+msgid ""
+"A modern control station for plasma based on the awesome work of prayag2!"
+msgstr ""
+"prayag2의 훌륭한 작업물을 기반으로 한 Plasma용 현대적인 제어 센터입니다!"
+
+#: ../contents/config/config.qml
+#: ../contents/ui/layouts/components/ControlCenter/LeftColumn.qml
+msgid "Appearance"
+msgstr "모양새"
+
+#: ../contents/config/config.qml
+msgid "Color schemes"
+msgstr "색상"
+
+#: ../contents/config/config.qml ../contents/ui/components/ScreenshotBtn.qml
+msgid "Screenshot"
+msgstr "스크린샷"
+
+#: ../contents/config/config.qml
+msgid "Support"
+msgstr ""
+
+#: ../contents/ui/components/Battery.qml
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgctxt "Placeholder is battery percentage"
+msgid "%1%"
+msgstr "%1%"
+
+#: ../contents/ui/components/ColorSchemeSwitcher.qml
+msgid "Dark Theme"
+msgstr "어두운 테마"
+
+#: ../contents/ui/components/DndButton.qml
+msgid "Do Not Disturb"
+msgstr "방해 금지"
+
+#: ../contents/ui/components/KDEConnect.qml
+msgid "KDE Connect"
+msgstr "KDE Connect"
+
+#: ../contents/ui/components/MediaPlayer.qml
+#: ../contents/ui/pages/components/mediaPlayer/AlbumArtStackView.qml
+msgid "No title"
+msgstr "제목 없음"
+
+#: ../contents/ui/components/MediaPlayer.qml
+#: ../contents/ui/pages/components/mediaPlayer/AlbumArtStackView.qml
+msgid "No media playing"
+msgstr "재생 중인 미디어 없음"
+
+#: ../contents/ui/components/NetworkBtn.qml
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: ../contents/ui/components/NetworkBtn.qml
+msgid "Airplane mode"
+msgstr "비행기 모드"
+
+#: ../contents/ui/components/NetworkBtn.qml
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Network"
+msgstr "네트워크"
+
+#: ../contents/ui/components/NightLight.qml
+#: ../contents/ui/pages/NightLightPage.qml
+msgid "Night Light"
+msgstr "야간 조명"
+
+#: ../contents/ui/components/RedShift.qml
+msgid "Night Color"
+msgstr "야간 색상"
+
+#: ../contents/ui/components/SystemActions.qml
+msgid "Power Off"
+msgstr "전원 끄기"
+
+#: ../contents/ui/components/UserAvatar.qml
+msgid "%1@%2"
+msgstr "%1@%2"
+
+#: ../contents/ui/components/Volume.qml
+msgid "Volume"
+msgstr "음량"
+
+#: ../contents/ui/config/components/ColorChooser.qml
+msgid "Please choose a color"
+msgstr "색상을 선택"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Icon:"
+msgstr "아이콘:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgctxt "@item:inmenu Open icon chooser dialog"
+msgid "Choose…"
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgctxt "@item:inmenu Reset icon to default"
+msgid "Clear Icon"
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Scale:"
+msgstr "크기:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Layout:"
+msgstr "배치:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "KDE Control Station (Default)"
+msgstr "KDE 제어 센터 (기본)"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Control Center"
+msgstr "제어 센터"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Flat"
+msgstr "플랫"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Tahoe"
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Custom"
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "General:"
+msgstr "일반:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Show volume/brightness percentage"
+msgstr "음량/밝기 퍼센트 표시"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Enable animations (Experimental)"
+msgstr "애니메이션 사용 (실험적)"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Enable transparency"
+msgstr "투명한 창 사용"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Transparency level of widgets (%1%):"
+msgstr "위젯 투명도 (%1%):"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Show borders aroud components"
+msgstr "구성요소 주변에 테두리 표시"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Toggle buttons and sliders"
+msgstr "토글 버튼과 슬라이더"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Toggle buttons"
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Highlight color: "
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Icon color: "
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Sliders controls style"
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Sliders color: "
+msgstr ""
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Show quick toggle buttons:"
+msgstr "빠른 토글 버튼 보기:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Name:"
+msgstr "이름:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Command:"
+msgstr "명령:"
+
+#: ../contents/ui/config/configAppearance.qml
+msgid "Show other components:"
+msgstr "다른 구성요소 보기:"
+
+#: ../contents/ui/config/configColorscheme.qml
+msgid "Change global theme instead of just changing color scheme"
+msgstr "색상 대신 전역 테마를 변경"
+
+#: ../contents/ui/config/configColorscheme.qml
+msgid "Light color"
+msgstr "밝은 색상"
+
+#: ../contents/ui/config/configColorscheme.qml
+msgid "Dark color"
+msgstr "어두운 색상"
+
+#: ../contents/ui/config/configScreenshot.qml
+msgid "Hide widget before screenshotting:"
+msgstr ""
+
+#: ../contents/ui/config/configScreenshot.qml
+msgid "Screenshot Command (default is 'spectacle'):"
+msgstr ""
+
+#: ../contents/ui/config/configSupport.qml
+msgid ""
+"I'd be very thankful if you like to support the development of this applet "
+"by donating or by simply spreading the word, TIA! :)"
+msgstr ""
+
+#: ../contents/ui/js/funcs.js
+msgid "Disabled"
+msgstr "사용 안 함"
+
+#: ../contents/ui/js/funcs.js
+msgid "Unavailable"
+msgstr "사용할 수 없음"
+
+#: ../contents/ui/js/funcs.js
+msgid "Offline"
+msgstr "오프라인"
+
+#: ../contents/ui/js/funcs.js
+msgid "Not Connected"
+msgstr "연결되지 않음"
+
+#: ../contents/ui/js/funcs.js
+msgid "On"
+msgstr "켜기"
+
+#: ../contents/ui/js/funcs.js
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Connected"
+msgstr "연결됨"
+
+#: ../contents/ui/js/funcs.js
+msgid "Disconnected"
+msgstr "연결되지 않음"
+
+#: ../contents/ui/layouts/components/ControlCenter/LeftColumn.qml
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "Bluetooth"
+msgstr "블루투스"
+
+#: ../contents/ui/pages/BatteryPage.qml
+msgid "The battery applet has enabled suppressing sleep and screen locking"
+msgstr ""
+
+#: ../contents/ui/pages/BatteryPage.qml
+msgid "Power and Battery"
+msgstr "전원과 배터리"
+
+#: ../contents/ui/pages/BatteryPage.qml
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Power Management"
+msgstr "전원 관리"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "Enable"
+msgstr "활성화"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "Pair Device…"
+msgstr "장치 페어링…"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "No Bluetooth adapters available"
+msgstr "사용할 수 있는 블루투스 어댑터가 없음"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "Bluetooth is disabled"
+msgstr "블루투스가 비활성화되어 있음"
+
+#: ../contents/ui/pages/BluetoothPage.qml
+msgid "No devices paired"
+msgstr "페어링된 장치 없음"
+
+#: ../contents/ui/pages/BrightnessControlPage.qml
+msgid "Brightness Control"
+msgstr "밝기 제어"
+
+#: ../contents/ui/pages/BrightnessControlPage.qml
+msgid "Keyboard Backlight"
+msgstr "키보드 백라이트"
+
+#: ../contents/ui/pages/BrightnessControlPage.qml
+msgid "Keyboard Color"
+msgstr "키보드 색상"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Charging"
+msgstr "충전 중"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Discharging"
+msgstr "배터리 소모 중"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Fully Charged"
+msgstr "충전됨"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Not Charging"
+msgstr "충전 중이지 않음"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgctxt "Battery is currently not present in the bay"
+msgid "Not present"
+msgstr "배터리 없음"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid ""
+"This battery's health is at only %1% and it should be replaced. Contact the "
+"manufacturer."
+msgstr ""
+"배터리 상태가 %1%이며 교체해야 합니다. 기기 제조사의 서비스를 받으십시오."
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Time To Full:"
+msgstr "충전될 때까지:"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Remaining Time:"
+msgstr "남은 시간:"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgctxt "@info"
+msgid "Estimating…"
+msgstr "측정 중…"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Battery Health:"
+msgstr "배터리 상태:"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgctxt "Placeholder is battery health percentage"
+msgid "%1%"
+msgstr "%1%"
+
+#: ../contents/ui/pages/components/battery/BatteryItem.qml
+msgid "Battery is configured to charge up to approximately %1%."
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "@title:group"
+msgid "Sleep and Screen Locking after Inactivity"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Sleep and Screen Locking after Inactivity"
+msgid "Blocked"
+msgstr "차단됨"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Sleep and Screen Locking after Inactivity"
+msgid "Automatic"
+msgstr "자동"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt ""
+"@option:check Manually block sleep and screen locking after inactivity"
+msgid "Manually block"
+msgstr "수동으로 차단"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "Failed to unblock automatic sleep and screen locking"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "Failed to block automatic sleep and screen locking"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Minimize the length of this string as much as possible"
+msgid ""
+"Your laptop is configured not to sleep when closing the lid while an "
+"external monitor is connected."
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "%1 application is currently blocking sleep and screen locking:"
+msgid_plural "%1 applications are currently blocking sleep and screen locking:"
+msgstr[0] "앱 %1개에서 절전 모드 진입과 화면 잠금을 차단함:"
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "%1 is currently blocking sleep and screen locking (%2)"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "%1 is currently blocking sleep and screen locking (unknown reason)"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid "An application is currently blocking sleep and screen locking (%1)"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgid ""
+"An application is currently blocking sleep and screen locking (unknown "
+"reason)"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Application name: reason for preventing sleep and screen locking"
+msgid "%1: %2"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Application name: reason for preventing sleep and screen locking"
+msgid "%1: unknown reason"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Application name: reason for preventing sleep and screen locking"
+msgid "Unknown application: %1"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerManagementItem.qml
+msgctxt "Application name: reason for preventing sleep and screen locking"
+msgid "Unknown application: unknown reason"
+msgstr ""
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Power Save"
+msgstr "절전"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Balanced"
+msgstr "균형 조정"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance"
+msgstr "성능"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Power Profile"
+msgstr "전원 프로필"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgctxt "Power profile"
+msgid "Not available"
+msgstr "사용할 수 없음"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Failed to activate %1 mode"
+msgstr "%1 모드를 활성화할 수 없음"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid ""
+"Performance mode has been disabled to reduce heat generation because the "
+"computer has detected that it may be sitting on your lap."
+msgstr ""
+"노트북 컴퓨터를 무릎 위에서 사용하는 것이 감지되어 발열을 낮추기 위해 성능 모"
+"드 사용이 제한됩니다."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid ""
+"Performance mode is unavailable because the computer is running too hot."
+msgstr "컴퓨터의 온도가 너무 높아 성능 모드를 사용할 수 없습니다."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance mode is unavailable."
+msgstr "성능 모드를 사용할 수 없습니다."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid ""
+"Performance may be lowered to reduce heat generation because the computer "
+"has detected that it may be sitting on your lap."
+msgstr ""
+"노트북 컴퓨터를 무릎 위에서 사용하는 것이 감지되어 발열을 낮추기 위해 성능을 "
+"제한합니다."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance may be reduced because the computer is running too hot."
+msgstr "컴퓨터의 온도가 너무 높아 성능이 제한됩니다."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "Performance may be reduced."
+msgstr "성능이 낮아집니다."
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid "One application has requested activating %2:"
+msgid_plural "%1 applications have requested activating %2:"
+msgstr[0] ""
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgctxt ""
+"%1 is the name of the application, %2 is the reason provided by it for "
+"activating performance mode"
+msgid "%1: %2"
+msgstr "%1: %2"
+
+#: ../contents/ui/pages/components/battery/PowerProfileItem.qml
+msgid ""
+"Power profiles may be supported on your device.<nl/>Try installing the "
+"<command>power-profiles-daemon</command> package using your distribution's "
+"package manager and restarting the system."
+msgstr ""
+"장치에서 전원 프로필을 지원해야 합니다.<nl/>리눅스 배포판에서 제공하는 "
+"<command>power-profiles-daemon</command> 패키지를 설치해보시고 시스템을 다시 "
+"시작하십시오."
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Disconnect"
+msgstr "연결 해제"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Connect"
+msgstr "연결"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Browse Files"
+msgstr "파일 찾기"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Send File"
+msgstr "파일 보내기"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+#: ../contents/ui/pages/components/network/DetailsText.qml
+msgid "Copy"
+msgstr "복사"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Yes"
+msgstr "예"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "No"
+msgstr "아니오"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgctxt "@label %1 is human-readable adapter name, %2 is HCI"
+msgid "%1 (%2)"
+msgstr "%1 (%2)"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Remote Name"
+msgstr ""
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Address"
+msgstr "주소"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Paired"
+msgstr "페어링됨"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Trusted"
+msgstr "신뢰함"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Adapter"
+msgstr "어댑터"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Disconnecting"
+msgstr "연결을 해제하는 중"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Connecting"
+msgstr "연결 중"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Connection failed"
+msgstr "연결 실패"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Audio device"
+msgstr "오디오 장치"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Input device"
+msgstr "입력 장치"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Phone"
+msgstr "전화"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "File transfer"
+msgstr "파일 전송"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Send file"
+msgstr "파일 보내기"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Input"
+msgstr "입력"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Audio"
+msgstr "오디오"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "Other device"
+msgstr "다른 장치"
+
+#: ../contents/ui/pages/components/bluetooth/DeviceItem.qml
+msgid "%1% Battery"
+msgstr "배터리 %1%"
+
+#: ../contents/ui/pages/components/bluetooth/Header.qml
+msgid "Configure Bluetooth"
+msgstr "블루투스 설정"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Backlight on or off"
+msgid "Off"
+msgstr "끔"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Brightness level"
+msgid "Low"
+msgstr "낮음"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Brightness level"
+msgid "Medium"
+msgstr "보통"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Brightness level"
+msgid "High"
+msgstr "높음"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Backlight on or off"
+msgid "On"
+msgstr "켬"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Placeholder is brightness percentage"
+msgid "%1%"
+msgstr "%1%"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Display brightness"
+msgid "Brightness"
+msgstr "밝기"
+
+#: ../contents/ui/pages/components/brightness/BrightnessItem.qml
+msgctxt "Placeholder is display name"
+msgid "Display Brightness - %1"
+msgstr "디스플레이 밝기 - %1"
+
+#: ../contents/ui/pages/components/brightness/KeyboardColorItem.qml
+msgid "Follow accent color"
+msgstr "강조 색상 따르기"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Remaining time for song e.g -5:42"
+msgid "-%1"
+msgstr "-%1"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "@action:button"
+msgid "Shuffle"
+msgstr "무작위 재생"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Play previous track"
+msgid "Previous Track"
+msgstr "이전 트랙"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Pause playback"
+msgid "Pause"
+msgstr "일시정지"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Start playback"
+msgid "Play"
+msgstr "재생"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgctxt "Play next track"
+msgid "Next Track"
+msgstr "다음 트랙"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgid "Repeat Track"
+msgstr "트랙 반복"
+
+#: ../contents/ui/pages/components/mediaPlayer/ExpandedRepresentation.qml
+msgid "Repeat"
+msgstr "반복"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Show Network's QR Code"
+msgstr "네트워크의 QR 코드 보기"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+#: ../contents/ui/pages/NightLightPage.qml
+msgid "Configure…"
+msgstr "설정…"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Speed"
+msgstr "속도"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Details"
+msgstr "자세히"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgctxt "@info:tooltip"
+msgid ""
+"Current download speed is %1 kibibytes per second; current upload speed is "
+"%2 kibibytes per second"
+msgstr "현재 다운로드 속도는 %1Kb/s입니다; 현재 업로드 속도는 %1Kb/s입니다"
+
+#: ../contents/ui/pages/components/network/ConnectionItem.qml
+msgid "Connected, ⬇ %1/s, ⬆ %2/s"
+msgstr "연결됨, ⬇ %1/s, ⬆ %2/s"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "You need to log in to this network"
+msgstr "이 네트워크에 로그인해야 함"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgctxt "@action:button"
+msgid "Log in"
+msgstr "로그인"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "Airplane mode is enabled"
+msgstr "비행기 모드가 켜져 있음"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "Wireless and mobile networks are deactivated"
+msgstr "무선 연결과 모바일 네트워크가 비활성화됨"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "Wireless is deactivated"
+msgstr "무선 연결이 비활성화됨"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "Mobile network is deactivated"
+msgstr "모바일 네트워크가 비활성화됨"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "No matches"
+msgstr "검색 결과 없음"
+
+#: ../contents/ui/pages/components/network/ConnectionListPage.qml
+msgid "No available connections"
+msgstr "사용 가능한 연결이 없음"
+
+#: ../contents/ui/pages/components/network/ShareNetworkQrCodePage.qml
+msgid "Scan this QR code with another device to connect to the \"%1\" network."
+msgstr "다른 기기에서 \"%1\" 네트워크에 연결하려면 QR 코드를 스캔하십시오."
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Enable Wi-Fi"
+msgstr "Wi-Fi 켜기"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Enable mobile network"
+msgstr "모바일 네트워크 켜기"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgctxt "@info"
+msgid "Disable airplane mode<nl/><nl/>This will enable Wi-Fi and Bluetooth"
+msgstr "비행기 모드를 끄기<nl/><nl/>Wi-Fi와 블루투스가 활성화됩니다"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgctxt "@info"
+msgid "Enable airplane mode<nl/><nl/>This will disable Wi-Fi and Bluetooth"
+msgstr "비행기 모드를 켜기<nl/><nl/>Wi-Fi와 블루투스가 비활성화됩니다"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Hotspot"
+msgstr "핫스팟"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Disable Hotspot"
+msgstr "핫스팟 비활성화"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Create Hotspot"
+msgstr "핫스팟 만들기"
+
+#: ../contents/ui/pages/components/network/Toolbar.qml
+msgid "Configure network connections…"
+msgstr "네트워크 연결 설정…"
+
+#: ../contents/ui/pages/components/network/TrafficMonitor.qml
+msgid "/s"
+msgstr "/s"
+
+#: ../contents/ui/pages/components/network/TrafficMonitor.qml
+msgid "Upload"
+msgstr "업로드"
+
+#: ../contents/ui/pages/components/network/TrafficMonitor.qml
+msgid "Download"
+msgstr "다운로드"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Currently not recording"
+msgstr "녹음 중이지 않음"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Currently not playing"
+msgstr "재생 중이지 않음"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "@action:button"
+msgid "Additional Options"
+msgstr "추가 설정"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Show additional options for %1"
+msgstr "%1의 추가 설정 보기"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "@action:button"
+msgid "Unmute"
+msgstr "음소거 해제"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "@action:button"
+msgid "Mute"
+msgstr "음소거"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Unmute %1"
+msgstr "%1 음소거 해제"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgid "Mute %1"
+msgstr "%1 음소거"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "Accessibility data on volume slider"
+msgid "Adjust volume for %1"
+msgstr "%1의 음량 조절"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "volume percentage"
+msgid "%1%"
+msgstr "%1%"
+
+#: ../contents/ui/pages/components/volume/ListItemBase.qml
+msgctxt "only used for sizing, should be widest possible string"
+msgid "100%"
+msgstr "100%"
+
+#: ../contents/ui/pages/components/volume/StreamListItem.qml
+msgid "Stream name not found"
+msgstr "스트림 이름을 찾을 수 없음"
+
+#: ../contents/ui/pages/MediaPlayerPage.qml
+msgid "Media Player"
+msgstr "미디어 재생기"
+
+#: ../contents/ui/pages/NetworkPage.qml
+msgid "Networks"
+msgstr "네트워크"
+
+#: ../contents/ui/pages/NetworkPage.qml
+msgctxt "@action:button"
+msgid "Return to Network Connections"
+msgstr "네트워크 연결로 돌아가기"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgid "Night light status"
+msgstr "야간 조명 상태"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "Suspended"
+msgstr "일시 정지"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "Unavailable"
+msgstr "사용할 수 없음"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "Not enabled"
+msgstr "비활성화됨"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "Not running"
+msgstr "실행 중이지 않음"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light status"
+msgid "On"
+msgstr "켬"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light phase"
+msgid "Morning Transition"
+msgstr "일출 전환"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light phase"
+msgid "Day"
+msgstr "낮"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light phase"
+msgid "Evening Transition"
+msgstr "일몰 전환"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Night light phase"
+msgid "Night"
+msgstr "밤"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Placeholder is screen color temperature"
+msgid "%1K"
+msgstr "%1K"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "@action:button Night Light"
+msgid "Suspend"
+msgstr "중단"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgid "Enable and Configure…"
+msgstr ""
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Label for a time"
+msgid "Transition to day complete by:"
+msgstr "일출 전환 완료 시간:"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Label for a time"
+msgid "Transition to night scheduled for:"
+msgstr "일몰 전환 시작 시간:"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Label for a time"
+msgid "Transition to night complete by:"
+msgstr "일몰 전환 완료 시간:"
+
+#: ../contents/ui/pages/NightLightPage.qml
+msgctxt "Label for a time"
+msgid "Transition to day scheduled for:"
+msgstr "일출 전환 시작 시간:"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Session Actions"
+msgstr "세션 동작"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Suspend"
+msgstr "대기 모드"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Restart"
+msgstr "다시 시작"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Shutdown"
+msgstr "컴퓨터 끄기"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Hibernate"
+msgstr ""
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Lock Screen"
+msgstr "잠금"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Log Out"
+msgstr "로그아웃"
+
+#: ../contents/ui/pages/SystemSessionActionsPage.qml
+msgid "Switch User"
+msgstr ""
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Audio Volume"
+msgstr "오디오 음량"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "No output or input devices found"
+msgstr "입출력 장치를 찾을 수 없음"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Device name not found"
+msgstr "장치 이름을 찾을 수 없음"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Devices"
+msgstr "장치"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Applications"
+msgstr "앱"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Force mute all playback devices"
+msgstr "모든 재생 장치 음소거"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Configure Audio Devices"
+msgstr "오디오 장치 설정"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "No applications playing or recording audio"
+msgstr "오디오를 재생하거나 녹음하는 앱 없음"
+
+#: ../contents/ui/pages/VolumePage.qml
+msgctxt "@info"
+msgid ""
+"Prolonged use of this feature will damage the device's speakers. Only use it "
+"temporarily to make quiet media audible."
+msgstr ""
+
+#: ../contents/ui/pages/VolumePage.qml
+msgid "Raise maximum volume"
+msgstr ""
+
+#~ msgid "Behaviour"
+#~ msgstr "동작"
+
+#~ msgid "Highlight color"
+#~ msgstr "강조 색상"
+
+#~ msgid "Sliders color"
+#~ msgstr "슬라이더 색상"
+
+#~ msgid "Volume:"
+#~ msgstr "음량:"
