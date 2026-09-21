@@ -5,8 +5,22 @@
 // qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(< layout.js)"
 // ==============================================================================
 
-var videoFile = "file://" + userDataPath() + "/.local/share/wallpapers/digital-gaze.mp4";
-var imageFile = "file://" + userDataPath() + "/.local/share/wallpapers/digital-gaze.png";
+var homeDir = "/home/petrolal";
+var videoFile = "file://" + homeDir + "/.local/share/wallpapers/digital-gaze.mp4";
+var imageFile = "file://" + homeDir + "/.local/share/wallpapers/digital-gaze.png";
+
+var videoConfigObj = [
+    {
+        "filename": videoFile,
+        "enabled": true,
+        "duration": 0,
+        "customDuration": 0,
+        "playbackRate": 0.0,
+        "alternativePlaybackRate": 0.0,
+        "loop": false,
+        "dayNightPhase": 4
+    }
+];
 
 // -----------------------------------------------------------------------------
 // 1. Multi-Screen Wallpaper Application (Smart Video Wallpaper)
@@ -16,7 +30,7 @@ for (var d = 0; d < allDesktops.length; d++) {
     var desk = allDesktops[d];
     desk.wallpaperPlugin = "luisbocanegra.smart.video.wallpaper.reborn";
     desk.currentConfigGroup = ["Wallpaper", "luisbocanegra.smart.video.wallpaper.reborn", "General"];
-    desk.writeConfig("VideoUrls", JSON.stringify([videoFile]));
+    desk.writeConfig("VideoUrls", JSON.stringify(videoConfigObj));
     desk.writeConfig("LastVideo", videoFile);
     desk.writeConfig("FillMode", 2);
     desk.writeConfig("MuteMode", 5);

@@ -5,4 +5,4 @@ WallpaperPlugin=luisbocanegra.smart.video.wallpaper.reborn
 FillMode=2
 LastVideo=file:///home/petrolal/.local/share/wallpapers/digital-gaze.mp4
 MuteMode=5
-VideoUrls=["file:///home/petrolal/.local/share/wallpapers/digital-gaze.mp4"]
+VideoUrls=[{"filename": "file:///home/petrolal/.local/share/wallpapers/digital-gaze.mp4", "enabled": true, "duration": 0, "customDuration": 0, "playbackRate": 0.0, "alternativePlaybackRate": 0.0, "loop": false, "dayNightPhase": 4}]

@@ -579,8 +579,9 @@ apply_kde_settings() {
         kwriteconfig6 --file kwinrc --group Effect-forceblur --key Contrast "105"
 
         # Lockscreen Video Wallpaper
+        local video_urls_json='[{"filename":"file://'"${HOME}"'/.local/share/wallpapers/digital-gaze.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0.0,"alternativePlaybackRate":0.0,"loop":false,"dayNightPhase":4}]'
         kwriteconfig6 --file kscreenlockerrc --group Greeter --key WallpaperPlugin "luisbocanegra.smart.video.wallpaper.reborn"
-        kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key VideoUrls '["file://'"${HOME}"'/.local/share/wallpapers/digital-gaze.mp4"]'
+        kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key VideoUrls "$video_urls_json"
         kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key LastVideo "file://${HOME}/.local/share/wallpapers/digital-gaze.mp4"
         kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key FillMode 2
         kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key MuteMode 5

@@ -269,7 +269,3 @@ toggle do not disturb=none,none,Toggle do not disturb
 
 [services][kitty.desktop]
 _launch=Meta+Return
-
-[services][org.kde.spectacle.desktop]
-CurrentMonitorScreenShot=none
-OpenWithoutScreenshot=none
