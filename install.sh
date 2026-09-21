@@ -60,7 +60,7 @@ SKIP_BACKUP=false
 SKIP_DEPS=false
 DEPS_ONLY=false
 SYMLINKS_ONLY=false
-APPLY_LAYOUT=false
+APPLY_LAYOUT=true
 INSTALL_SDDM=true
 INSTALL_PLYMOUTH=true
 NO_RESTART=false
@@ -77,7 +77,8 @@ Options:
     -h, --help          Show this help message and exit
     -s, --symlinks-only Apply symlinks, configs, plasmoids and themes only (skip pkg manager)
     -d, --deps-only     Install dependencies only (skip applying dotfiles/layout)
-    -l, --apply-layout  Automatically evaluate Plasma 6 dual panel layout & widgets via DBus
+    -l, --apply-layout  Evaluate Plasma 6 dual panel layout & widgets via DBus (Default: enabled)
+        --no-layout     Skip evaluating panel layout and widgets
         --sddm          Install Monochrome SDDM login theme to /usr/share/sddm/themes
         --no-sddm       Skip installing SDDM login theme
         --plymouth      Install dotLock Plymouth boot splash theme
@@ -109,6 +110,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -l|--apply-layout)
             APPLY_LAYOUT=true
+            shift
+            ;;
+        --no-layout|--skip-layout)
+            APPLY_LAYOUT=false
             shift
             ;;
         --sddm)
