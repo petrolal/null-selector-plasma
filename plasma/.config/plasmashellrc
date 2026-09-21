@@ -1,17 +1,17 @@
-[PlasmaViews][Panel 29]
+[PlasmaViews][Panel 107]
 floating=1
 panelOpacity=2
 shell=org.kde.plasma.desktop
 
-[PlasmaViews][Panel 29][Defaults]
+[PlasmaViews][Panel 107][Defaults]
 thickness=34
 
-[PlasmaViews][Panel 38]
+[PlasmaViews][Panel 116]
 floating=1
 panelOpacity=2
 shell=org.kde.plasma.desktop
 
-[PlasmaViews][Panel 38][Defaults]
+[PlasmaViews][Panel 116][Defaults]
 thickness=48
 
 [PlasmaViews][Panel 68]

@@ -680,8 +680,28 @@ apply_panel_layout() {
     fi
 
     if command -v qdbus6 >/dev/null 2>&1; then
+        # Ensure plasmashell is running and responsive on DBus
+        if ! pgrep -x plasmashell >/dev/null 2>&1; then
+            log_info "Starting KDE Plasma Shell to evaluate layout..."
+            kstart plasmashell >/dev/null 2>&1 & disown || true
+        fi
+
+        # Wait up to 5 seconds for /PlasmaShell DBus interface to register
+        local retries=0
+        while [[ $retries -lt 10 ]]; do
+            if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "true" >/dev/null 2>&1; then
+                break
+            fi
+            sleep 0.5
+            ((retries++))
+        done
+
         log_info "Evaluating layout.js..."
-        qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(< "${SCRIPT_DIR}/plasma/layout.js")" || log_warn "Panel layout script returned a non-zero exit code."
+        if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(< "${SCRIPT_DIR}/plasma/layout.js")" >/dev/null 2>&1; then
+            log_success "Applied dual capsule panel layout and wallpaper via DBus."
+        else
+            log_warn "Panel layout script could not be evaluated via DBus at this moment. Configurations are symlinked directly in ~/.config."
+        fi
 
         if command -v python3 >/dev/null 2>&1; then
             python3 -c '
