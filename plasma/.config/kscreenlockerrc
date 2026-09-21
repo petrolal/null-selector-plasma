@@ -1,0 +1,8 @@
+[Greeter]
+WallpaperPlugin=luisbocanegra.smart.video.wallpaper.reborn
+
+[Greeter][Wallpaper][luisbocanegra.smart.video.wallpaper.reborn][General]
+FillMode=2
+LastVideo=file:///home/petrolal/.local/share/wallpapers/digital-gaze.mp4
+MuteMode=5
+VideoUrls=["file:///home/petrolal/.local/share/wallpapers/digital-gaze.mp4"]
