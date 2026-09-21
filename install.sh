@@ -61,7 +61,8 @@ SKIP_DEPS=false
 DEPS_ONLY=false
 SYMLINKS_ONLY=false
 APPLY_LAYOUT=false
-INSTALL_SDDM=false
+INSTALL_SDDM=true
+INSTALL_PLYMOUTH=true
 NO_RESTART=false
 AUTO_YES=false
 AUR_HELPER=""
@@ -77,7 +78,10 @@ Options:
     -s, --symlinks-only Apply symlinks, configs, plasmoids and themes only (skip pkg manager)
     -d, --deps-only     Install dependencies only (skip applying dotfiles/layout)
     -l, --apply-layout  Automatically evaluate Plasma 6 dual panel layout & widgets via DBus
-        --sddm          Install Monochrome SDDM login theme to /usr/share/sddm/themes (requires sudo)
+        --sddm          Install Monochrome SDDM login theme to /usr/share/sddm/themes
+        --no-sddm       Skip installing SDDM login theme
+        --plymouth      Install dotLock Plymouth boot splash theme
+        --no-plymouth   Skip installing Plymouth boot splash theme
         --no-restart    Skip automatically restarting plasmashell at the end
     -n, --dry-run       Simulate installation without modifying any files
         --no-backup     Skip backing up existing configuration files
@@ -95,6 +99,8 @@ while [[ $# -gt 0 ]]; do
         -s|--symlinks-only)
             SYMLINKS_ONLY=true
             SKIP_DEPS=true
+            INSTALL_SDDM=false
+            INSTALL_PLYMOUTH=false
             shift
             ;;
         -d|--deps-only)
@@ -107,6 +113,18 @@ while [[ $# -gt 0 ]]; do
             ;;
         --sddm)
             INSTALL_SDDM=true
+            shift
+            ;;
+        --no-sddm)
+            INSTALL_SDDM=false
+            shift
+            ;;
+        --plymouth)
+            INSTALL_PLYMOUTH=true
+            shift
+            ;;
+        --no-plymouth)
+            INSTALL_PLYMOUTH=false
             shift
             ;;
         --no-restart)
@@ -285,6 +303,7 @@ backup_configs() {
         "${HOME}/.config/kdeglobals"
         "${HOME}/.config/kwinrc"
         "${HOME}/.config/plasmashellrc"
+        "${HOME}/.config/kscreenlockerrc"
         "${HOME}/.config/panel-colorizer"
         "${HOME}/.config/Kvantum"
         "${HOME}/.config/fastfetch"
@@ -321,7 +340,6 @@ clean_broken_symlinks() {
     fi
 
     find "${HOME}/.config" "${HOME}/.local/share" "${HOME}" -maxdepth 3 -xtype l 2>/dev/null | while read -r broken_link; do
-        # Do not touch runtime browser/steam sockets
         if [[ "$broken_link" != *"SingletonLock"* && "$broken_link" != *"SingletonCookie"* && "$broken_link" != *".steampath"* ]]; then
             log_info "Removing dangling symlink: $broken_link"
             rm -f "$broken_link"
@@ -350,7 +368,6 @@ deploy_components() {
         return 0
     fi
 
-    # Ensure directories exist (replace any old symlinked folder with real dir)
     for d in "$PLASMOIDS_DIR" "$COLOR_DIR" "$THEME_DIR" "$AURORAE_DIR" "$LOOK_FEEL_DIR" "$PRESETS_DIR" "$WALLPAPER_DIR" "$ICONS_DIR"; do
         if [[ -L "$d" ]]; then rm -f "$d"; fi
         mkdir -p "$d"
@@ -402,20 +419,20 @@ deploy_components() {
         cp -rf "${SCRIPT_DIR}/plasma/.config/panel-colorizer/presets/"* "$PRESETS_DIR/"
     fi
 
-    # 6. Wallpaper (Static 4K frame & Video)
-    if [[ -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.png" ]]; then
-        cp -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.png" "${WALLPAPER_DIR}/"
-    fi
-    if [[ -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.mp4" ]]; then
-        cp -f "${SCRIPT_DIR}/assets/wallpapers/digital-gaze.mp4" "${WALLPAPER_DIR}/"
+    # 6. Wallpapers (4K PNG frames & Live MP4 videos)
+    if [[ -d "${SCRIPT_DIR}/assets/wallpapers" ]]; then
+        for wp in "${SCRIPT_DIR}/assets/wallpapers/"*.{png,mp4}; do
+            if [[ -f "$wp" ]]; then
+                cp -f "$wp" "${WALLPAPER_DIR}/"
+            fi
+        done
     fi
 
-    # 7. Cool-Retro-Term Profile & Automatic SQLite Profile Loader
+    # 7. Cool-Retro-Term Profile & Automatic SQLite Injection
     mkdir -p "${HOME}/.config/cool-retro-term"
     if [[ -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" ]]; then
         cp -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" "${HOME}/.config/cool-retro-term/"
         
-        # Inject Monochrome profile directly into cool-retro-term QML SQLite storage
         if command -v python3 >/dev/null 2>&1; then
             python3 -c '
 import sqlite3, json, hashlib, os
@@ -476,6 +493,9 @@ apply_symlinks() {
     ln -sfn "${SCRIPT_DIR}/plasma/.config/kglobalshortcutsrc" "${HOME}/.config/kglobalshortcutsrc"
     ln -sfn "${SCRIPT_DIR}/plasma/.config/kwinrc" "${HOME}/.config/kwinrc"
     ln -sfn "${SCRIPT_DIR}/plasma/.config/plasmashellrc" "${HOME}/.config/plasmashellrc"
+    if [[ -f "${SCRIPT_DIR}/plasma/.config/kscreenlockerrc" ]]; then
+        ln -sfn "${SCRIPT_DIR}/plasma/.config/kscreenlockerrc" "${HOME}/.config/kscreenlockerrc"
+    fi
     if [[ -f "${SCRIPT_DIR}/plasma/.config/klassy/klassyrc" ]]; then
         ln -sfn "${SCRIPT_DIR}/plasma/.config/klassy/klassyrc" "${HOME}/.config/klassy/klassyrc"
     fi
@@ -558,6 +578,13 @@ apply_kde_settings() {
         kwriteconfig6 --file kwinrc --group Effect-forceblur --key Saturation "0"
         kwriteconfig6 --file kwinrc --group Effect-forceblur --key Contrast "105"
 
+        # Lockscreen Video Wallpaper
+        kwriteconfig6 --file kscreenlockerrc --group Greeter --key WallpaperPlugin "luisbocanegra.smart.video.wallpaper.reborn"
+        kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key VideoUrls '["file://'"${HOME}"'/.local/share/wallpapers/digital-gaze.mp4"]'
+        kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key LastVideo "file://${HOME}/.local/share/wallpapers/digital-gaze.mp4"
+        kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key FillMode 2
+        kwriteconfig6 --file kscreenlockerrc --group Greeter --group Wallpaper --group "luisbocanegra.smart.video.wallpaper.reborn" --group General --key MuteMode 5
+
         # Reconfigure KWin
         if command -v qdbus6 >/dev/null 2>&1; then
             qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || true
@@ -568,26 +595,66 @@ apply_kde_settings() {
 }
 
 # -----------------------------------------------------------------------------
-# Optional SDDM Theme Installation
+# SDDM Monochrome Login Theme Installation
 # -----------------------------------------------------------------------------
 install_sddm_theme() {
     if [[ "$INSTALL_SDDM" != true ]]; then
         return 0
     fi
 
-    log_step "Installing Monochrome SDDM Login Theme (Requires sudo)"
+    log_step "Installing Monochrome SDDM Login Theme"
     if [[ "$DRY_RUN" == true ]]; then
         log_info "[DRY-RUN] Would install SDDM theme to /usr/share/sddm/themes/monochrome"
         return 0
     fi
 
     if [[ -d "${SCRIPT_DIR}/assets/sddm-theme" ]]; then
-        sudo mkdir -p /usr/share/sddm/themes/monochrome
-        sudo cp -rf "${SCRIPT_DIR}/assets/sddm-theme/"* /usr/share/sddm/themes/monochrome/
-        sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current monochrome 2>/dev/null || true
-        log_success "SDDM Monochrome theme installed."
+        if sudo -n true 2>/dev/null || ask_confirm "Install SDDM Monochrome Theme (requires sudo)?"; then
+            sudo mkdir -p /usr/share/sddm/themes/monochrome /etc/sddm.conf.d
+            sudo cp -rf "${SCRIPT_DIR}/assets/sddm-theme/"* /usr/share/sddm/themes/monochrome/
+            sudo kwriteconfig6 --file /etc/sddm.conf --group Theme --key Current monochrome 2>/dev/null || true
+            sudo kwriteconfig6 --file /etc/sddm.conf.d/theme.conf --group Theme --key Current monochrome 2>/dev/null || true
+            log_success "SDDM Monochrome theme installed and set as default."
+        else
+            log_warn "Skipped SDDM installation (sudo access declined)."
+        fi
     else
         log_warn "SDDM theme directory not found at assets/sddm-theme"
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# Plymouth dotLock Boot Splash Theme Installation
+# -----------------------------------------------------------------------------
+install_plymouth_theme() {
+    if [[ "$INSTALL_PLYMOUTH" != true ]]; then
+        return 0
+    fi
+
+    log_step "Installing dotLock Plymouth Boot Splash Theme"
+    if [[ "$DRY_RUN" == true ]]; then
+        log_info "[DRY-RUN] Would install dotLock Plymouth theme to /usr/share/plymouth/themes/dotLock"
+        return 0
+    fi
+
+    if [[ -d "${SCRIPT_DIR}/assets/plymouth-theme/dotLock" ]]; then
+        if sudo -n true 2>/dev/null || ask_confirm "Install dotLock Plymouth Boot Splash (requires sudo)?"; then
+            sudo mkdir -p /usr/share/plymouth/themes/dotLock /etc/plymouth
+            sudo cp -rf "${SCRIPT_DIR}/assets/plymouth-theme/dotLock/"* /usr/share/plymouth/themes/dotLock/
+            
+            # Set default theme via plymouth utility if present
+            if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+                sudo plymouth-set-default-theme dotLock 2>/dev/null || true
+            fi
+            
+            # Configure plymouthd.conf
+            sudo kwriteconfig6 --file /etc/plymouth/plymouthd.conf --group Daemon --key Theme dotLock 2>/dev/null || true
+            log_success "dotLock Plymouth theme installed and configured."
+        else
+            log_warn "Skipped Plymouth installation (sudo access declined)."
+        fi
+    else
+        log_warn "Plymouth theme directory not found at assets/plymouth-theme/dotLock"
     fi
 }
 
@@ -610,7 +677,6 @@ apply_panel_layout() {
         log_info "Evaluating layout.js..."
         qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(< "${SCRIPT_DIR}/plasma/layout.js")" || log_warn "Panel layout script returned a non-zero exit code."
 
-        # Configure Kurve and Panel Colorizer on live widgets
         if command -v python3 >/dev/null 2>&1; then
             python3 -c '
 import json, subprocess
@@ -733,11 +799,12 @@ main() {
     apply_symlinks
     apply_kde_settings
     install_sddm_theme
+    install_plymouth_theme
     apply_panel_layout
     restart_plasma_shell
 
     log_step "Installation Completed Successfully!"
-    log_info "All Rice components, profiles, and dependencies are active."
+    log_info "All Rice components, SDDM, Plymouth, profiles, and dependencies are active."
 }
 
 main "$@"
