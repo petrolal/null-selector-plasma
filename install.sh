@@ -379,29 +379,43 @@ deploy_components() {
         mkdir -p "$d"
     done
 
-    # 1. Bundled Plasmoids
-    log_info "Deploying Plasmoids (YoRHa HUD, CatWalk Enhanced, Thermal Monitor, ClearClock, Kurve)..."
+    # 1. Bundled Plasmoids (Direct Symlinks to Repo)
+    log_info "Symlinking Plasmoids (YoRHa HUD, CatWalk Enhanced, Thermal Monitor, ClearClock, Kurve, Control Station)..."
     if [[ -d "${SCRIPT_DIR}/plasma/.local/share/plasma/plasmoids" ]]; then
         for plasmoid in "${SCRIPT_DIR}/plasma/.local/share/plasma/plasmoids/"*; do
             if [[ -d "$plasmoid" ]]; then
                 local p_name="$(basename "$plasmoid")"
                 rm -rf "${PLASMOIDS_DIR:?}/${p_name}"
-                cp -r "$plasmoid" "${PLASMOIDS_DIR}/"
-                log_success "Installed plasmoid: $p_name"
+                ln -sfn "$plasmoid" "${PLASMOIDS_DIR}/${p_name}"
+                log_success "Linked plasmoid: $p_name -> repo"
             fi
         done
     fi
 
-    # 2. Monochrome Color Scheme & Desktop Theme
-    log_info "Installing Monochrome colors and Plasma styles..."
+    # 2. Monochrome Color Scheme & Desktop Theme (Symlinks)
+    log_info "Symlinking Monochrome colors and Plasma styles..."
     if [[ -d "${SCRIPT_DIR}/plasma/.local/share/color-schemes" ]]; then
-        cp -f "${SCRIPT_DIR}/plasma/.local/share/color-schemes/"* "$COLOR_DIR/" 2>/dev/null || true
+        for cs in "${SCRIPT_DIR}/plasma/.local/share/color-schemes/"*; do
+            if [[ -f "$cs" ]]; then
+                ln -sfn "$cs" "${COLOR_DIR}/$(basename "$cs")"
+            fi
+        done
     fi
     if [[ -d "${SCRIPT_DIR}/plasma/.local/share/plasma/desktoptheme" ]]; then
-        cp -rf "${SCRIPT_DIR}/plasma/.local/share/plasma/desktoptheme/"* "$THEME_DIR/" 2>/dev/null || true
+        for dt in "${SCRIPT_DIR}/plasma/.local/share/plasma/desktoptheme/"*; do
+            if [[ -d "$dt" ]]; then
+                rm -rf "${THEME_DIR:?}/$(basename "$dt")"
+                ln -sfn "$dt" "${THEME_DIR}/$(basename "$dt")"
+            fi
+        done
     fi
     if [[ -d "${SCRIPT_DIR}/plasma/.local/share/aurorae/themes" ]]; then
-        cp -rf "${SCRIPT_DIR}/plasma/.local/share/aurorae/themes/"* "$AURORAE_DIR/" 2>/dev/null || true
+        for at in "${SCRIPT_DIR}/plasma/.local/share/aurorae/themes/"*; do
+            if [[ -d "$at" ]]; then
+                rm -rf "${AURORAE_DIR:?}/$(basename "$at")"
+                ln -sfn "$at" "${AURORAE_DIR}/$(basename "$at")"
+            fi
+        done
     fi
 
     # 3. Splash Screen (Kuro the cat)
@@ -419,17 +433,23 @@ deploy_components() {
         ln -sfn /usr/share/icons/yet-another-monochrome-icon-set "${ICONS_DIR}/yet-another-monochrome-icon-set"
     fi
 
-    # 5. Panel Colorizer Presets
-    log_info "Installing Panel Colorizer presets ('Main Setup' & 'Main Blur')..."
+    # 5. Panel Colorizer Presets (Symlinked to Repo)
+    log_info "Symlinking Panel Colorizer presets ('Main Setup' & 'Main Blur')..."
     if [[ -d "${SCRIPT_DIR}/plasma/.config/panel-colorizer/presets" ]]; then
-        cp -rf "${SCRIPT_DIR}/plasma/.config/panel-colorizer/presets/"* "$PRESETS_DIR/"
+        for preset in "${SCRIPT_DIR}/plasma/.config/panel-colorizer/presets/"*; do
+            if [[ -d "$preset" ]]; then
+                local pr_name="$(basename "$preset")"
+                rm -rf "${PRESETS_DIR:?}/${pr_name}"
+                ln -sfn "$preset" "${PRESETS_DIR}/${pr_name}"
+            fi
+        done
     fi
 
-    # 6. Wallpapers (4K PNG frames & Live MP4 videos)
+    # 6. Wallpapers (4K PNG frames & Live MP4 videos - Symlinked to Repo)
     if [[ -d "${SCRIPT_DIR}/assets/wallpapers" ]]; then
         for wp in "${SCRIPT_DIR}/assets/wallpapers/"*.{png,mp4}; do
             if [[ -f "$wp" ]]; then
-                cp -f "$wp" "${WALLPAPER_DIR}/"
+                ln -sfn "$wp" "${WALLPAPER_DIR}/$(basename "$wp")"
             fi
         done
     fi
@@ -437,7 +457,7 @@ deploy_components() {
     # 7. Cool-Retro-Term Profile & Automatic SQLite Injection
     mkdir -p "${HOME}/.config/cool-retro-term"
     if [[ -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" ]]; then
-        cp -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" "${HOME}/.config/cool-retro-term/"
+        ln -sfn "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" "${HOME}/.config/cool-retro-term/cool-retro-term-monochrome.json"
         
         if command -v python3 >/dev/null 2>&1; then
             python3 -c '
@@ -468,14 +488,14 @@ except Exception:
         fi
     fi
 
-    # 8. Zen Browser userChrome.css Auto-Deployment
+    # 8. Zen Browser userChrome.css Auto-Deployment (Symlinked)
     local ZEN_DIR="${HOME}/.zen"
     if [[ -d "$ZEN_DIR" ]]; then
         for profile in "$ZEN_DIR"/*; do
             if [[ -d "$profile" ]]; then
                 mkdir -p "$profile/chrome"
-                cp -f "${SCRIPT_DIR}/zen-browser/userChrome.css" "$profile/chrome/userChrome.css"
-                log_success "Deployed userChrome.css to Zen profile: $(basename "$profile")"
+                ln -sfn "${SCRIPT_DIR}/zen-browser/userChrome.css" "$profile/chrome/userChrome.css"
+                log_success "Linked userChrome.css to Zen profile: $(basename "$profile")"
             fi
         done
     fi
@@ -534,9 +554,13 @@ apply_symlinks() {
         ln -sfn "${SCRIPT_DIR}/zsh/.config/zsh/aliases.zsh" "${HOME}/.config/zsh/aliases.zsh"
     fi
 
-    # Kvantum
+    # Kvantum (Symlinks to Repo)
     if [[ -d "${SCRIPT_DIR}/kvantum/.config/Kvantum" ]]; then
-        cp -rf "${SCRIPT_DIR}/kvantum/.config/Kvantum/"* "${HOME}/.config/Kvantum/"
+        for kitem in "${SCRIPT_DIR}/kvantum/.config/Kvantum/"*; do
+            local kname="$(basename "$kitem")"
+            rm -rf "${HOME}/.config/Kvantum/${kname}"
+            ln -sfn "$kitem" "${HOME}/.config/Kvantum/${kname}"
+        done
     fi
 
     log_success "All configuration symlinks applied successfully."
