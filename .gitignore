@@ -52,6 +52,10 @@ cache/
 .cache/
 *.cache
 
+# Python Artifacts
+__pycache__/
+*.pyc
+
 # Build Artifacts & Source Dumps
 build/
 bin/

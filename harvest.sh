@@ -149,10 +149,31 @@ log_step "Sanitizing Harvested Configurations"
 # Remove transient history/token keys if any crept in
 find "$SCRIPT_DIR" -type f \( -name "*.bak" -o -name "*kwallet*" -o -name "*.tmp" \) -delete
 
+APPLETSRC="$SCRIPT_DIR/plasma/.config/plasma-org.kde.plasma.desktop-appletsrc"
+PLASMASHELLRC="$SCRIPT_DIR/plasma/.config/plasmashellrc"
+
 # Clean potential personal screen mappings or machine UUIDs from desktop-appletsrc
-if [[ -f "$SCRIPT_DIR/plasma/.config/plasma-org.kde.plasma.desktop-appletsrc" ]]; then
-    sed -i '/screenMapping=/d' "$SCRIPT_DIR/plasma/.config/plasma-org.kde.plasma.desktop-appletsrc" || true
-    sed -i '/itemsOnDisabledScreens=/d' "$SCRIPT_DIR/plasma/.config/plasma-org.kde.plasma.desktop-appletsrc" || true
+if [[ -f "$APPLETSRC" ]]; then
+    sed -i '/screenMapping=/d' "$APPLETSRC" || true
+    sed -i '/itemsOnDisabledScreens=/d' "$APPLETSRC" || true
+
+    # Template out the harvesting machine's $HOME and default activity UUID so
+    # the config is reproducible on a fresh install, and prune plasmashellrc's
+    # orphaned [PlasmaViews][Panel N] blocks left behind by prior panel
+    # recreations (these accumulate and are what corrupts panel state).
+    if command -v python3 >/dev/null 2>&1; then
+        python3 "$SCRIPT_DIR/scripts/sanitize_appletsrc.py" harvest \
+            --appletsrc "$APPLETSRC" \
+            --plasmashellrc "$PLASMASHELLRC" \
+            --home "$HOME"
+
+        log_step "Verifying Rice Widget Manifest"
+        if ! python3 "$SCRIPT_DIR/scripts/sanitize_appletsrc.py" verify --appletsrc "$APPLETSRC"; then
+            log_warn "One or more expected rice widgets are missing from the harvested layout."
+        fi
+    else
+        log_warn "python3 not found; skipping template sanitization and widget verification."
+    fi
 fi
 
 log_success "Configs sanitized."

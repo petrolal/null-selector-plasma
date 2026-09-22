@@ -6,9 +6,9 @@ RightButton;NoModifier=org.kde.contextmenu
 RightButton;NoModifier=org.kde.contextmenu
 
 [Containments][1]
-ItemGeometries-1920x1080=Applet-1981:0,0,96,784,0;Applet-1982:80,784,304,176,0;Applet-1983:1360,352,528,272,0;Applet-1984:1472,624,336,96,0;
-ItemGeometriesHorizontal=Applet-1981:0,0,96,784,0;Applet-1982:80,784,304,176,0;Applet-1983:1360,352,528,272,0;Applet-1984:1472,624,336,96,0;
-activityId=2837bf2b-dd5a-4a1b-b4b3-af699357f52b
+ItemGeometries-1920x1080=Applet-1981:0,0,224,784,0;Applet-1982:80,784,304,176,0;Applet-1983:1360,352,528,272,0;Applet-1984:1456,624,336,64,0;
+ItemGeometriesHorizontal=Applet-1981:0,0,224,784,0;Applet-1982:80,784,304,176,0;Applet-1983:1360,352,528,272,0;Applet-1984:1456,624,336,64,0;
+activityId={{ACTIVITY_ID}}
 formfactor=0
 immutability=1
 lastScreen=0
@@ -68,14 +68,16 @@ blockHeight=5
 blockSpacing=4
 centeredBars=false
 desktopWidgetBg=0
-drawInactiveBlocks=false
+disableLeftClick=true
 framerate=60
+hideToolTip=true
 hideWhenIdle=false
 inactiveBlockColors={"enabled":false,"lightness":0.5,"saturation":0.5,"alpha":0.3,"systemColor":"textColor","systemColorSet":"Window","custom":"#013eff","list":["#ED8796","#A6DA95","#EED49F","#8AADF4","#F5BDE6","#8BD5CA","#f5a97f"],"reverseList":false,"followColor":0,"saturationEnabled":false,"lightnessEnabled":false,"sourceType":1,"smoothGradient":true,"colorsOrientation":0,"image":{"source":"","fillMode":2},"hueStart":0,"hueEnd":360}
 monstercat=true
 noiseReduction=75
 orientation=2
 roundedBars=true
+sensitivityEnabled=true
 visualizerStyle=2
 waveFillColors={"enabled":false,"lightness":0.5,"saturation":0.5,"alpha":0.3,"systemColor":"highlightColor","systemColorSet":"Window","custom":"#013eff","list":["#ED8796","#A6DA95","#EED49F","#8AADF4","#F5BDE6","#8BD5CA","#f5a97f"],"reverseList":false,"followColor":0,"saturationEnabled":false,"lightnessEnabled":false,"sourceType":7,"smoothGradient":true,"colorsOrientation":0,"image":{"source":"","fillMode":2},"hueStart":0,"hueEnd":360}
 waves=false
@@ -115,7 +117,11 @@ popupHeight=400
 popupWidth=560
 
 [Containments][1][Applets][1984][Configuration][Appearance]
-fontScale=1.4
+fontScale=1.1
+
+[Containments][1][Applets][1984][Configuration][ConfigDialog]
+DialogHeight=630
+DialogWidth=810
 
 [Containments][1][Applets][1984][Configuration][Configuration]
 UserBackgroundHints=ShadowBackground
@@ -142,10 +148,10 @@ sortMode=-1
 [Containments][1][Wallpaper][luisbocanegra.smart.video.wallpaper.reborn][General]
 DarkLightScheduleState=AAAAAQAAAAgAAAGgw9AI0AAAAAAAAAGgwnB40AAAAaDCg2SQAAAAAQAAAaDFHK0QAAABoMUvmNAAAAGgyPYO4AAAAAAAAAGgx5Z+4AAAAaDHqWqgAAAAAQAAAaDKQrMgAAABoMpVnuAAAAGgzhwY2AAAAAAAAAGgzLyI2AAAAaDMz3SYAAAAAQAAAaDPaL0YAAABoM97qNgAAAGg00Ii0AAAAAAAAAGg0eKS0AAAAaDR9X6QAAAAAQAAAaDUjscQAAABoNShstAAAAGg2GgsyAAAAAAAAAGg1wicyAAAAaDXG4iIAAAAAQAAAaDZtNEIAAABoNnHwLAAAAGg3Y46qAAAAAAAAAGg3C6mwAAAAaDcQZZoAAAAAQAAAaDe2t7oAAABoN7tyqgAAAGg4rREoAAAAAAAAAGg4VSwuAAAAaDhZ6BgAAAAAQAAAaDkAOjgAAABoOQT2IgAAAGg59pSgAAAAAAAAAGg5nq+mAAAAaDmja5AAAAAAQAAAaDpJvbAAAABoOk55mg=
 FillMode=2
-LastVideo=file:///home/petrolal/.local/share/wallpapers/synthwave-dreamwave-girl.mp4
+LastVideo=file://{{HOME}}/.local/share/wallpapers/synthwave-dreamwave-girl.mp4
 LastVideoPosition=1433
 MuteMode=5
-VideoUrls=[{"filename":"file:///home/petrolal/.local/share/wallpapers/synthwave-dreamwave-girl.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0,"alternativePlaybackRate":0,"loop":false,"dayNightPhase":4}]
+VideoUrls=[{"filename":"file://{{HOME}}/.local/share/wallpapers/synthwave-dreamwave-girl.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0,"alternativePlaybackRate":0,"loop":false,"dayNightPhase":4}]
 
 [Containments][196][Applets][201][Configuration]
 popupHeight=400
@@ -456,7 +462,7 @@ AppletOrder=1986;1987;1988;1989;1990;1991;1992;1993;1994;1995;1996;1997;1998;199
 [Containments][2]
 ItemGeometries-1920x1080=
 ItemGeometriesHorizontal=
-activityId=2837bf2b-dd5a-4a1b-b4b3-af699357f52b
+activityId={{ACTIVITY_ID}}
 formfactor=0
 immutability=1
 lastScreen=1
@@ -467,10 +473,10 @@ wallpaperplugin=luisbocanegra.smart.video.wallpaper.reborn
 [Containments][2][Wallpaper][luisbocanegra.smart.video.wallpaper.reborn][General]
 DarkLightScheduleState=AAAAAQAAAAgAAAGgw9AI0AAAAAAAAAGgwnB40AAAAaDCg2SQAAAAAQAAAaDFHK0QAAABoMUvmNAAAAGgyPYO4AAAAAAAAAGgx5Z+4AAAAaDHqWqgAAAAAQAAAaDKQrMgAAABoMpVnuAAAAGgzhwY2AAAAAAAAAGgzLyI2AAAAaDMz3SYAAAAAQAAAaDPaL0YAAABoM97qNgAAAGg00Ii0AAAAAAAAAGg0eKS0AAAAaDR9X6QAAAAAQAAAaDUjscQAAABoNShstAAAAGg2GgsyAAAAAAAAAGg1wicyAAAAaDXG4iIAAAAAQAAAaDZtNEIAAABoNnHwLAAAAGg3Y46qAAAAAAAAAGg3C6mwAAAAaDcQZZoAAAAAQAAAaDe2t7oAAABoN7tyqgAAAGg4rREoAAAAAAAAAGg4VSwuAAAAaDhZ6BgAAAAAQAAAaDkAOjgAAABoOQT2IgAAAGg59pSgAAAAAAAAAGg5nq+mAAAAaDmja5AAAAAAQAAAaDpJvbAAAABoOk55mg=
 FillMode=2
-LastVideo=file:///home/petrolal/.local/share/wallpapers/synthwave-dreamwave-girl.mp4
+LastVideo=file://{{HOME}}/.local/share/wallpapers/synthwave-dreamwave-girl.mp4
 LastVideoPosition=1333
 MuteMode=5
-VideoUrls=[{"filename":"file:///home/petrolal/.local/share/wallpapers/synthwave-dreamwave-girl.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0,"alternativePlaybackRate":0,"loop":false,"dayNightPhase":4}]
+VideoUrls=[{"filename":"file://{{HOME}}/.local/share/wallpapers/synthwave-dreamwave-girl.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0,"alternativePlaybackRate":0,"loop":false,"dayNightPhase":4}]
 
 [Containments][2000]
 activityId=

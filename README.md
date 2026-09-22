@@ -86,11 +86,16 @@ plasma-mono-rice/
 │       ├── kwin-effects-forceblur-1.png
 │       └── transparent-zen-settings.png
 │
+├── scripts/
+│   ├── sanitize_appletsrc.py        # Harvest/install template engine + widget verifier
+│   └── dump_widgets.py              # Debug: pretty-print live containment/applet config
+│
 ├── plasma/                          # KDE Plasma 6 desktop & KWin configuration
 │   ├── .config/
 │   │   ├── kdeglobals               # Monochrome color scheme, YAMIS icons, JetBrains font
 │   │   ├── kwinrc                   # KWin window manager & forceblur effects
-│   │   ├── plasmashellrc            # Floating top bar and bottom dock settings
+│   │   ├── plasmashellrc            # Floating top bar and bottom dock geometry
+│   │   ├── plasma-org.kde.plasma.desktop-appletsrc  # Panel/desktop widget layout (templated)
 │   │   ├── panel-colorizer/
 │   │   │   └── presets/
 │   │   │       ├── Main Setup/      # Active floating capsule preset
@@ -106,7 +111,7 @@ plasma-mono-rice/
 │   │       ├── org.kde.plasma.catwalkEnhanced/# CatWalk Animated CPU Cat
 │   │       ├── org.kde.olib.thermalmonitor/   # Hardware Temperature Monitor
 │   │       └── org.kde.plasma.clearclock/     # Minimalist ClearClock
-│   └── layout.js                    # Declarative Plasma 6 JS dual-panel layout script
+│   └── layout.js                    # DEPRECATED historical reference only, not deployed
 │
 ├── cool-retro-term/                 # CRT terminal emulator profile
 │   ├── cool-retro-term-monochrome.json
@@ -185,6 +190,33 @@ The installer creates a timestamped safety backup in `~/.config_backup_mono_<tim
 3. Ensure `cava` is installed (`sudo pacman -S --needed cava`).
 
 ---
+
+## 🧩 Panel & Desktop Layout Architecture
+
+The dual-panel + desktop HUD layout is **not** applied via `qdbus6 ... evaluateScript`.
+In Plasma 6 that DBus scripting API ignores `writeConfig` on desktop applets,
+mangles large nested JSON configs (e.g. Panel Colorizer), and races with
+plasmashell's own writes to disk — reliably corrupting panel state.
+
+Instead, the layout is scraped and replayed as plain config files:
+
+- **`harvest.sh`** copies your live, working
+  `~/.config/plasma-org.kde.plasma.desktop-appletsrc` and `~/.config/plasmashellrc`
+  into `plasma/.config/`, then runs `scripts/sanitize_appletsrc.py harvest` to
+  template out your `$HOME` path and default activity UUID (so the file is
+  reproducible on any machine) and prune stale `[PlasmaViews][Panel N]` blocks
+  left behind by prior panel recreations. It finishes with a `verify` pass
+  confirming every widget in the [Layout Specification](#-design-specifications)
+  is still present.
+- **`install.sh`**'s `apply_panel_layout()` stops plasmashell, hydrates the
+  tracked appletsrc template back into a real config (via
+  `scripts/sanitize_appletsrc.py install`, injecting the current machine's
+  `$HOME` and live default activity UUID), copies both files into
+  `~/.config/`, and restarts plasmashell — waiting for it to actually exit and
+  come back up rather than a fixed `sleep`.
+
+`plasma/layout.js` is kept only as a historical reference of the layout's
+intent; it is not linked or evaluated by either script.
 
 ## 🔄 Maintaining & Syncing Dotfiles
 

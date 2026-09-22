@@ -308,6 +308,7 @@ backup_configs() {
         "${HOME}/.config/kdeglobals"
         "${HOME}/.config/kwinrc"
         "${HOME}/.config/plasmashellrc"
+        "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
         "${HOME}/.config/kscreenlockerrc"
         "${HOME}/.config/panel-colorizer"
         "${HOME}/.config/Kvantum"
@@ -517,7 +518,12 @@ apply_symlinks() {
     ln -sfn "${SCRIPT_DIR}/plasma/.config/kdeglobals" "${HOME}/.config/kdeglobals"
     ln -sfn "${SCRIPT_DIR}/plasma/.config/kglobalshortcutsrc" "${HOME}/.config/kglobalshortcutsrc"
     ln -sfn "${SCRIPT_DIR}/plasma/.config/kwinrc" "${HOME}/.config/kwinrc"
-    ln -sfn "${SCRIPT_DIR}/plasma/.config/plasmashellrc" "${HOME}/.config/plasmashellrc"
+    # NOTE: plasmashellrc and plasma-org.kde.plasma.desktop-appletsrc are
+    # deliberately NOT symlinked here. Plasmashell rewrites them constantly at
+    # runtime, and a symlink would let those live writes (or apply_panel_layout's
+    # hydrated activityId/$HOME) leak straight back into the tracked repo copy.
+    # apply_panel_layout() deploys them as plain, one-way file copies instead;
+    # harvest.sh is the only path that intentionally pulls live state back in.
     if [[ -f "${SCRIPT_DIR}/plasma/.config/kscreenlockerrc" ]]; then
         ln -sfn "${SCRIPT_DIR}/plasma/.config/kscreenlockerrc" "${HOME}/.config/kscreenlockerrc"
     fi
@@ -527,7 +533,8 @@ apply_symlinks() {
     if [[ -f "${SCRIPT_DIR}/plasma/.config/plasma-workspace/env/rice-env.sh" ]]; then
         ln -sfn "${SCRIPT_DIR}/plasma/.config/plasma-workspace/env/rice-env.sh" "${HOME}/.config/plasma-workspace/env/rice-env.sh"
     fi
-    ln -sfn "${SCRIPT_DIR}/plasma/layout.js" "${HOME}/layout.js"
+    # plasma/layout.js is kept only as historical reference (see its header
+    # comment); the panel/desktop layout is deployed by apply_panel_layout().
 
     # Fastfetch
     if [[ -f "${SCRIPT_DIR}/fastfetch/.config/fastfetch/config.jsonc" ]]; then
@@ -604,8 +611,8 @@ apply_kde_settings() {
         kwriteconfig6 --file kdeglobals --group General --key TerminalApplication "cool-retro-term"
         kwriteconfig6 --file kdeglobals --group General --key TerminalService "cool-retro-term.desktop"
 
-        # Terminal Keybindings (Super+Enter, Super+T, Ctrl+Alt+T)
-        kwriteconfig6 --file kglobalshortcutsrc --group services --group "cool-retro-term.desktop" --key _launch "Meta+Return\tCtrl+Alt+T\tMeta+T,none,Cool Retro Term"
+        # Terminal Keybinding (KDE's default terminal launch shortcut: Ctrl+Alt+T)
+        kwriteconfig6 --file kglobalshortcutsrc --group services --group "cool-retro-term.desktop" --key _launch "Ctrl+Alt+T,Ctrl+Alt+T,Cool Retro Term"
         kwriteconfig6 --file kglobalshortcutsrc --group kwin --key "Edit Tiles" "none,none,Toggle Tiles Editor"
 
         # KWin Force Blur for Zen Browser
@@ -704,35 +711,65 @@ install_plymouth_theme() {
 apply_panel_layout() {
     log_step "Deploying Plasma Layout & Containment Configurations"
     if [[ "$DRY_RUN" == true ]]; then
-        log_info "[DRY-RUN] Would deploy layout configs and reload plasmashell."
+        log_info "[DRY-RUN] Would stop plasmashell, deploy layout configs, and restart plasmashell."
         return 0
     fi
 
-    echo ":: Stopping plasmashell..."
-    systemctl --user stop plasma-plasmashell || kquitapp6 plasmashell || killall plasmashell || true
-    sleep 1
+    local APPLETSRC_SRC="$SCRIPT_DIR/plasma/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    local PLASMASHELLRC_SRC="$SCRIPT_DIR/plasma/.config/plasmashellrc"
 
-    echo ":: Deploying layout configuration..."
-    if [[ -f "$SCRIPT_DIR/plasma/plasma-org.kde.plasma.desktop-appletsrc" ]]; then
-        cp "$SCRIPT_DIR/plasma/plasma-org.kde.plasma.desktop-appletsrc" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    log_info "Stopping plasmashell..."
+    systemctl --user stop plasma-plasmashell 2>/dev/null || kquitapp6 plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
+    for i in $(seq 1 20); do
+        pgrep -x plasmashell >/dev/null 2>&1 || break
+        sleep 0.5
+    done
+    if pgrep -x plasmashell >/dev/null 2>&1; then
+        log_warn "plasmashell did not exit cleanly after 10s; forcing termination."
+        killall -9 plasmashell 2>/dev/null || true
+        sleep 1
     fi
-    if [[ -f "$SCRIPT_DIR/plasma/plasmashellrc" ]]; then
-        cp "$SCRIPT_DIR/plasma/plasmashellrc" "$HOME/.config/plasmashellrc"
+
+    log_info "Deploying layout configuration..."
+    if [[ -f "$APPLETSRC_SRC" ]]; then
+        if command -v python3 >/dev/null 2>&1; then
+            local hydrated
+            hydrated="$(mktemp)"
+            python3 "$SCRIPT_DIR/scripts/sanitize_appletsrc.py" install \
+                --appletsrc "$APPLETSRC_SRC" \
+                --out "$hydrated" \
+                --home "$HOME"
+            cp "$hydrated" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+            rm -f "$hydrated"
+        else
+            log_warn "python3 not found; deploying appletsrc without placeholder hydration."
+            cp "$APPLETSRC_SRC" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+        fi
+    else
+        log_warn "No tracked appletsrc found at $APPLETSRC_SRC; skipping."
+    fi
+    if [[ -f "$PLASMASHELLRC_SRC" ]]; then
+        cp "$PLASMASHELLRC_SRC" "$HOME/.config/plasmashellrc"
     fi
 
-    echo ":: Restarting plasmashell..."
-    systemctl --user start plasma-plasmashell || kstart plasmashell >/dev/null 2>&1 &
-    disown
+    if [[ "$NO_RESTART" == true ]]; then
+        log_info "Skipping plasmashell restart (--no-restart). Start it manually when ready."
+        return 0
+    fi
 
-    echo ":: Layout successfully restored."
+    log_info "Restarting plasmashell..."
+    (systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell >/dev/null 2>&1 &)
+    for i in $(seq 1 20); do
+        pgrep -x plasmashell >/dev/null 2>&1 && break
+        sleep 0.5
+    done
+    if ! pgrep -x plasmashell >/dev/null 2>&1; then
+        log_warn "plasmashell did not report running after 10s; check it manually."
+    else
+        log_success "plasmashell restarted."
+    fi
+
     log_success "Plasma layout deployed and active."
-}
-
-# -----------------------------------------------------------------------------
-# Restart Plasma Shell
-# -----------------------------------------------------------------------------
-restart_plasma_shell() {
-    return 0
 }
 
 # -----------------------------------------------------------------------------
@@ -748,7 +785,11 @@ main() {
         deploy_components
         apply_symlinks
         apply_kde_settings
-        apply_panel_layout
+        if [[ "$APPLY_LAYOUT" == true ]]; then
+            apply_panel_layout
+        else
+            log_info "Skipping panel layout deployment (--no-layout)."
+        fi
         log_step "Symlinks and Configurations Applied Successfully!"
         return 0
     fi
@@ -768,8 +809,11 @@ main() {
     apply_kde_settings
     install_sddm_theme
     install_plymouth_theme
-    apply_panel_layout
-    restart_plasma_shell
+    if [[ "$APPLY_LAYOUT" == true ]]; then
+        apply_panel_layout
+    else
+        log_info "Skipping panel layout deployment (--no-layout)."
+    fi
 
     log_step "Installation Completed Successfully!"
     log_info "All Rice components, SDDM, Plymouth, profiles, and dependencies are active."

@@ -268,4 +268,4 @@ switch to previous activity=none,none,Switch to Previous Activity
 toggle do not disturb=none,none,Toggle do not disturb
 
 [services][cool-retro-term.desktop]
-_launch=Meta+Return\\tCtrl+Alt+T\\tMeta+T,none,Cool Retro Term
+_launch=Ctrl+Alt+T,Ctrl+Alt+T,Cool Retro Term
