@@ -546,6 +546,12 @@ apply_symlinks() {
         ln -sfn "${SCRIPT_DIR}/kitty/.config/kitty/kitty.conf" "${HOME}/.config/kitty/kitty.conf"
     fi
 
+    # CAVA Audio Visualizer
+    mkdir -p "${HOME}/.config/cava"
+    if [[ -f "${SCRIPT_DIR}/cava/.config/cava/config" ]]; then
+        ln -sfn "${SCRIPT_DIR}/cava/.config/cava/config" "${HOME}/.config/cava/config"
+    fi
+
     # Zsh
     if [[ -f "${SCRIPT_DIR}/zsh/.zshrc" ]]; then
         ln -sfn "${SCRIPT_DIR}/zsh/.zshrc" "${HOME}/.zshrc"
@@ -759,8 +765,15 @@ for (var w of d.widgets()) {{
         w.writeConfig("visualizerStyle", 2);
         w.writeConfig("orientation", 2);
         w.writeConfig("roundedBars", true);
-        w.writeConfig("barWidth", 4);
-        w.writeConfig("barGap", 5);
+        w.writeConfig("framerate", 60);
+        w.writeConfig("barCount", 48);
+        w.writeConfig("barWidth", 2);
+        w.writeConfig("barGap", 3);
+        w.writeConfig("inputMethod", "pipewire");
+        w.writeConfig("inputSource", "auto");
+        w.writeConfig("noiseReduction", 75);
+        w.writeConfig("monstercat", true);
+        w.writeConfig("waves", false);
         w.writeConfig("blockHeight", 5);
         w.writeConfig("blockSpacing", 4);
         w.writeConfig("drawInactiveBlocks", false);
