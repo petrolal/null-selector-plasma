@@ -232,7 +232,6 @@ install_dependencies() {
         "stow"
         "kvantum"
         "ttf-jetbrains-mono-nerd"
-        "kitty"
         "cool-retro-term"
         "cava"
         "ffmpeg"
@@ -540,12 +539,6 @@ apply_symlinks() {
         ln -sfn "${SCRIPT_DIR}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
     fi
 
-    # Kitty
-    mkdir -p "${HOME}/.config/kitty"
-    if [[ -f "${SCRIPT_DIR}/kitty/.config/kitty/kitty.conf" ]]; then
-        ln -sfn "${SCRIPT_DIR}/kitty/.config/kitty/kitty.conf" "${HOME}/.config/kitty/kitty.conf"
-    fi
-
     # CAVA Audio Visualizer
     mkdir -p "${HOME}/.config/cava"
     if [[ -f "${SCRIPT_DIR}/cava/.config/cava/config" ]]; then
@@ -607,17 +600,17 @@ apply_kde_settings() {
         kwriteconfig6 --file kdeglobals --group General --key toolBarFont "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
         kwriteconfig6 --file kdeglobals --group General --key windowTitleFont "JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold"
 
-        # Terminal Preference (Kitty as Default Terminal)
-        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication "kitty"
-        kwriteconfig6 --file kdeglobals --group General --key TerminalService "kitty.desktop"
+        # Terminal Preference (Cool-Retro-Term as Default Terminal)
+        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication "cool-retro-term"
+        kwriteconfig6 --file kdeglobals --group General --key TerminalService "cool-retro-term.desktop"
 
         # Terminal Keybindings (Super+Enter, Super+T, Ctrl+Alt+T)
-        kwriteconfig6 --file kglobalshortcutsrc --group services --group "kitty.desktop" --key _launch "Meta+Return\tCtrl+Alt+T\tMeta+T,none,Kitty"
+        kwriteconfig6 --file kglobalshortcutsrc --group services --group "cool-retro-term.desktop" --key _launch "Meta+Return\tCtrl+Alt+T\tMeta+T,none,Cool Retro Term"
         kwriteconfig6 --file kglobalshortcutsrc --group kwin --key "Edit Tiles" "none,none,Toggle Tiles Editor"
 
-        # KWin Force Blur for Zen Browser & Kitty
+        # KWin Force Blur for Zen Browser
         kwriteconfig6 --file kwinrc --group Plugins --key forceblurEnabled true
-        kwriteconfig6 --file kwinrc --group Effect-forceblur --key MatchingClasses "zen,kitty"
+        kwriteconfig6 --file kwinrc --group Effect-forceblur --key MatchingClasses "zen"
         kwriteconfig6 --file kwinrc --group Effect-forceblur --key BlurStrength "4"
         kwriteconfig6 --file kwinrc --group Effect-forceblur --key NoiseStrength "5"
         kwriteconfig6 --file kwinrc --group Effect-forceblur --key Brightness "25"

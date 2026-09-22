@@ -1,3 +1,35 @@
+[PlasmaViews][Panel 1012]
+floating=1
+panelOpacity=2
+shell=org.kde.plasma.desktop
+
+[PlasmaViews][Panel 1012][Defaults]
+thickness=36
+
+[PlasmaViews][Panel 1027]
+floating=1
+panelOpacity=2
+shell=org.kde.plasma.desktop
+
+[PlasmaViews][Panel 1027][Defaults]
+thickness=46
+
+[PlasmaViews][Panel 1061]
+floating=1
+panelOpacity=2
+shell=org.kde.plasma.desktop
+
+[PlasmaViews][Panel 1061][Defaults]
+thickness=34
+
+[PlasmaViews][Panel 1076]
+floating=1
+panelOpacity=2
+shell=org.kde.plasma.desktop
+
+[PlasmaViews][Panel 1076][Defaults]
+thickness=46
+
 [PlasmaViews][Panel 224]
 floating=1
 panelOpacity=2

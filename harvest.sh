@@ -134,8 +134,7 @@ if [[ -d "$HOME/.config/Kvantum/PetrolalDark" ]]; then
 fi
 
 log_step "Harvesting Terminal & Shell Configurations"
-harvest_file "$HOME/.config/kitty/kitty.conf"                       "kitty/.config/kitty/kitty.conf"
-harvest_file "$HOME/.config/kitty/current-theme.conf"               "kitty/.config/kitty/current-theme.conf"
+harvest_file "$HOME/.config/cava/config"                         "cava/.config/cava/config"
 harvest_file "$HOME/.config/ghostty/config"                         "ghostty/.config/ghostty/config"
 harvest_file "$HOME/.zshrc"                                         "zsh/.zshrc"
 harvest_file "$HOME/.config/zsh/aliases.zsh"                        "zsh/.config/zsh/aliases.zsh"
