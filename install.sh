@@ -699,139 +699,40 @@ install_plymouth_theme() {
 }
 
 # -----------------------------------------------------------------------------
-# Apply Dual Panel Layout & Widgets via DBus
+# Deploy Plasma Layout Configuration
 # -----------------------------------------------------------------------------
 apply_panel_layout() {
-    if [[ "$APPLY_LAYOUT" != true ]]; then
-        log_info "Skipping panel layout evaluation. (Use --apply-layout to reset & reconfigure panels)"
-        return 0
-    fi
-
-    log_step "Applying Plasma 6 Dual Panel Layout & Widgets via DBus"
+    log_step "Deploying Plasma Layout & Containment Configurations"
     if [[ "$DRY_RUN" == true ]]; then
-        log_info "[DRY-RUN] Would evaluate layout.js via qdbus6."
+        log_info "[DRY-RUN] Would deploy layout configs and reload plasmashell."
         return 0
     fi
 
-    if command -v qdbus6 >/dev/null 2>&1; then
-        # Ensure plasmashell is running and responsive on DBus
-        if ! pgrep -x plasmashell >/dev/null 2>&1; then
-            log_info "Starting KDE Plasma Shell to evaluate layout..."
-            kstart plasmashell >/dev/null 2>&1 & disown || true
-        fi
+    echo ":: Stopping plasmashell..."
+    systemctl --user stop plasma-plasmashell || kquitapp6 plasmashell || killall plasmashell || true
+    sleep 1
 
-        # Wait up to 5 seconds for /PlasmaShell DBus interface to register
-        local retries=0
-        while [[ $retries -lt 10 ]]; do
-            if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "true" >/dev/null 2>&1; then
-                break
-            fi
-            sleep 0.5
-            retries=$((retries + 1))
-        done
-
-        log_info "Evaluating layout.js..."
-        if qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(< "${SCRIPT_DIR}/plasma/layout.js")" >/dev/null 2>&1; then
-            log_success "Applied dual capsule panel layout and wallpaper via DBus."
-        else
-            log_warn "Panel layout script could not be evaluated via DBus at this moment. Configurations are symlinked directly in ~/.config."
-        fi
-
-        if command -v python3 >/dev/null 2>&1; then
-            python3 -c '
-import json, subprocess
-
-preset_file = "'"${HOME}"'/.config/panel-colorizer/presets/Main Setup/settings.json"
-try:
-    with open(preset_file) as f:
-        d = json.load(f)
-    gs = json.dumps(d["globalSettings"])
-except Exception:
-    gs = "{}"
-
-js = f"""
-// Configure Kurve
-var d = desktops()[0];
-for (var w of d.widgets()) {{
-    if (w.type === "luisbocanegra.audio.visualizer") {{
-        w.currentConfigGroup = ["General"];
-        w.writeConfig("visualizerStyle", 2);
-        w.writeConfig("orientation", 2);
-        w.writeConfig("roundedBars", true);
-        w.writeConfig("framerate", 60);
-        w.writeConfig("barCount", 48);
-        w.writeConfig("barWidth", 2);
-        w.writeConfig("barGap", 3);
-        w.writeConfig("inputMethod", "pipewire");
-        w.writeConfig("inputSource", "auto");
-        w.writeConfig("noiseReduction", 75);
-        w.writeConfig("monstercat", true);
-        w.writeConfig("waves", false);
-        w.writeConfig("blockHeight", 5);
-        w.writeConfig("blockSpacing", 4);
-        w.writeConfig("drawInactiveBlocks", false);
-        w.writeConfig("centeredBars", false);
-        w.writeConfig("desktopWidgetBg", 1);
-        w.writeConfig("hideWhenIdle", false);
-        var barColors = {{
-            "enabled": true,
-            "lightness": 1.0,
-            "lightnessEnabled": true,
-            "saturation": 0.5,
-            "saturationEnabled": false,
-            "alpha": 1.0,
-            "systemColor": "highlightColor",
-            "systemColorSet": "Window",
-            "sourceType": 1,
-            "reverseList": false
-        }};
-        w.writeConfig("barColors", JSON.stringify(barColors));
-        w.reloadConfig();
-    }}
-}}
-
-// Configure Panel Colorizer on both panels
-for (var p of panels()) {{
-    for (var w of p.widgets()) {{
-        if (w.type === "luisbocanegra.panel.colorizer") {{
-            w.currentConfigGroup = ["General"];
-            w.writeConfig("globalSettings", {json.dumps(gs)});
-            w.reloadConfig();
-        }}
-    }}
-}}
-"""
-subprocess.run(["qdbus6", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell.evaluateScript", js], capture_output=True)
-'
-        fi
-        log_success "Panel layout and widget parameters evaluated."
-    else
-        log_warn "qdbus6 command not found; could not evaluate layout.js automatically."
+    echo ":: Deploying layout configuration..."
+    if [[ -f "$SCRIPT_DIR/plasma/plasma-org.kde.plasma.desktop-appletsrc" ]]; then
+        cp "$SCRIPT_DIR/plasma/plasma-org.kde.plasma.desktop-appletsrc" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
     fi
+    if [[ -f "$SCRIPT_DIR/plasma/plasmashellrc" ]]; then
+        cp "$SCRIPT_DIR/plasma/plasmashellrc" "$HOME/.config/plasmashellrc"
+    fi
+
+    echo ":: Restarting plasmashell..."
+    systemctl --user start plasma-plasmashell || kstart plasmashell >/dev/null 2>&1 &
+    disown
+
+    echo ":: Layout successfully restored."
+    log_success "Plasma layout deployed and active."
 }
 
 # -----------------------------------------------------------------------------
 # Restart Plasma Shell
 # -----------------------------------------------------------------------------
 restart_plasma_shell() {
-    if [[ "$NO_RESTART" == true || "$DRY_RUN" == true ]]; then
-        return 0
-    fi
-
-    if [[ "$APPLY_LAYOUT" == true ]]; then
-        # Layout was already evaluated live via DBus
-        return 0
-    fi
-
-    if [[ "${XDG_CURRENT_DESKTOP:-}" == *"KDE"* || "${DESKTOP_SESSION:-}" == *"plasma"* ]]; then
-        log_step "Automatically Reloading KDE Plasma Shell"
-        if command -v kquitapp6 >/dev/null 2>&1; then
-            kquitapp6 plasmashell 2>/dev/null || killall -TERM plasmashell 2>/dev/null || true
-            sleep 1.5
-            kstart plasmashell >/dev/null 2>&1 & disown || true
-            log_success "KDE Plasma Shell restarted successfully."
-        fi
-    fi
+    return 0
 }
 
 # -----------------------------------------------------------------------------
@@ -847,10 +748,7 @@ main() {
         deploy_components
         apply_symlinks
         apply_kde_settings
-        if [[ "$APPLY_LAYOUT" == true ]]; then
-            apply_panel_layout
-        fi
-        restart_plasma_shell
+        apply_panel_layout
         log_step "Symlinks and Configurations Applied Successfully!"
         return 0
     fi
