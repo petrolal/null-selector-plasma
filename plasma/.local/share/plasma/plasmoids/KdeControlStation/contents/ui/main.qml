@@ -122,17 +122,21 @@ PlasmoidItem {
         id: executable
         engine: "executable"
         connectedSources: ["plasmashell -v"]
-        onNewData: {
-            if(data["exit code"] == 0){
-                plasmaVersion = data.stdout.split(" ")[1].split(".")[1];
+    }
+
+    Connections {
+        target: executable
+        function onNewData(source, data) {
+            if (data["exit code"] == 0 && data.stdout) {
+                root.plasmaVersion = Number(data.stdout.split(" ")[1].split(".")[1])
             }
-            disconnectSource(connectedSources)
+            executable.disconnectSource(executable.connectedSources[0])
         }
     }
     
     switchHeight: fullRepWidth
     switchWidth: fullRepWidth
-    preferredRepresentation: inPanel ? Plasmoid.compactRepresentation : Plasmoid.fullRepresentation
+    preferredRepresentation: inPanel ? compactRepresentation : fullRepresentation
     fullRepresentation: FullRepresentation { }
     compactRepresentation: CompactRepresentation {}
 

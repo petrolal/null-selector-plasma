@@ -693,7 +693,7 @@ apply_panel_layout() {
                 break
             fi
             sleep 0.5
-            ((retries++))
+            retries=$((retries + 1))
         done
 
         log_info "Evaluating layout.js..."
@@ -777,14 +777,17 @@ restart_plasma_shell() {
         return 0
     fi
 
+    if [[ "$APPLY_LAYOUT" == true ]]; then
+        # Layout was already evaluated live via DBus
+        return 0
+    fi
+
     if [[ "${XDG_CURRENT_DESKTOP:-}" == *"KDE"* || "${DESKTOP_SESSION:-}" == *"plasma"* ]]; then
         log_step "Automatically Reloading KDE Plasma Shell"
         if command -v kquitapp6 >/dev/null 2>&1; then
             kquitapp6 plasmashell 2>/dev/null || killall -TERM plasmashell 2>/dev/null || true
-            sleep 1
-            if ! pgrep -x plasmashell >/dev/null; then
-                kstart plasmashell >/dev/null 2>&1 & disown || true
-            fi
+            sleep 1.5
+            kstart plasmashell >/dev/null 2>&1 & disown || true
             log_success "KDE Plasma Shell restarted successfully."
         fi
     fi

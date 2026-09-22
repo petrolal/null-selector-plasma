@@ -24,17 +24,22 @@ PlasmaComponents3.ItemDelegate {
 
     property bool isManuallyInhibited
     property bool isManuallyInhibitedError
-    // List of active power management inhibitions (applications that are
-    // blocking sleep and screen locking).
+    // List of requested power management inhibitions (applications that are
+    // blocking sleep and screen locking). Not all are necessarily active.
     //
     // type: [{
-    //  Name: string,
-    //  PrettyName: string,
-    //  Icon: string,
-    //  Reason: string,
+    //  appName: string,
+    //  prettyName: string,
+    //  icon: string,
+    //  reason: string,
+    //  behaviors: array<string>,
+    //  active: bool,
+    //  allowed: bool,
     // }]
-    property var inhibitions: []
+    property var requestedInhibitions: []
     property bool inhibitsLidAction
+
+    readonly property var activeInhibitions: powerManagementItem.requestedInhibitions.filter((inh) => inh.active)
 
     property alias manualInhibitionSwitch: manualInhibitionSwitch
 
@@ -60,7 +65,7 @@ PlasmaComponents3.ItemDelegate {
         
         Kirigami.Icon {
             id: icon
-            source: powerManagementItem.isManuallyInhibited || powerManagementItem.inhibitions.length > 0 ? "system-suspend-inhibited" : "system-suspend-uninhibited"
+            source: powerManagementItem.isManuallyInhibited || powerManagementItem.activeInhibitions.length > 0 ? "system-suspend-inhibited" : "system-suspend-uninhibited"
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: Kirigami.Units.iconSizes.medium
             Layout.preferredHeight: Kirigami.Units.iconSizes.medium
@@ -86,7 +91,7 @@ PlasmaComponents3.ItemDelegate {
                 PlasmaComponents3.Label {
                     id: pmStatusLabel
                     Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                    text: powerManagementItem.isManuallyInhibited || powerManagementItem.inhibitions.length > 0 ? i18nc("Sleep and Screen Locking after Inactivity", "Blocked") : i18nc("Sleep and Screen Locking after Inactivity", "Automatic")
+                    text: powerManagementItem.isManuallyInhibited || powerManagementItem.activeInhibitions.length > 0 ? i18nc("Sleep and Screen Locking after Inactivity", "Blocked") : i18nc("Sleep and Screen Locking after Inactivity", "Automatic")
                     textFormat: Text.PlainText
                 }
             }
@@ -165,10 +170,10 @@ PlasmaComponents3.ItemDelegate {
                 id: inhibitionReasonsLayout
 
                 Layout.fillWidth: false
-                visible: powerManagementItem.inhibitsLidAction || (powerManagementItem.inhibitions.length > 0)
+                visible: powerManagementItem.inhibitsLidAction || (powerManagementItem.activeInhibitions.length > 0)
 
                 InhibitionHint {
-                  anchors.fill:parent
+                    Layout.fillWidth: true
                     visible: powerManagementItem.inhibitsLidAction
                     iconSource: "computer-laptop"
                     text: i18nc("Minimize the length of this string as much as possible", "Your laptop is configured not to sleep when closing the lid while an external monitor is connected.")
@@ -177,30 +182,30 @@ PlasmaComponents3.ItemDelegate {
                 PlasmaComponents3.Label {
                     id: inhibitionExplanation
                     Layout.fillWidth: true
-                    visible: powerManagementItem.inhibitions.length > 1
+                    visible: powerManagementItem.activeInhibitions.length > 1
                     font: Kirigami.Theme.smallFont
                     wrapMode: Text.WordWrap
                     elide: Text.ElideRight
                     maximumLineCount: 3
                     text: i18np("%1 application is currently blocking sleep and screen locking:",
                                 "%1 applications are currently blocking sleep and screen locking:",
-                                powerManagementItem.inhibitions.length)
+                                powerManagementItem.activeInhibitions.length)
                     textFormat: Text.PlainText
                 }
 
                 Repeater {
-                    model: powerManagementItem.inhibitions
+                    model: powerManagementItem.activeInhibitions
 
                     InhibitionHint {
-                        property string icon: modelData.Icon
+                        property string icon: modelData.icon
                             || (KWindowSystem.isPlatformWayland ? "wayland" : "xorg")
-                        property string name: modelData.PrettyName
-                        property string reason: modelData.Reason
+                        property string name: modelData.prettyName
+                        property string reason: modelData.reason
 
                         Layout.fillWidth: true
                         iconSource: icon
                         text: {
-                            if (powerManagementItem.inhibitions.length === 1) {
+                            if (powerManagementItem.activeInhibitions.length === 1) {
                                 if (reason && name) {
                                     return i18n("%1 is currently blocking sleep and screen locking (%2)", name, reason)
                                 } else if (name) {

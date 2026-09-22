@@ -178,14 +178,9 @@ RowLayout {
 
         Connections {
             target: handler
-            function onHotspotCreated() {
-                hotspotButton.checked = true
-                tooltip.text = i18n("Disable Hotspot")
-            }
-
-            function onHotspotDisabled() {
-                hotspotButton.checked = false
-                tooltip.text = i18n("Create Hotspot")
+            function onHotspotActiveChanged(hotspotActive) {
+                hotspotButton.checked = hotspotActive
+                tooltip.text = hotspotActive ? i18n("Disable Hotspot") : i18n("Create Hotspot")
             }
         }
 

@@ -5,6 +5,7 @@ import org.kde.kquickcontrolsaddons 2.1
 import org.kde.plasma.components 3.0 as PlasmaComponents3
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras 2.0 as PlasmaExtras
+import org.kde.kirigami as Kirigami
 
 PlasmaComponents3.ScrollView {
         id: scrollView
@@ -32,11 +33,12 @@ PlasmaComponents3.ScrollView {
         // blocking sleep and screen locking).
         //
         // type: [{
-        //  Icon: string,
-        //  Name: string,
-        //  Reason: string,
+        //  icon: string,
+        //  prettyName: string,
+        //  reason: string,
+        //  active: bool,
         // }]
-        property var inhibitions: []
+        property var requestedInhibitions: []
         property bool inhibitsLidAction
 
         property string inhibitionReason
@@ -68,7 +70,7 @@ PlasmaComponents3.ScrollView {
         Column {
             id: batteryList
 
-            spacing: PlasmaCore.Units.smallSpacing * 2
+            spacing: Kirigami.Units.smallSpacing * 2
 
             readonly property Item firstHeaderItem: {
                 if (powerProfileItem.visible) {
@@ -135,7 +137,7 @@ PlasmaComponents3.ScrollView {
                 
                 id: pmSwitch
 
-                inhibitions: scrollView.inhibitions
+                requestedInhibitions: scrollView.requestedInhibitions
                 inhibitsLidAction: scrollView.inhibitsLidAction
                 pluggedIn: scrollView.pluggedIn
                 onInhibitionChangeRequested: scrollView.inhibitionChangeRequested(inhibit)

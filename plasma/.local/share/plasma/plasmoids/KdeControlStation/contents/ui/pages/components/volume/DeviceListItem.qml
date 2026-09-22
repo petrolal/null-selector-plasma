@@ -39,8 +39,8 @@ ListItemBase {
 
     onMutedChanged: {
         if (type === "sink" && globalMute && !model.Muted) {
-            config.globalMute = false;
-            config.globalMuteDevices = [];
+            config.globalMuteSinks = false;
+            config.globalMuteSinksMutedDevices = [];
             config.save();
         }
     }

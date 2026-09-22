@@ -26,7 +26,7 @@ PageTemplate {
     }
 
     property bool volumeFeedback: config.audioFeedback
-    property bool globalMute: config.globalMute
+    property bool globalMute: config.globalMuteSinks
     property string displayName: i18n("Audio Volume")
     property QtObject draggedStream: null
 
@@ -191,7 +191,7 @@ PageTemplate {
 
                 icon.name: "audio-volume-muted"
                 onClicked: {
-                    GlobalService.globalMute()
+                    GlobalService.globalMuteSinks()
                 }
                 checked: globalMute
 

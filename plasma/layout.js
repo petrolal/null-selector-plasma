@@ -38,11 +38,18 @@ for (var d = 0; d < allDesktops.length; d++) {
 }
 
 // -----------------------------------------------------------------------------
-// 2. Clear Existing Panels
+// 2. Clear Existing Panels & Desktop Widgets (Prevent Duplication)
 // -----------------------------------------------------------------------------
 var allPanels = panels();
 for (var i = 0; i < allPanels.length; i++) {
     allPanels[i].remove();
+}
+
+for (var d = 0; d < allDesktops.length; d++) {
+    var ws = allDesktops[d].widgets();
+    for (var w = ws.length - 1; w >= 0; w--) {
+        ws[w].remove();
+    }
 }
 
 // -----------------------------------------------------------------------------
