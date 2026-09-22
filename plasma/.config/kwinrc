@@ -17,7 +17,7 @@ BlurMenus=false
 BlurStrength=4
 Brightness=25
 Contrast=105
-MatchingClasses=zen
+MatchingClasses=zen,kitty
 NoiseStrength=5
 Saturation=0
 
