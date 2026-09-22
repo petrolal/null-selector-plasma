@@ -731,6 +731,17 @@ apply_panel_layout() {
     fi
 
     log_info "Deploying layout configuration..."
+    local APPLETSRC_DEST="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    local PLASMASHELLRC_DEST="$HOME/.config/plasmashellrc"
+
+    # Older revisions of this script (and manual stow setups) symlinked these
+    # destinations back into the repo. `cp` refuses to copy a file onto a
+    # symlink that resolves to itself ("are the same file") and aborts the
+    # whole script under `set -e`, leaving plasmashell stopped. Force these
+    # destinations to always be plain, independent files before writing.
+    [[ -L "$APPLETSRC_DEST" ]] && rm -f "$APPLETSRC_DEST"
+    [[ -L "$PLASMASHELLRC_DEST" ]] && rm -f "$PLASMASHELLRC_DEST"
+
     if [[ -f "$APPLETSRC_SRC" ]]; then
         if command -v python3 >/dev/null 2>&1; then
             local hydrated
@@ -739,17 +750,17 @@ apply_panel_layout() {
                 --appletsrc "$APPLETSRC_SRC" \
                 --out "$hydrated" \
                 --home "$HOME"
-            cp "$hydrated" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+            cp "$hydrated" "$APPLETSRC_DEST"
             rm -f "$hydrated"
         else
             log_warn "python3 not found; deploying appletsrc without placeholder hydration."
-            cp "$APPLETSRC_SRC" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+            cp "$APPLETSRC_SRC" "$APPLETSRC_DEST"
         fi
     else
         log_warn "No tracked appletsrc found at $APPLETSRC_SRC; skipping."
     fi
     if [[ -f "$PLASMASHELLRC_SRC" ]]; then
-        cp "$PLASMASHELLRC_SRC" "$HOME/.config/plasmashellrc"
+        cp "$PLASMASHELLRC_SRC" "$PLASMASHELLRC_DEST"
     fi
 
     if [[ "$NO_RESTART" == true ]]; then
@@ -758,15 +769,24 @@ apply_panel_layout() {
     fi
 
     log_info "Restarting plasmashell..."
-    (systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell >/dev/null 2>&1 &)
-    for i in $(seq 1 20); do
-        pgrep -x plasmashell >/dev/null 2>&1 && break
-        sleep 0.5
-    done
-    if ! pgrep -x plasmashell >/dev/null 2>&1; then
-        log_warn "plasmashell did not report running after 10s; check it manually."
+    # plasma-plasmashell.service is Type=dbus: "systemctl start" already blocks
+    # in the foreground until plasmashell registers its bus name, which is the
+    # correct, race-free way to wait for it. Backgrounding this call (as a
+    # previous version of this script did) put it in the terminal's process
+    # group without a disown, so it could get torn down mid-startup when the
+    # script exited -- plasmashell would never finish coming back up.
+    if systemctl --user start plasma-plasmashell 2>/dev/null; then
+        log_success "plasmashell restarted via systemd."
     else
-        log_success "plasmashell restarted."
+        log_warn "systemd unit unavailable or failed; falling back to kstart."
+        kstart plasmashell >/dev/null 2>&1 || true
+    fi
+
+    sleep 1
+    if pgrep -x plasmashell >/dev/null 2>&1; then
+        log_success "plasmashell is running."
+    else
+        log_warn "plasmashell does not appear to be running. Start it manually: systemctl --user start plasma-plasmashell"
     fi
 
     log_success "Plasma layout deployed and active."

@@ -91,9 +91,16 @@ harvest_file() {
 
     if [[ -f "$src" ]]; then
         mkdir -p "$(dirname "$dest")"
-        # If dest is already a symlink pointing to src (due to stow), reading or copying dereferences safely
-        cp -L "$src" "$dest"
-        log_success "Harvested: $src -> $dest"
+        # Many of these live files are themselves symlinks back into this repo
+        # (install.sh's apply_symlinks). In that case src and dest resolve to
+        # the identical inode, and `cp` refuses ("are the same file"), which
+        # under set -e would abort the whole harvest. Skip the no-op copy.
+        if [[ "$(realpath -e "$src" 2>/dev/null)" == "$(realpath -e "$dest" 2>/dev/null)" ]]; then
+            log_info "Already symlinked to repo (no-op): $src -> $dest"
+        else
+            cp -L "$src" "$dest"
+            log_success "Harvested: $src -> $dest"
+        fi
     else
         log_warn "Source file not found (skipping): $src"
     fi
