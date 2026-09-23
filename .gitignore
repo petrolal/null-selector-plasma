@@ -60,7 +60,6 @@ __pycache__/
 build/
 bin/
 pkg/
-src/
 *.tar.gz
 *.tar.xz
 *.tar.zst

@@ -1,0 +1,15 @@
+{:paths ["src"]
+ :tasks
+ {:init (require '[mono-rice.core :as core])
+  install {:doc "Deploy and install complete null-sector-plasma rice"
+           :task (apply core/-main "install" *command-line-args*)}
+  harvest {:doc "Scrape live $HOME configs back into repository with template sanitization"
+           :task (apply core/-main "harvest" *command-line-args*)}
+  backup {:doc "Create a timestamped backup snapshot of current configurations"
+          :task (apply core/-main "backup" *command-line-args*)}
+  verify {:doc "Verify configuration drift and required rice components against rice.edn"
+          :task (apply core/-main "verify" *command-line-args*)}
+  dump-widgets {:doc "Pretty-print active containment/plasmoid tree"
+                :task (apply core/-main "dump-widgets" *command-line-args*)}
+  open-zen-mods {:doc "Open Zen Browser mod install pages"
+                 :task (apply core/-main "open-zen-mods" *command-line-args*)}}}

@@ -1,0 +1,121 @@
+{:rice/version "1.0.0"
+ :rice/name    "null-sector-plasma"
+ :rice/author  "petrolal"
+ :rice/repo    "https://github.com/petrolal/null-sector-plasma"
+
+ :system
+ {:compatibility [:arch :cachyos]
+  :desktop       :plasma-6
+  :session       [:wayland :x11]}
+
+ :theme
+ {:color-scheme      "Monochrome"
+  :fallback-scheme   "BreezeDark"
+  :look-and-feel     "org.kde.breezedark.desktop"
+  :widget-style      "kvantum-dark"
+  :icon-theme        "yet-another-monochrome-icon-set"
+  :cursor-theme      "Bibata-Modern-Ice"
+  :splash-theme      "a2n.kuro"
+  :gtk-color-scheme  "prefer-dark"
+  :gtk-theme         "Breeze-Dark"
+  :fonts
+  {:font                "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
+   :fixed               "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
+   :menuFont            "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
+   :smallestReadableFont "JetBrainsMono Nerd Font,8,-1,5,50,0,0,0,0,0"
+   :toolBarFont         "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
+   :windowTitleFont     "JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold"}}
+
+ :terminal
+ {:default    "konsole"
+  :service    "org.kde.konsole.desktop"
+  :shortcuts  ["Ctrl+Alt+T" "Meta+Return"]}
+
+ :editor
+ {:default "emacs.desktop"
+  :mime    "text/plain"}
+
+ :file-manager
+ {:default "org.kde.dolphin.desktop"
+  :mime    "inode/directory"}
+
+ :browser
+ {:default     "zen.desktop"
+  :window-rule {:description "Zen Browser - Borderless for Transparency"
+                :wm-class     "zen"
+                :match-type   1       ;; 1 = Exact Match
+                :noborder     true
+                :noborderrule 2}      ;; 2 = Force
+  :kwin-blur   {:plugin          "better_blur_dx"
+                :fallback-plugin "forceblur"
+                :classes         ["zen"]
+                :strength        4
+                :noise           5
+                :brightness      25
+                :saturation      0
+                :contrast        105}
+  :extensions  [{:name "darkreader"
+                 :id   "addon@darkreader.org"
+                 :url  "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi"}
+                {:name "zen-internet"
+                 :id   "{91aa3897-2634-4a8a-9092-279db23a7689}"
+                 :url  "https://addons.mozilla.org/firefox/downloads/latest/zen-internet/latest.xpi"}
+                {:name "bonjourr"
+                 :id   "{4f391a9e-8717-4ba6-a5b1-488a34931fcb}"
+                 :url  "https://addons.mozilla.org/firefox/downloads/latest/bonjourr-startpage/latest.xpi"}]
+  :mods        [{:name "Transparent Zen"           :uuid "642854b5-88b4-4c40-b256-e035532109df"}
+                {:name "Animations Plus"            :uuid "f4866f39-cfd6-4498-ab92-54213b8279dc"}
+                {:name "Audio Indicator Enhanced"   :uuid "2317fd93-c3ed-4f37-b55a-304c1816819e"}
+                {:name "Better Find Bar"            :uuid "a6335949-4465-4b71-926c-4a52d34bc9c0"}
+                {:name "Floating History"           :uuid "253a3a74-0cc4-47b7-8b82-996a64f030d5"}
+                {:name "Floating Status Bar"        :uuid "906c6915-5677-48ff-9bfc-096a02a72379"}
+                {:name "Load Bar"                   :uuid "ae7868dc-1fa1-469e-8b89-a5edf7ab1f24"}]}
+
+ :lockscreen
+ {:wallpaper-plugin "luisbocanegra.smart.video.wallpaper.reborn"
+  :video-file       "digital-gaze.mp4"
+  :fill-mode        2
+  :mute-mode        5}
+
+ :dependencies
+ {:pacman ["base-devel"
+           "git"
+           "cmake"
+           "extra-cmake-modules"
+           "stow"
+           "kvantum"
+           "ttf-jetbrains-mono-nerd"
+           "konsole"
+           "cava"
+           "ffmpeg"
+           "starship"
+           "fastfetch"
+           "zsh"
+           "dolphin"
+           "discord"
+           "kservice"
+           "emacs"]
+  :aur    ["yamis-icon-theme-git"
+           "bibata-cursor-git"
+           "plasma6-applets-panel-colorizer"
+           "plasma6-applets-kurve-git"
+           "plasma6-applets-kde-control-station"
+           "plasma6-wallpapers-smart-video-wallpaper-reborn"
+           "kwin-effects-better-blur-dx"
+           "klassy"
+           "zen-browser-bin"]
+  :git    [{:name   "kuro-splash"
+            :url    "https://github.com/bouteillerAlan/kuro.git"
+            :target ".local/share/plasma/look-and-feel/a2n.kuro"}]}
+
+ :backup-targets
+ [".config/kdeglobals"
+  ".config/kwinrc"
+  ".config/plasmashellrc"
+  ".config/plasma-org.kde.plasma.desktop-appletsrc"
+  ".config/kscreenlockerrc"
+  ".config/panel-colorizer"
+  ".config/Kvantum"
+  ".config/fastfetch"
+  ".config/starship.toml"
+  ".zshrc"]}
