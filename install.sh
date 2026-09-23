@@ -10,7 +10,7 @@
 # Rice: null-sector-plasma (Cyberpunk / NieR Monochrome Aesthetic)
 # Inspired by: agridyne/dotfiles-dt
 # Author: petrolal
-# License: MIT
+# License: GPL-3.0
 # ==============================================================================
 
 set -euo pipefail
@@ -249,7 +249,7 @@ install_dependencies() {
         "stow"
         "kvantum"
         "ttf-jetbrains-mono-nerd"
-        "cool-retro-term"
+        "konsole"
         "cava"
         "ffmpeg"
         "starship"
@@ -493,53 +493,7 @@ deploy_components() {
         done
     fi
 
-    # 7. Cool-Retro-Term Profile & Automatic SQLite Injection
-    mkdir -p "${HOME}/.config/cool-retro-term"
-    if [[ -f "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" ]]; then
-        ln -sfn "${SCRIPT_DIR}/cool-retro-term/cool-retro-term-monochrome.json" "${HOME}/.config/cool-retro-term/cool-retro-term-monochrome.json"
-        
-        if command -v python3 >/dev/null 2>&1; then
-            python3 -c '
-import sqlite3, json, hashlib, os
-try:
-    db_dir = os.path.expanduser("~/.local/share/cool-retro-term/cool-retro-term/QML/OfflineStorage/Databases")
-    os.makedirs(db_dir, exist_ok=True)
-    db_name = "coolretroterm2"
-    db_hash = hashlib.md5(db_name.encode("utf-8")).hexdigest()
-    ini_path = os.path.join(db_dir, f"{db_hash}.ini")
-    if not os.path.exists(ini_path):
-        with open(ini_path, "w") as f:
-            f.write(f"[General]\nDescription=StorageDatabase\nDriver=QSQLITE\nEstimatedSize=100000\nName={db_name}\nVersion=1.0\n")
-    sqlite_path = os.path.join(db_dir, f"{db_hash}.sqlite")
-    conn = sqlite3.connect(sqlite_path)
-    cur = conn.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS settings (setting TEXT UNIQUE, value TEXT)")
-    with open("'"${SCRIPT_DIR}"'/cool-retro-term/cool-retro-term-monochrome.json") as f:
-        mono = f.read()
-    settings = json.dumps({
-        "effectsFrameSkip": 3,
-        "windowScaling": 1,
-        "showTerminalSize": True,
-        "fontScaling": 0.8,
-        "showMenubar": False,
-        "bloomQuality": 0.5,
-        "burnInQuality": 0.5,
-        "useCustomCommand": False,
-        "customCommand": ""
-    })
-    cur.execute("INSERT OR REPLACE INTO settings (setting, value) VALUES (?, ?)", ("_CURRENT_SETTINGS", settings))
-    cur.execute("INSERT OR REPLACE INTO settings (setting, value) VALUES (?, ?)", ("_CURRENT_PROFILE", mono))
-    cur.execute("INSERT OR REPLACE INTO settings (setting, value) VALUES (?, ?)", ("_CUSTOM_PROFILES", json.dumps([{"text": "Monochrome", "obj_string": mono, "builtin": False}])))
-    conn.commit()
-    conn.close()
-except Exception:
-    pass
-'
-            log_success "Configured cool-retro-term default profile to Monochrome."
-        fi
-    fi
-
-    # 8. Zen Browser userChrome.css / userContent.css Auto-Deployment (Symlinked)
+    # 7. Zen Browser userChrome.css / userContent.css Auto-Deployment (Symlinked)
     #
     # zen-browser-bin actually resolves its profile under the XDG path
     # ~/.config/zen/ (confirmed via ~/.config/zen/installs.ini's pinned
@@ -667,18 +621,28 @@ apply_kde_settings() {
         return 0
     fi
 
-    # Apply Colors & Cursor
+    # Apply Colors, Dark Mode & Cursor
     if command -v plasma-apply-colorscheme >/dev/null 2>&1; then
-        plasma-apply-colorscheme Monochrome 2>/dev/null || log_warn "Could not apply color scheme via plasma-apply-colorscheme"
+        plasma-apply-colorscheme Monochrome 2>/dev/null || plasma-apply-colorscheme BreezeDark 2>/dev/null || log_warn "Could not apply color scheme via plasma-apply-colorscheme"
     fi
     if command -v plasma-apply-cursortheme >/dev/null 2>&1; then
         plasma-apply-cursortheme Bibata-Modern-Ice 2>/dev/null || log_warn "Could not apply cursor via plasma-apply-cursortheme"
     fi
 
+    # Set dark theme portal for GTK / Flatpak / system apps
+    if command -v gsettings >/dev/null 2>&1; then
+        gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
+        gsettings set org.gnome.desktop.interface gtk-theme 'Breeze-Dark' 2>/dev/null || true
+    fi
+
     if command -v kwriteconfig6 >/dev/null 2>&1; then
-        # Color Scheme & Icons
+        # Color Scheme, Dark Mode & Icons
         kwriteconfig6 --file kdeglobals --group General --key ColorScheme "Monochrome"
         kwriteconfig6 --file kdeglobals --group General --key Name "Monochrome"
+        kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage "org.kde.breezedark.desktop"
+        kwriteconfig6 --file kdeglobals --group KDE --key colorScheme "Monochrome"
+        kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle "kvantum-dark"
+        kwriteconfig6 --file kdeglobals --group General --key widgetStyle "kvantum-dark"
         kwriteconfig6 --file kdeglobals --group Icons --key Theme "yet-another-monochrome-icon-set"
         kwriteconfig6 --file kdeglobals --group Mouse --key cursorTheme "Bibata-Modern-Ice"
         kwriteconfig6 --file ksplashrc --group KSplash --key Theme "a2n.kuro"
@@ -691,13 +655,13 @@ apply_kde_settings() {
         kwriteconfig6 --file kdeglobals --group General --key toolBarFont "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
         kwriteconfig6 --file kdeglobals --group General --key windowTitleFont "JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold"
 
-        # Terminal Preference (Cool-Retro-Term as Default Terminal)
-        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication "cool-retro-term"
-        kwriteconfig6 --file kdeglobals --group General --key TerminalService "cool-retro-term.desktop"
+        # Terminal Preference (Konsole as Default Terminal)
+        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication "konsole"
+        kwriteconfig6 --file kdeglobals --group General --key TerminalService "org.kde.konsole.desktop"
 
         # Terminal Keybinding (Ctrl+Alt+T and Meta+Return / Super+Enter)
-        kwriteconfig6 --file kglobalshortcutsrc --group services --group "org.kde.konsole.desktop" --key _launch "none,none,Konsole"
-        kwriteconfig6 --file kglobalshortcutsrc --group services --group "cool-retro-term.desktop" --key _launch $'Ctrl+Alt+T\tMeta+Return,Ctrl+Alt+T\tMeta+Return,Cool Retro Term'
+        kwriteconfig6 --file kglobalshortcutsrc --group services --group "org.kde.konsole.desktop" --key _launch $'Ctrl+Alt+T\tMeta+Return,Ctrl+Alt+T\tMeta+Return,Konsole'
+        kwriteconfig6 --file kglobalshortcutsrc --group services --group "cool-retro-term.desktop" --key _launch "none,none,Cool Retro Term"
         kwriteconfig6 --file kglobalshortcutsrc --group kwin --key "Edit Tiles" "none,none,Toggle Tiles Editor"
         systemctl --user restart plasma-kglobalaccel 2>/dev/null || true
 
@@ -1025,6 +989,7 @@ PYEOF
     fi
     log_success "KWin window rule configured."
 }
+
 
 # -----------------------------------------------------------------------------
 # Zen Mods Registry Seeding (Experimental)

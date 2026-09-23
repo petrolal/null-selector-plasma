@@ -268,8 +268,8 @@ switch to next activity=none,none,Switch to Next Activity
 switch to previous activity=none,none,Switch to Previous Activity
 toggle do not disturb=none,none,Toggle do not disturb
 
-[services][org.kde.konsole.desktop]
-_launch=none,none,Konsole
-
 [services][cool-retro-term.desktop]
-_launch=Ctrl+Alt+T	Meta+Return,Ctrl+Alt+T	Meta+Return,Cool Retro Term
+_launch=none,none,Cool Retro Term
+
+[services][org.kde.konsole.desktop]
+_launch=Ctrl+Alt+T	Meta+Return,Ctrl+Alt+T	Meta+Return,Konsole

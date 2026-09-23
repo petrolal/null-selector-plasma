@@ -211,7 +211,7 @@ var taskbar = bottomPanel.addWidget("org.kde.plasma.icontasks");
 if (taskbar) {
   taskbar.currentConfigGroup = ["Configuration", "General"];
   taskbar.writeConfig("launchers", [
-    "applications:cool-retro-term.desktop",
+    "applications:org.kde.konsole.desktop",
     "preferred://browser",
     "preferred://filemanager",
     "applications:systemsettings.desktop",

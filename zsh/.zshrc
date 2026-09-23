@@ -70,6 +70,8 @@ if [[ -o interactive ]] && command -v fastfetch >/dev/null 2>&1; then
     fi
 fi
 
+export PATH="$HOME/hellmacs/bin/:$PATH"
+
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

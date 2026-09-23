@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
+import QtMultimedia
 import "Components"
 
 Item {
@@ -15,13 +16,32 @@ Item {
     z: 0
     color: config.bgDefault
   }
+  MediaPlayer {
+    id: player
+    source: config.VideoBackground ? config.VideoBackground : ""
+    videoOutput: videoBg
+    loops: MediaPlayer.Infinite
+    audioTracks: []
+    Component.onCompleted: {
+      if (config.VideoBackground && config.VideoBackground !== "") {
+        player.play()
+      }
+    }
+  }
+  VideoOutput {
+    id: videoBg
+    anchors.fill: parent
+    fillMode: VideoOutput.PreserveAspectCrop
+    visible: config.VideoBackground && config.VideoBackground !== ""
+    z: 1
+  }
   Image {
     id: backgroundImage
     anchors.fill: parent
     height: parent.height
     width: parent.width
     fillMode: Image.PreserveAspectCrop
-    visible: config.CustomBackground == "true" ? true : false
+    visible: (!config.VideoBackground || config.VideoBackground === "") && config.CustomBackground == "true"
     z: 1
     source: config.Background
     asynchronous: false

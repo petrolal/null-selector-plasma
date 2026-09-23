@@ -9,7 +9,7 @@
 # Dotfile Sync / Harvesting Script
 # Scrapes active configurations from $HOME into the repository.
 # Author: petrolal
-# License: MIT
+# License: GPL-3.0
 # ==============================================================================
 
 set -euo pipefail

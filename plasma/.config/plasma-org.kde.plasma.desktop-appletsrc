@@ -541,10 +541,10 @@ immutability=1
 plugin=org.kde.plasma.icontasks
 
 [Containments][2000][Applets][2004][Configuration][Configuration][General]
-launchers=applications:cool-retro-term.desktop,applications:zen.desktop,applications:org.kde.dolphin.desktop,applications:systemsettings.desktop,applications:com.spotify.Client.desktop,applications:discord.desktop
+launchers=applications:org.kde.konsole.desktop,applications:zen.desktop,applications:org.kde.dolphin.desktop,applications:systemsettings.desktop,applications:com.spotify.Client.desktop,applications:discord.desktop
 
 [Containments][2000][Applets][2004][Configuration][General]
-launchers=applications:cool-retro-term.desktop,applications:emacsclient.desktop,applications:zen.desktop
+launchers=applications:org.kde.konsole.desktop,applications:zen.desktop,applications:org.kde.dolphin.desktop,applications:systemsettings.desktop,applications:com.spotify.Client.desktop,applications:discord.desktop
 
 [Containments][2000][Applets][2005]
 immutability=1

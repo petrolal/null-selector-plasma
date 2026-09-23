@@ -29,8 +29,7 @@ checksum-verified installer — same idea as Mason, lazy.nvim, or npm's
 ### Does not migrate (by design, not by limitation)
 
 - **Config/data files** — `plasma/`, `kvantum/`, `cava/`, `fastfetch/`,
-  `starship/`, `zsh/`, `zen-browser/`, `assets/`, the cool-retro-term JSON
-  profile. These are data, not code.
+  `starship/`, `zsh/`, `zen-browser/`, `assets/`. These are data, not code.
 - **`plasma/layout.js`** — KDE's own DBus `evaluateScript` JS dialect, not our
   code. Already kept only as historical reference per its header comment;
   superseded by the `sanitize_appletsrc` template approach.
@@ -131,7 +130,7 @@ helper does on its own. Moving this to a manifest gets us:
   "schemaVersion": 1,
   "dependencies": [
     {
-      "name": "cool-retro-term",
+      "name": "konsole",
       "installer": "pacman",
       "version": "latest"
     },
@@ -181,7 +180,7 @@ Written after a successful `deps sync`, records what's actually installed:
 {
   "generatedAt": "2026-09-22T10:00:00Z",
   "installed": [
-    { "name": "cool-retro-term", "installer": "pacman", "resolvedVersion": "1.2.0-1" },
+    { "name": "konsole", "installer": "pacman", "resolvedVersion": "24.08.0-1" },
     { "name": "kuro-splash", "installer": "git", "resolvedVersion": "a1b2c3d4e5f6..." }
   ]
 }

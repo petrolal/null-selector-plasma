@@ -9,12 +9,11 @@
 [![CachyOS](https://img.shields.io/badge/CachyOS-00A389?logo=linux&logoColor=white&style=for-the-badge)](https://cachyos.org/)
 [![KDE Plasma 6](https://img.shields.io/badge/KDE_Plasma_6-1D99F3?logo=kde&logoColor=white&style=for-the-badge)](https://kde.org/plasma-desktop/)
 [![Wayland](https://img.shields.io/badge/Wayland-Native-brightgreen?logo=wayland&logoColor=white&style=for-the-badge)](https://wayland.freedesktop.org/)
-[![GNU Stow](https://img.shields.io/badge/Dotfiles-GNU_Stow-informational?logo=gnu&logoColor=white&style=for-the-badge)](https://www.gnu.org/software/stow/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0)
 
 <p align="center">
   A high-contrast <b>monochrome cyberpunk desktop environment</b> for <b>KDE Plasma 6 on Wayland</b>.<br />
-  Engineered with <b>Panel Colorizer</b> floating capsule islands, <b>YoRHa HUD</b> telemetry, <b>Kurve</b> audio visualizer, <b>CatWalk</b> CPU monitor, <b>YAMIS</b> monochrome icons, <b>cool-retro-term</b>, and <b>Zen Browser</b> translucent glass.
+  Engineered with <b>Panel Colorizer</b> floating capsule islands, <b>YoRHa HUD</b> telemetry, <b>Kurve</b> audio visualizer, <b>CatWalk</b> CPU monitor, <b>YAMIS</b> monochrome icons, <b>Konsole</b>, and <b>Zen Browser</b> translucent glass.
 </p>
 
 [Quick Start](#-quick-start) • [Design Specifications](#-design-specifications) • [Architecture](#-directory-tree--stow-architecture) • [Post-Install Guides](#-component-configuration-guides) • [Troubleshooting](#-troubleshooting)
@@ -57,7 +56,7 @@
 | **Thermal Monitor** | [Thermal Monitor](https://github.com/olib14/thermal-monitor) | Direct hardware temperature telemetry (CPU/GPU) |
 | **Audio Visualizer** | [Kurve](https://github.com/luisbocanegra/kurve) | Left-side CAVA desktop spectrum equalizer |
 | **CPU Cat** | [CatWalk Enhanced](https://github.com/BLADR-ONE/CatWalk-Enhanced-Plasmoid) | Animated running cat scaled to processor load |
-| **Terminal** | [Cool-Retro-Term](https://github.com/Swordfish90/cool-retro-term) | Bundled amber/white monochrome CRT profile with scanlines |
+| **Terminal** | [Konsole](https://konsole.kde.org/) | Native KDE terminal emulator with JetBrainsMono Nerd Font |
 | **Browser** | [Zen Browser](https://zen-browser.app/) | Glass translucency via `userChrome.css`, KWin Better Blur DX force blur, and auto-installed extensions/mods |
 
 ---
@@ -72,7 +71,7 @@ null-sector-plasma/
 ├── harvest.sh                       # Dotfile sync script to scrape live configs back into repo
 ├── backup.sh                        # CLI alias wrapper for harvest.sh
 ├── .gitignore                       # Rules preventing secret / cache pollution
-├── LICENSE                          # MIT License
+├── LICENSE                          # GNU General Public License v3.0
 ├── README.md                        # Documentation and architecture guide
 │
 ├── assets/
@@ -113,10 +112,6 @@ null-sector-plasma/
 │   │       ├── org.kde.olib.thermalmonitor/   # Hardware Temperature Monitor
 │   │       └── org.kde.plasma.clearclock/     # Minimalist ClearClock
 │   └── layout.js                    # DEPRECATED historical reference only, not deployed
-│
-├── cool-retro-term/                 # CRT terminal emulator profile
-│   ├── cool-retro-term-monochrome.json
-│   └── README.md
 │
 ├── zen-browser/                     # Zen Browser styling
 │   ├── userChrome.css
@@ -166,13 +161,6 @@ The installer creates a timestamped safety backup in `~/.config_backup_mono_<tim
 ---
 
 ## 🛠️ Component Configuration Guides
-
-### 📺 Cool-Retro-Term (Phosphor CRT Terminal)
-1. Launch `cool-retro-term`.
-2. Right-click inside the terminal window and select **Settings**.
-3. Navigate to the **Profiles** tab and click **Import Profile**.
-4. Select `cool-retro-term/cool-retro-term-monochrome.json`.
-5. Select the **Monochrome** profile and click **Load**.
 
 ### 🌐 Zen Browser Transparency & Blur
 Fully automated by `install.sh` except for a handful of one-click mod installs.
@@ -242,6 +230,6 @@ When you customize your settings in KDE System Settings, you can scrape your cha
 ---
 
 ## 📜 License
-Released under the [MIT License](LICENSE).
+Released under the [GNU General Public License v3.0](LICENSE).
 Monochrome theme by [pwyde](https://github.com/pwyde/monochrome-kde), YAMIS by [dirn](https://github.com/dirn/yet-another-monochrome-icon-set), YoRHa HUD by [AxZoRos](https://github.com/AxZoRos/YoRHa-HUD), CatWalk Enhanced by [BLADR-ONE](https://github.com/BLADR-ONE/CatWalk-Enhanced-Plasmoid).
 Original rice inspiration from [agridyne/dotfiles-dt](https://github.com/agridyne/dotfiles-dt).
