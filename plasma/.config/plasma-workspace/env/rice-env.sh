@@ -12,3 +12,7 @@ export QT_QPA_PLATFORMTHEME="kde"
 export MOZ_ENABLE_WAYLAND=1
 export ELECTRON_OZONE_PLATFORM_HINT="auto"
 export GDK_BACKEND="wayland,x11,*"
+
+# Default text editor
+export EDITOR="emacs"
+export VISUAL="emacs"

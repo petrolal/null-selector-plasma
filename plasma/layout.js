@@ -84,7 +84,7 @@ function addGap(panel, length) {
 // -----------------------------------------------------------------------------
 // 3. Top Status Bar (Telemetry Left + Controls Right)
 // -----------------------------------------------------------------------------
-var topPanelHeight = 36;
+var topPanelHeight = 30;
 var topPanel = new Panel();
 topPanel.screen = targetScreen;
 topPanel.location = "top";
@@ -179,7 +179,7 @@ topPanel.addWidget("KdeControlStation");
 // -----------------------------------------------------------------------------
 // 4. Bottom Dock (3-Island Layout)
 // -----------------------------------------------------------------------------
-var bottomPanelHeight = 48;
+var bottomPanelHeight = 30;
 var bottomPanel = new Panel();
 bottomPanel.screen = targetScreen;
 bottomPanel.location = "bottom";

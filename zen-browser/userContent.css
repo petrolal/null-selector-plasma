@@ -1,0 +1,9 @@
+/* Makes Zen's built-in blank/new-tab/PDF pages transparent so they don't
+ * show an opaque white/gray flash on top of the transparent chrome from
+ * userChrome.css. Bonjourr overrides about:newtab entirely once installed;
+ * this covers about:blank and the PDF viewer, which it doesn't touch. */
+@-moz-document url(about:blank), url(about:newtab), url(about:home) {
+  html, body {
+    background-color: transparent !important;
+  }
+}

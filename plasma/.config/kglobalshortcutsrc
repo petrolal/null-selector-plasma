@@ -249,6 +249,7 @@ activate task manager entry 6=Meta+6,Meta+6,Activate Task Manager Entry 6
 activate task manager entry 7=Meta+7,Meta+7,Activate Task Manager Entry 7
 activate task manager entry 8=Meta+8,Meta+8,Activate Task Manager Entry 8
 activate task manager entry 9=Meta+9,Meta+9,Activate Task Manager Entry 9
+activate widget 1069=none,none,Activate System Monitor Widget
 clear history=none,none,Clear Notification History
 clear-history=none,none,Clear Clipboard History
 clipboard_action=Meta+Ctrl+X,Meta+Ctrl+X,Automatic Action Popup Menu
@@ -267,5 +268,8 @@ switch to next activity=none,none,Switch to Next Activity
 switch to previous activity=none,none,Switch to Previous Activity
 toggle do not disturb=none,none,Toggle do not disturb
 
+[services][org.kde.konsole.desktop]
+_launch=none,none,Konsole
+
 [services][cool-retro-term.desktop]
-_launch=Ctrl+Alt+T,Ctrl+Alt+T,Cool Retro Term
+_launch=Ctrl+Alt+T	Meta+Return,Ctrl+Alt+T	Meta+Return,Cool Retro Term

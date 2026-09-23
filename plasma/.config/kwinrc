@@ -6,6 +6,16 @@ Id_4=0e06bc84-94ba-4d0e-9b4f-73f67e120e18
 Number=4
 Rows=1
 
+[Effect-better-blur-dx]
+BlurMatching=true
+BlurNonMatching=false
+BlurStrength=4
+Brightness=25
+Contrast=105
+NoiseStrength=5
+Saturation=0
+WindowClasses=zen
+
 [Effect-blur]
 BlurStrength=4
 NoiseStrength=5
@@ -27,10 +37,11 @@ DayTemperature=6500
 NightTemperature=4500
 
 [Plugins]
+better_blur_dxEnabled=true
 blurEnabled=true
 contrastEnabled=true
 desktopgridEnabled=true
-forceblurEnabled=true
+forceblurEnabled=false
 glideEnabled=true
 kwin4_effect_translucencyEnabled=true
 overviewEnabled=true
@@ -93,5 +104,3 @@ BorderSizeAuto=false
 ButtonsOnLeft=M
 ButtonsOnRight=IAX
 CloseOnDoubleClickOnMenu=false
-library=org.kde.klassy
-theme=klassy

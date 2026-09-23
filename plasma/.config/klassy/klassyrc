@@ -37,7 +37,7 @@ TitleAlignment=Center
 TitleFont=Inter,10,-1,5,70,0,0,0,0,0,Bold
 
 [Global]
-LookAndFeelSet=klassy-dark
+LookAndFeelSet=org.kde.breezedark.desktop
 
 [Metrics]
 TitlebarBottomMargin=2

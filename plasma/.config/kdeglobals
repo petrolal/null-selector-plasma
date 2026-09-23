@@ -62,6 +62,20 @@ ForegroundNormal[$d]
 ForegroundPositive[$d]
 ForegroundVisited[$d]
 
+[Colors:Header][Inactive]
+BackgroundAlternate[$d]
+BackgroundNormal[$d]
+DecorationFocus[$d]
+DecorationHover[$d]
+ForegroundActive[$d]
+ForegroundInactive[$d]
+ForegroundLink[$d]
+ForegroundNegative[$d]
+ForegroundNeutral[$d]
+ForegroundNormal[$d]
+ForegroundPositive[$d]
+ForegroundVisited[$d]
+
 [Colors:Selection]
 BackgroundAlternate=29,153,243
 BackgroundNormal=114,114,116
@@ -119,6 +133,8 @@ ForegroundPositive=85,255,255
 ForegroundVisited=127,140,141
 
 [General]
+BrowserApplication=zen.desktop
+ColorScheme=Monochrome
 ColorSchemeHash=51d730535134e778fe069690ae4f1f61fb700fdc
 Name=Monochrome
 TerminalApplication=cool-retro-term
@@ -135,12 +151,11 @@ windowTitleFont=JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold
 Theme=yet-another-monochrome-icon-set
 
 [KDE]
-LookAndFeelPackage=klassy-dark
+LookAndFeelPackage=org.kde.breezedark.desktop
 ShowDeleteCommand=true
 SingleClick=false
 contrast=4
 frameContrast=0.2
-widgetStyle=kvantum-dark
 
 [KFileDialog Settings]
 Allow Expansion=false

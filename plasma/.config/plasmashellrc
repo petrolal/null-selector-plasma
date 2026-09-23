@@ -4,12 +4,12 @@ panelOpacity=2
 shell=org.kde.plasma.desktop
 
 [PlasmaViews][Panel 1985][Defaults]
-thickness=34
+thickness=30
 
 [PlasmaViews][Panel 2000]
 floating=1
-panelOpacity=2
+panelOpacity=1
 shell=org.kde.plasma.desktop
 
 [PlasmaViews][Panel 2000][Defaults]
-thickness=46
+thickness=30

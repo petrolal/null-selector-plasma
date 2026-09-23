@@ -1,1 +1,27 @@
-#browser {background-color: #40404066;}
+#browser {
+  background-color: #000000;
+}
+
+:root {
+  color-scheme: dark !important;
+  --zen-colors-text: #e0e0e0 !important;
+  --toolbar-color: #e0e0e0 !important;
+  --toolbar-field-color: #e0e0e0 !important;
+  --lwt-text-color: #e0e0e0 !important;
+  --lwt-toolbar-field-color: #e0e0e0 !important;
+}
+
+/* Ensure light text color across sidebar, tabs, URL bar, and navigation toolbox */
+#navigator-toolbox,
+#TabsToolbar,
+.tabbrowser-tab,
+.tab-text,
+#zen-sidebar-top-buttons,
+#zen-sidebar-bottom-buttons,
+#urlbar,
+#urlbar-input,
+.urlbar-input-box {
+  color: #e0e0e0 !important;
+  --zen-colors-text: #e0e0e0 !important;
+  --toolbar-color: #e0e0e0 !important;
+}

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🖤 plasma-mono-rice
+# 🖤 null-sector-plasma
 
 ### Automated • Reproducible • Declarative KDE Plasma 6 Monochrome Rice
 *(Inspired by [agridyne/dotfiles-dt](https://github.com/agridyne/dotfiles-dt) & NieR: Automata / Cyberpunk Aesthetics)*
@@ -52,13 +52,13 @@
 | **Icon Theme** | [YAMIS](https://github.com/dirn/yet-another-monochrome-icon-set) | Adaptive monochrome vector icons across panel and desktop |
 | **Cursor Theme** | `Bibata-Modern-Ice` | Crisp white minimalist cursor |
 | **System Font** | `JetBrainsMono Nerd Font` | System-wide 10pt monospace font with icons |
-| **Panels** | [Panel Colorizer](https://github.com/luisbocanegra/plasma-panel-colorizer) | Bundled `Main Setup` & `Main Blur` presets with floating capsules |
+| **Panels** | [Panel Colorizer](https://github.com/luisbocanegra/plasma-panel-colorizer) | Bundled `Main Setup` & `Main Blur` presets with floating capsules, auto-switched by window state |
 | **Telemetry HUD** | [YoRHa HUD](https://github.com/AxZoRos/YoRHa-HUD) | *NieR: Automata* Bunker link telemetry widget on desktop |
 | **Thermal Monitor** | [Thermal Monitor](https://github.com/olib14/thermal-monitor) | Direct hardware temperature telemetry (CPU/GPU) |
 | **Audio Visualizer** | [Kurve](https://github.com/luisbocanegra/kurve) | Left-side CAVA desktop spectrum equalizer |
 | **CPU Cat** | [CatWalk Enhanced](https://github.com/BLADR-ONE/CatWalk-Enhanced-Plasmoid) | Animated running cat scaled to processor load |
 | **Terminal** | [Cool-Retro-Term](https://github.com/Swordfish90/cool-retro-term) | Bundled amber/white monochrome CRT profile with scanlines |
-| **Browser** | [Zen Browser](https://zen-browser.app/) | Glass translucency via `userChrome.css` and KWin force blur |
+| **Browser** | [Zen Browser](https://zen-browser.app/) | Glass translucency via `userChrome.css`, KWin Better Blur DX force blur, and auto-installed extensions/mods |
 
 ---
 
@@ -67,7 +67,7 @@
 This repository strictly follows the **GNU Stow** modular architecture. Every component links cleanly into `$HOME` without manual copying:
 
 ```text
-plasma-mono-rice/
+null-sector-plasma/
 ├── install.sh                       # Non-destructive automated deployment & dependency installer
 ├── harvest.sh                       # Dotfile sync script to scrape live configs back into repo
 ├── backup.sh                        # CLI alias wrapper for harvest.sh
@@ -88,12 +88,13 @@ plasma-mono-rice/
 │
 ├── scripts/
 │   ├── sanitize_appletsrc.py        # Harvest/install template engine + widget verifier
+│   ├── open_zen_mods.sh             # Opens each required Zen Mod's install page
 │   └── dump_widgets.py              # Debug: pretty-print live containment/applet config
 │
 ├── plasma/                          # KDE Plasma 6 desktop & KWin configuration
 │   ├── .config/
 │   │   ├── kdeglobals               # Monochrome color scheme, YAMIS icons, JetBrains font
-│   │   ├── kwinrc                   # KWin window manager & forceblur effects
+│   │   ├── kwinrc                   # KWin window manager & Better Blur DX force-blur
 │   │   ├── plasmashellrc            # Floating top bar and bottom dock geometry
 │   │   ├── plasma-org.kde.plasma.desktop-appletsrc  # Panel/desktop widget layout (templated)
 │   │   ├── panel-colorizer/
@@ -144,8 +145,8 @@ plasma-mono-rice/
 
 ### 1. Clone the Repository
 ```bash
-git clone git@github.com:petrolal/plasma-mono-rice.git
-cd plasma-mono-rice
+git clone git@github.com:petrolal/null-sector-plasma.git
+cd null-sector-plasma
 ```
 
 ### 2. Run the Automated Installer
@@ -174,12 +175,23 @@ The installer creates a timestamped safety backup in `~/.config_backup_mono_<tim
 5. Select the **Monochrome** profile and click **Load**.
 
 ### 🌐 Zen Browser Transparency & Blur
-1. Ensure `kwin-effects-forceblur-git` is installed.
-2. In **System Settings** -> **Window Management** -> **Desktop Effects** -> **Blur / Force Blur**:
-   - Add `zen` to the forced window classes.
-   - Blur strength: `4`, Noise strength: `5`, Brightness: `25%`, Saturation: `0%`, Contrast: `105%`.
-3. In Zen Browser, install the **Transparent Zen** mod and configure as shown in `assets/screenshots/transparent-zen-settings.png`.
-4. The file `zen-browser/userChrome.css` is automatically copied to your Zen profiles by `install.sh`.
+Fully automated by `install.sh` except for a handful of one-click mod installs.
+See [`zen-browser/README.md`](zen-browser/README.md) for the full breakdown, or
+in short:
+1. `install.sh` installs `kwin-effects-better-blur-dx` (successor to the
+   now-removed `kwin-effects-forceblur`), enables it, and force-blurs `zen`
+   windows at strength `4` / noise `5` / brightness `25%` / saturation `0%` /
+   contrast `105%`.
+2. `install.sh` bootstraps a Zen profile non-interactively if none exists yet,
+   then symlinks `zen-browser/userChrome.css` into every profile listed in
+   `~/.config/zen/profiles.ini` (the real, XDG-path profile location -- not
+   the legacy `~/.zen/` dotfolder), and force-installs Bonjourr, Dark Reader &
+   Zen Internet plus the required transparency prefs via Zen's `policies.json`
+   (sudo required).
+3. Run `./scripts/open_zen_mods.sh` once and click **Install** on each of the 7
+   opened tabs (Transparent Zen first, then enable its "Allow transparency on
+   linux" option) — Zen Mods can only be installed through the browser UI, no
+   file-based path exists for that step.
 
 ### 🔊 Kurve Audio Visualizer
 1. Add the **Kurve** widget to your left desktop screen.

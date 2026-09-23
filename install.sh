@@ -7,7 +7,7 @@
 # |_|   |_|\__,_|___/_| |_| |_|\__,_|___|_|  |_|\___/|_| |_|\___/|_| \_\_|\___\___|
 #
 # Automated Non-Destructive Installer & Deployment Script for KDE Plasma 6
-# Rice: plasma-mono-rice (Cyberpunk / NieR Monochrome Aesthetic)
+# Rice: null-sector-plasma (Cyberpunk / NieR Monochrome Aesthetic)
 # Inspired by: agridyne/dotfiles-dt
 # Author: petrolal
 # License: MIT
@@ -63,6 +63,8 @@ SYMLINKS_ONLY=false
 APPLY_LAYOUT=true
 INSTALL_SDDM=true
 INSTALL_PLYMOUTH=true
+INSTALL_ZEN_EXTENSIONS=true
+OPEN_ZEN_MODS=false
 NO_RESTART=false
 AUTO_YES=false
 AUR_HELPER=""
@@ -71,7 +73,7 @@ print_help() {
     cat <<EOF
 Usage: $(basename "$0") [OPTIONS]
 
-Automated installer and dotfiles bootstrap script for Plasma Monochrome Rice.
+Automated installer and dotfiles bootstrap script for null-sector-plasma.
 
 Options:
     -h, --help          Show this help message and exit
@@ -83,6 +85,8 @@ Options:
         --no-sddm       Skip installing SDDM login theme
         --plymouth      Install dotLock Plymouth boot splash theme
         --no-plymouth   Skip installing Plymouth boot splash theme
+        --no-zen-extensions  Skip force-installing Bonjourr/Dark Reader/Zen Internet
+        --open-zen-mods      Open each required Zen Mod's install page for one-click setup
         --no-restart    Skip automatically restarting plasmashell at the end
     -n, --dry-run       Simulate installation without modifying any files
         --no-backup     Skip backing up existing configuration files
@@ -102,6 +106,7 @@ while [[ $# -gt 0 ]]; do
             SKIP_DEPS=true
             INSTALL_SDDM=false
             INSTALL_PLYMOUTH=false
+            INSTALL_ZEN_EXTENSIONS=false
             shift
             ;;
         -d|--deps-only)
@@ -130,6 +135,18 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-plymouth)
             INSTALL_PLYMOUTH=false
+            shift
+            ;;
+        --zen-extensions)
+            INSTALL_ZEN_EXTENSIONS=true
+            shift
+            ;;
+        --no-zen-extensions)
+            INSTALL_ZEN_EXTENSIONS=false
+            shift
+            ;;
+        --open-zen-mods)
+            OPEN_ZEN_MODS=true
             shift
             ;;
         --no-restart)
@@ -238,6 +255,10 @@ install_dependencies() {
         "starship"
         "fastfetch"
         "zsh"
+        "dolphin"
+        "discord"
+        "kservice"
+        "emacs"
     )
 
     local MISSING_PACMAN=()
@@ -259,6 +280,15 @@ install_dependencies() {
     fi
 
     log_step "Resolving AUR Enhancements & Plasma 6 Extensions"
+
+    # kwin-effects-forceblur was removed from the AUR upstream; better-blur-dx
+    # is its maintained successor (also required for Zen Browser transparency
+    # per https://sameerasw.com/zen). Ships separate Wayland/X11 packages.
+    local BLUR_PKG="kwin-effects-better-blur-dx"
+    if [[ "${XDG_SESSION_TYPE:-}" == "x11" ]]; then
+        BLUR_PKG="kwin-effects-better-blur-dx-x11"
+    fi
+
     local AUR_DEPS=(
         "yamis-icon-theme-git"
         "bibata-cursor-git"
@@ -266,7 +296,7 @@ install_dependencies() {
         "plasma6-applets-kurve-git"
         "plasma6-applets-kde-control-station"
         "plasma6-wallpapers-smart-video-wallpaper-reborn"
-        "kwin-effects-forceblur-git"
+        "$BLUR_PKG"
         "klassy"
         "zen-browser-bin"
     )
@@ -284,6 +314,15 @@ install_dependencies() {
             log_info "[DRY-RUN] Would install via AUR helper: ${MISSING_AUR[*]}"
         else
             if [[ -n "$AUR_HELPER" ]]; then
+                # better-blur-dx declares a hard package conflict with the old
+                # forceblur-git; --noconfirm does NOT auto-answer pacman's
+                # conflict-removal prompt (only its "proceed?" prompts), so it
+                # silently defaults to "N" and the whole transaction aborts.
+                # Remove the superseded package explicitly first.
+                if [[ " ${MISSING_AUR[*]} " == *" $BLUR_PKG "* ]] && pacman -Qq kwin-effects-forceblur-git >/dev/null 2>&1; then
+                    log_info "Removing superseded kwin-effects-forceblur-git (conflicts with $BLUR_PKG)..."
+                    sudo pacman -R --noconfirm kwin-effects-forceblur-git || log_warn "Could not remove kwin-effects-forceblur-git; $BLUR_PKG install may fail."
+                fi
                 "$AUR_HELPER" -S --needed --noconfirm "${MISSING_AUR[@]}" || log_warn "Some AUR packages may need manual confirmation."
             else
                 log_warn "No AUR helper found (yay/paru). Please install: ${MISSING_AUR[*]}"
@@ -477,6 +516,18 @@ try:
     cur.execute("CREATE TABLE IF NOT EXISTS settings (setting TEXT UNIQUE, value TEXT)")
     with open("'"${SCRIPT_DIR}"'/cool-retro-term/cool-retro-term-monochrome.json") as f:
         mono = f.read()
+    settings = json.dumps({
+        "effectsFrameSkip": 3,
+        "windowScaling": 1,
+        "showTerminalSize": True,
+        "fontScaling": 0.8,
+        "showMenubar": False,
+        "bloomQuality": 0.5,
+        "burnInQuality": 0.5,
+        "useCustomCommand": False,
+        "customCommand": ""
+    })
+    cur.execute("INSERT OR REPLACE INTO settings (setting, value) VALUES (?, ?)", ("_CURRENT_SETTINGS", settings))
     cur.execute("INSERT OR REPLACE INTO settings (setting, value) VALUES (?, ?)", ("_CURRENT_PROFILE", mono))
     cur.execute("INSERT OR REPLACE INTO settings (setting, value) VALUES (?, ?)", ("_CUSTOM_PROFILES", json.dumps([{"text": "Monochrome", "obj_string": mono, "builtin": False}])))
     conn.commit()
@@ -488,16 +539,49 @@ except Exception:
         fi
     fi
 
-    # 8. Zen Browser userChrome.css Auto-Deployment (Symlinked)
-    local ZEN_DIR="${HOME}/.zen"
-    if [[ -d "$ZEN_DIR" ]]; then
-        for profile in "$ZEN_DIR"/*; do
-            if [[ -d "$profile" ]]; then
-                mkdir -p "$profile/chrome"
-                ln -sfn "${SCRIPT_DIR}/zen-browser/userChrome.css" "$profile/chrome/userChrome.css"
-                log_success "Linked userChrome.css to Zen profile: $(basename "$profile")"
-            fi
-        done
+    # 8. Zen Browser userChrome.css / userContent.css Auto-Deployment (Symlinked)
+    #
+    # zen-browser-bin actually resolves its profile under the XDG path
+    # ~/.config/zen/ (confirmed via ~/.config/zen/installs.ini's pinned
+    # Default=<profile>), NOT the legacy ~/.zen/ dotfolder that Firefox
+    # documentation and most guides assume. Targeting ~/.zen/ silently
+    # symlinked userChrome.css into a profile the browser never reads --
+    # that's the actual reason transparency never appeared.
+    local ZEN_DIR="${HOME}/.config/zen"
+
+    # Firefox-family browsers only create their profile on first launch, so on
+    # a fresh install there's nothing here yet to symlink userChrome.css into.
+    # `-CreateProfile` bootstraps one non-interactively without opening a
+    # window, but it only ever creates the LEAF directory it's given -- it
+    # silently no-ops (exit 0, nothing written) if the parent doesn't already
+    # exist, which is why this needs the `mkdir -p "$ZEN_DIR"` first.
+    if [[ ! -d "$ZEN_DIR" ]] && command -v zen-browser >/dev/null 2>&1; then
+        log_info "No Zen Browser profile found; bootstrapping one non-interactively..."
+        mkdir -p "$ZEN_DIR"
+        timeout --signal=KILL 15 zen-browser --headless -CreateProfile "default ${ZEN_DIR}/default" >/dev/null 2>&1
+        if [[ -d "${ZEN_DIR}/default" ]]; then
+            log_success "Created Zen profile: ${ZEN_DIR}/default"
+        else
+            log_warn "Could not auto-create a Zen profile; launch Zen Browser once yourself, then re-run this script."
+        fi
+    fi
+
+    # ~/.config/zen/ also contains installs.ini, profiles.ini and a "Profile
+    # Groups" directory that are NOT browsable profiles -- read profiles.ini's
+    # Path= entries instead of blindly globbing every directory in there.
+    if [[ -f "${ZEN_DIR}/profiles.ini" ]]; then
+        while IFS='=' read -r _ rel_path; do
+            [[ -n "$rel_path" && -d "${ZEN_DIR}/${rel_path}" ]] || continue
+            mkdir -p "${ZEN_DIR}/${rel_path}/chrome"
+            ln -sfn "${SCRIPT_DIR}/zen-browser/userChrome.css" "${ZEN_DIR}/${rel_path}/chrome/userChrome.css"
+            ln -sfn "${SCRIPT_DIR}/zen-browser/userContent.css" "${ZEN_DIR}/${rel_path}/chrome/userContent.css"
+            # user.js lives at the profile root (not chrome/) -- it's how the
+            # zen.*/mod.sameerasw.* transparency prefs actually get applied;
+            # see the NOTE in configure_zen_extensions() for why policies.json
+            # can't carry those.
+            ln -sfn "${SCRIPT_DIR}/zen-browser/user.js" "${ZEN_DIR}/${rel_path}/user.js"
+            log_success "Linked userChrome.css + userContent.css + user.js to Zen profile: ${rel_path}"
+        done < <(grep "^Path=" "${ZEN_DIR}/profiles.ini")
     fi
 }
 
@@ -611,18 +695,60 @@ apply_kde_settings() {
         kwriteconfig6 --file kdeglobals --group General --key TerminalApplication "cool-retro-term"
         kwriteconfig6 --file kdeglobals --group General --key TerminalService "cool-retro-term.desktop"
 
-        # Terminal Keybinding (KDE's default terminal launch shortcut: Ctrl+Alt+T)
-        kwriteconfig6 --file kglobalshortcutsrc --group services --group "cool-retro-term.desktop" --key _launch "Ctrl+Alt+T,Ctrl+Alt+T,Cool Retro Term"
+        # Terminal Keybinding (Ctrl+Alt+T and Meta+Return / Super+Enter)
+        kwriteconfig6 --file kglobalshortcutsrc --group services --group "org.kde.konsole.desktop" --key _launch "none,none,Konsole"
+        kwriteconfig6 --file kglobalshortcutsrc --group services --group "cool-retro-term.desktop" --key _launch $'Ctrl+Alt+T\tMeta+Return,Ctrl+Alt+T\tMeta+Return,Cool Retro Term'
         kwriteconfig6 --file kglobalshortcutsrc --group kwin --key "Edit Tiles" "none,none,Toggle Tiles Editor"
+        systemctl --user restart plasma-kglobalaccel 2>/dev/null || true
 
-        # KWin Force Blur for Zen Browser
-        kwriteconfig6 --file kwinrc --group Plugins --key forceblurEnabled true
-        kwriteconfig6 --file kwinrc --group Effect-forceblur --key MatchingClasses "zen"
-        kwriteconfig6 --file kwinrc --group Effect-forceblur --key BlurStrength "4"
-        kwriteconfig6 --file kwinrc --group Effect-forceblur --key NoiseStrength "5"
-        kwriteconfig6 --file kwinrc --group Effect-forceblur --key Brightness "25"
-        kwriteconfig6 --file kwinrc --group Effect-forceblur --key Saturation "0"
-        kwriteconfig6 --file kwinrc --group Effect-forceblur --key Contrast "105"
+        # Default Browser (Zen), Default File Manager (Dolphin), & Default Editor (Emacs)
+        if command -v xdg-settings >/dev/null 2>&1; then
+            xdg-settings set default-web-browser zen.desktop 2>/dev/null || log_warn "Could not set Zen as default browser via xdg-settings."
+        fi
+        kwriteconfig6 --file mimeapps.list --group "Default Applications" --key inode/directory "org.kde.dolphin.desktop"
+        kwriteconfig6 --file mimeapps.list --group "Default Applications" --key text/plain "emacs.desktop"
+        if command -v xdg-mime >/dev/null 2>&1; then
+            xdg-mime default emacs.desktop text/plain 2>/dev/null || true
+        fi
+
+        # KWin Force Blur for Zen Browser. better-blur-dx is forceblur's
+        # maintained successor (forceblur was removed from the AUR upstream)
+        # and what makes Zen's transparency mod actually render correctly, but
+        # it's a from-source AUR build that can fail (e.g. its package conflict
+        # with forceblur-git isn't --noconfirm-safe -- see install_dependencies).
+        # Never disable forceblur in favor of a plugin that isn't actually
+        # installed: that leaves zero working blur effect.
+        if pacman -Qq kwin-effects-better-blur-dx >/dev/null 2>&1 || pacman -Qq kwin-effects-better-blur-dx-x11 >/dev/null 2>&1; then
+            # Plugin service name is "better_blur_dx" (see CMakeLists.txt
+            # upstream); its config group is "Effect-better-blur-dx" (see
+            # src/blur.kcfg).
+            kwriteconfig6 --file kwinrc --group Plugins --key forceblurEnabled false
+            kwriteconfig6 --file kwinrc --group Plugins --key better_blur_dxEnabled true
+            kwriteconfig6 --file kwinrc --group Effect-better-blur-dx --key WindowClasses "zen"
+            kwriteconfig6 --file kwinrc --group Effect-better-blur-dx --key BlurMatching true
+            kwriteconfig6 --file kwinrc --group Effect-better-blur-dx --key BlurNonMatching false
+            # Strength/noise/brightness/saturation/contrast carried over
+            # unchanged from the old forceblur tuning (same effect lineage,
+            # same 0-200/percent semantics); adjust via System Settings >
+            # Desktop Effects if your reference screenshots specify different
+            # numbers.
+            kwriteconfig6 --file kwinrc --group Effect-better-blur-dx --key BlurStrength "4"
+            kwriteconfig6 --file kwinrc --group Effect-better-blur-dx --key NoiseStrength "5"
+            kwriteconfig6 --file kwinrc --group Effect-better-blur-dx --key Brightness "25"
+            kwriteconfig6 --file kwinrc --group Effect-better-blur-dx --key Saturation "0"
+            kwriteconfig6 --file kwinrc --group Effect-better-blur-dx --key Contrast "105"
+        elif pacman -Qq kwin-effects-forceblur-git >/dev/null 2>&1 || pacman -Qq kwin-effects-forceblur >/dev/null 2>&1; then
+            log_warn "kwin-effects-better-blur-dx not installed; keeping forceblur active as a fallback."
+            kwriteconfig6 --file kwinrc --group Plugins --key forceblurEnabled true
+            kwriteconfig6 --file kwinrc --group Effect-forceblur --key MatchingClasses "zen"
+            kwriteconfig6 --file kwinrc --group Effect-forceblur --key BlurStrength "4"
+            kwriteconfig6 --file kwinrc --group Effect-forceblur --key NoiseStrength "5"
+            kwriteconfig6 --file kwinrc --group Effect-forceblur --key Brightness "25"
+            kwriteconfig6 --file kwinrc --group Effect-forceblur --key Saturation "0"
+            kwriteconfig6 --file kwinrc --group Effect-forceblur --key Contrast "105"
+        else
+            log_warn "Neither kwin-effects-better-blur-dx nor kwin-effects-forceblur is installed; skipping Zen blur config."
+        fi
 
         # Lockscreen Video Wallpaper
         local video_urls_json='[{"filename":"file://'"${HOME}"'/.local/share/wallpapers/digital-gaze.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0.0,"alternativePlaybackRate":0.0,"loop":false,"dayNightPhase":4}]'
@@ -635,6 +761,22 @@ apply_kde_settings() {
         # Reconfigure KWin
         if command -v qdbus6 >/dev/null 2>&1; then
             qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || true
+
+            # KF6 effect plugins embed their metadata in the .so itself (no
+            # .desktop file for ksycoca to index) and KWin only scans its
+            # plugin directories for new ones at its own startup -- a
+            # `reconfigure` call re-evaluates the enabled list among effects
+            # it already knows about, but can't discover one installed after
+            # the current KWin process started. If this rice just installed
+            # better-blur-dx for the first time, config is correct but the
+            # effect genuinely cannot be loaded without a logout/login (or
+            # reboot) to restart kwin_wayland itself.
+            if pacman -Qq kwin-effects-better-blur-dx >/dev/null 2>&1 || pacman -Qq kwin-effects-better-blur-dx-x11 >/dev/null 2>&1; then
+                if [[ "$(qdbus6 org.kde.KWin /Effects isEffectLoaded better_blur_dx 2>/dev/null)" != "true" ]]; then
+                    log_warn "better_blur_dx is enabled but not yet loaded by KWin (new plugins are only discovered at KWin's own startup)."
+                    log_warn "Log out and back in (or reboot) once for Zen's blur to actually appear -- this is unavoidable, not a config bug."
+                fi
+            fi
         fi
 
         log_success "KDE system settings registered and active."
@@ -706,6 +848,375 @@ install_plymouth_theme() {
 }
 
 # -----------------------------------------------------------------------------
+# Zen Browser Extension Auto-Install (Bonjourr, Dark Reader, Zen Internet)
+# -----------------------------------------------------------------------------
+# Zen's built-in "Mods" (Transparent Zen, Animations Plus, etc.) can only be
+# installed by clicking through the in-browser store UI -- confirmed upstream
+# limitation (zen-browser/desktop discussion #4097; even Zen's own local-JSON
+# theme import is broken, see issue #8789). There is no reliable file-based
+# path to automate that part; see scripts/open_zen_mods.sh for the closest
+# available shortcut (opens each mod's install page for a one-click install).
+#
+# Regular WebExtensions ARE scriptable: Firefox-based browsers read
+# <install-dir>/distribution/policies.json and can force-install/force-set
+# prefs from it with zero UI interaction. That's what this function does.
+configure_zen_extensions() {
+    if [[ "$INSTALL_ZEN_EXTENSIONS" != true ]]; then
+        return 0
+    fi
+
+    log_step "Force-Installing Zen Browser Extensions (Bonjourr, Dark Reader, Zen Internet)"
+    if [[ "$DRY_RUN" == true ]]; then
+        log_info "[DRY-RUN] Would merge ExtensionSettings/Preferences into Zen's policies.json."
+        return 0
+    fi
+
+    if ! command -v zen-browser >/dev/null 2>&1; then
+        log_warn "Zen Browser not found (zen-browser-bin not installed?); skipping."
+        return 0
+    fi
+    if ! command -v python3 >/dev/null 2>&1; then
+        log_warn "python3 not found; skipping."
+        return 0
+    fi
+
+    local POLICIES=""
+    for candidate in \
+        /opt/zen-browser-bin/distribution/policies.json \
+        /opt/zen-browser/distribution/policies.json \
+        /usr/lib/zen-browser/distribution/policies.json
+    do
+        if [[ -f "$candidate" ]]; then
+            POLICIES="$candidate"
+            break
+        fi
+    done
+    if [[ -z "$POLICIES" ]]; then
+        log_warn "Could not locate Zen's distribution/policies.json; skipping."
+        return 0
+    fi
+
+    if ! sudo -n true 2>/dev/null && ! ask_confirm "Force-install Bonjourr, Dark Reader & Zen Internet system-wide (requires sudo, edits $POLICIES)?"; then
+        log_warn "Skipped Zen extension auto-install (sudo access declined)."
+        return 0
+    fi
+
+    # NOTE: zen-browser-bin does not mark this file as a pacman backup, so a
+    # future package update can silently overwrite it. Re-running install.sh
+    # after an update re-applies this merge.
+    local merged
+    merged="$(mktemp)"
+    python3 - "$POLICIES" "$merged" <<'PYEOF'
+import json, sys
+
+src, dst = sys.argv[1], sys.argv[2]
+try:
+    with open(src) as f:
+        data = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    data = {}
+
+policies = data.setdefault("policies", {})
+ext = policies.setdefault("ExtensionSettings", {})
+
+# GUIDs from Mozilla's AMO API (addons.mozilla.org/api/v5/addons/addon/<slug>/).
+# The "latest.xpi" URL is Mozilla's evergreen redirect: it always resolves to
+# the current version, so this never needs to be re-pinned by hand.
+ext["addon@darkreader.org"] = {
+    "installation_mode": "force_installed",
+    "install_url": "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi",
+}
+ext["{91aa3897-2634-4a8a-9092-279db23a7689}"] = {
+    "installation_mode": "force_installed",
+    "install_url": "https://addons.mozilla.org/firefox/downloads/latest/zen-internet/latest.xpi",
+}
+ext["{4f391a9e-8717-4ba6-a5b1-488a34931fcb}"] = {
+    "installation_mode": "force_installed",
+    "install_url": "https://addons.mozilla.org/firefox/downloads/latest/bonjourr-startpage/latest.xpi",
+}
+
+# REQUIRED for userChrome.css/userContent.css to load at all -- without this,
+# Firefox-family browsers silently ignore both files entirely (a hard
+# requirement since Firefox 69). This was missing the whole time userChrome.css
+# was being correctly deployed but never visibly rendering.
+#
+# NOTE: this is the ONLY custom preference set via policies.json's
+# "Preferences" block. Every zen.*/mod.sameerasw.* transparency pref used to
+# live here too, but empirically (diffing a live profile's prefs.js against
+# Zen's own compiled-in defaults) none of them ever actually applied --
+# Firefox's enterprise Preferences policy silently drops names it doesn't
+# recognize as standard/allowlisted Firefox prefs, and only this one is.
+# Those prefs now live in zen-browser/user.js instead, which has no such
+# allowlist and is symlinked into every profile alongside userChrome.css.
+prefs = policies.setdefault("Preferences", {})
+prefs["toolkit.legacyUserProfileCustomizations.stylesheets"] = {"Value": True, "Status": "user"}
+
+with open(dst, "w") as f:
+    json.dump(data, f, indent=2)
+PYEOF
+
+    sudo cp "$merged" "$POLICIES"
+    rm -f "$merged"
+    log_success "policies.json updated: Bonjourr, Dark Reader & Zen Internet will force-install on next Zen launch."
+    log_info "Zen Mods can't be installed headlessly -- run ./scripts/open_zen_mods.sh once Zen is open, then click Install on each tab."
+}
+
+# -----------------------------------------------------------------------------
+# Zen Browser KWin Window Rule (Borderless for Transparency)
+# -----------------------------------------------------------------------------
+# Force-removes window decorations on zen-classed windows so the transparent
+# chrome isn't broken up by a KWin titlebar/border. This is a plain per-user
+# ~/.config/kwinrulesrc entry (no sudo needed), written idempotently: it
+# no-ops if a rule with this Description already exists, and appends rather
+# than overwriting if the user already has other, unrelated window rules.
+configure_zen_kwin_rule() {
+    log_step "Configuring KWin Window Rule for Zen Browser"
+    if [[ "$DRY_RUN" == true ]]; then
+        log_info "[DRY-RUN] Would add a borderless kwinrulesrc entry for zen-classed windows."
+        return 0
+    fi
+    if ! command -v python3 >/dev/null 2>&1; then
+        log_warn "python3 not found; skipping KWin window rule."
+        return 0
+    fi
+
+    python3 - "${HOME}/.config/kwinrulesrc" <<'PYEOF'
+import configparser
+import sys
+
+path = sys.argv[1]
+DESC = "Zen Browser - Borderless for Transparency"
+
+config = configparser.ConfigParser(strict=False)
+config.optionxform = str
+config.read(path)
+
+for section in config.sections():
+    if section != "General" and config.get(section, "Description", fallback="") == DESC:
+        print(f"[kwinrule] '{DESC}' already present (rule {section}); skipping.")
+        sys.exit(0)
+
+existing = sorted(int(s) for s in config.sections() if s != "General" and s.isdigit())
+next_idx = (existing[-1] + 1) if existing else 1
+
+config[str(next_idx)] = {
+    "Description": DESC,
+    "wmclass": "zen",
+    "wmclassmatch": "1",       # 1 = Exact Match
+    "wmclasscomplete": "false",
+    "types": "1",              # 1 = NormalWindow
+    "noborder": "true",
+    "noborderrule": "2",       # 2 = Force
+}
+
+all_indices = existing + [next_idx]
+if "General" not in config:
+    config["General"] = {}
+config["General"]["count"] = str(len(all_indices))
+config["General"]["rules"] = ",".join(str(i) for i in all_indices)
+
+with open(path, "w") as f:
+    config.write(f, space_around_delimiters=False)
+print(f"[kwinrule] added rule {next_idx}: {DESC}")
+PYEOF
+
+    if command -v qdbus6 >/dev/null 2>&1; then
+        qdbus6 org.kde.KWin /KWin reconfigure 2>/dev/null || true
+    fi
+    log_success "KWin window rule configured."
+}
+
+# -----------------------------------------------------------------------------
+# Zen Mods Registry Seeding (Experimental)
+# -----------------------------------------------------------------------------
+# Zen mods are documented as UI-install-only (zen-browser/desktop discussion
+# #4097, and the official "Import Mods" JSON feature is confirmed broken --
+# issue #8789). But inspecting a real installed mod on this rice's own machine
+# showed the profile's own registry (<profile>/zen-themes.json) is just plain,
+# static catalog metadata plus "enabled": true -- no user-specific data, no
+# checksum, nothing that looks hand-wavy. This function seeds that registry
+# for the 6 mods not yet installed, additively (never touches an already-
+# registered mod, e.g. Transparent Zen, and never touches the generated
+# chrome/zen-themes.css -- that's left for Zen's own marketplace code to
+# regenerate).
+#
+# What's UNVERIFIED: whether Zen actually regenerates zen-themes.css from this
+# file automatically on next launch, or only when the marketplace preferences
+# page (about:preferences#zenMarketplace) is opened. If mods show as installed
+# but their CSS doesn't apply after restarting Zen, opening that page once
+# should force the regeneration. Treat this as a real time-saver (skips 6 of 7
+# manual installs) rather than a guaranteed full replacement for the click.
+configure_zen_mods_registry() {
+    log_step "Seeding Zen Mods Registry (experimental)"
+    if [[ "$DRY_RUN" == true ]]; then
+        log_info "[DRY-RUN] Would seed zen-themes.json with the required mods for each profile."
+        return 0
+    fi
+    if ! command -v python3 >/dev/null 2>&1; then
+        log_warn "python3 not found; skipping mod registry seeding."
+        return 0
+    fi
+
+    local ZEN_DIR="${HOME}/.config/zen"
+    [[ -f "${ZEN_DIR}/profiles.ini" ]] || return 0
+
+    local catalog
+    catalog="$(mktemp)"
+    if ! curl -fsSL "https://raw.githubusercontent.com/zen-browser/theme-store/main/themes.json" -o "$catalog"; then
+        log_warn "Could not fetch the Zen mods catalog; skipping registry seeding."
+        rm -f "$catalog"
+        return 0
+    fi
+
+    while IFS='=' read -r _ rel_path; do
+        [[ -n "$rel_path" && -d "${ZEN_DIR}/${rel_path}" ]] || continue
+        python3 - "$catalog" "${ZEN_DIR}/${rel_path}/zen-themes.json" "$rel_path" <<'PYEOF'
+import json, sys
+
+catalog_path, registry_path, profile_name = sys.argv[1], sys.argv[2], sys.argv[3]
+
+REQUIRED = {
+    "642854b5-88b4-4c40-b256-e035532109df": "Transparent Zen",
+    "f4866f39-cfd6-4498-ab92-54213b8279dc": "Animations Plus",
+    "2317fd93-c3ed-4f37-b55a-304c1816819e": "Audio Indicator Enhanced",
+    "a6335949-4465-4b71-926c-4a52d34bc9c0": "Better Find Bar",
+    "253a3a74-0cc4-47b7-8b82-996a64f030d5": "Floating History",
+    "906c6915-5677-48ff-9bfc-096a02a72379": "Floating Status Bar",
+    "ae7868dc-1fa1-469e-8b89-a5edf7ab1f24": "Load Bar",
+}
+
+with open(catalog_path) as f:
+    catalog = json.load(f)
+
+try:
+    with open(registry_path) as f:
+        registry = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    registry = {}
+
+added = []
+for uuid, name in REQUIRED.items():
+    if uuid in registry:
+        continue
+    entry = catalog.get(uuid)
+    if not entry:
+        continue
+    entry = dict(entry)
+    entry["enabled"] = True
+    registry[uuid] = entry
+    added.append(name)
+
+if added:
+    with open(registry_path, "w") as f:
+        json.dump(registry, f, indent=2)
+    print(f"[zen-mods] {profile_name}: registered {', '.join(added)}")
+else:
+    print(f"[zen-mods] {profile_name}: all required mods already registered")
+PYEOF
+    done < <(grep "^Path=" "${ZEN_DIR}/profiles.ini")
+
+    rm -f "$catalog"
+    log_success "Zen mods registry seeded. Restart Zen, then check about:preferences#zenMarketplace if CSS doesn't apply."
+}
+
+# -----------------------------------------------------------------------------
+# Zen Browser Workspace Gradient De-Colorization
+# -----------------------------------------------------------------------------
+# Zen assigns each newly-created Workspace a random-ish gradient accent color
+# on first launch (e.g. a warm cream/beige) -- this is separate from
+# everything else in this file: it's not a pref, not policies.json, not
+# user.js, it's per-workspace state Zen writes into its own session store
+# (<profile>/zen-sessions.jsonlz4, Mozilla's "mozLz4" format: an 8-byte magic
+# + 4-byte LE size prefix around a raw LZ4 block -- decompressed/recompressed
+# here via liblz4 through ctypes since there's no python-lz4 package and the
+# `lz4` CLI only speaks the frame format, not this block format). There is no
+# UI pref or about:config flag for it; confirmed by tracing Zen's own
+# ZenGradientGenerator.mjs, the workspace's theme.gradientColors dots are the
+# only source of this color.
+#
+# Every dot with mismatched R/G/B gets replaced by a neutral gray at the same
+# average luminance (keeps the same visual weight/opacity, drops the hue).
+# Only runs when Zen isn't running -- it owns this file and autosaves over it,
+# so patching it live would race and likely get silently reverted.
+configure_zen_workspace_theme() {
+    log_step "De-Colorizing Zen Workspace Gradients"
+    if [[ "$DRY_RUN" == true ]]; then
+        log_info "[DRY-RUN] Would neutralize any non-gray Zen workspace gradient colors."
+        return 0
+    fi
+    if ! command -v python3 >/dev/null 2>&1; then
+        log_warn "python3 not found; skipping workspace gradient de-colorization."
+        return 0
+    fi
+    if pgrep -f 'zen-bin$' >/dev/null 2>&1; then
+        log_warn "Zen Browser is running; skipping workspace gradient de-colorization (it owns zen-sessions.jsonlz4 and would overwrite this). Quit Zen and re-run to apply."
+        return 0
+    fi
+
+    local ZEN_DIR="${HOME}/.config/zen"
+    [[ -f "${ZEN_DIR}/profiles.ini" ]] || return 0
+
+    while IFS='=' read -r _ rel_path; do
+        [[ -n "$rel_path" && -f "${ZEN_DIR}/${rel_path}/zen-sessions.jsonlz4" ]] || continue
+        python3 - "${ZEN_DIR}/${rel_path}/zen-sessions.jsonlz4" "$rel_path" <<'PYEOF'
+import ctypes, json, struct, sys
+
+path, profile_name = sys.argv[1], sys.argv[2]
+MAGIC = b"mozLz40\x00"
+
+with open(path, "rb") as f:
+    raw = f.read()
+if raw[:8] != MAGIC:
+    print(f"[zen-workspace-theme] {profile_name}: not a mozLz4 file, skipping")
+    sys.exit(0)
+
+size = struct.unpack("<I", raw[8:12])[0]
+lz4 = ctypes.CDLL("liblz4.so.1")
+out = ctypes.create_string_buffer(size)
+ret = lz4.LZ4_decompress_safe(raw[12:], out, len(raw) - 12, size)
+if ret != size:
+    print(f"[zen-workspace-theme] {profile_name}: decompression failed, skipping")
+    sys.exit(0)
+
+data = json.loads(out.raw[:ret])
+
+patched = []
+for space in data.get("spaces", []):
+    for dot in space.get("theme", {}).get("gradientColors", []):
+        c = dot.get("c")
+        lightness = dot.get("lightness")
+        if c == [25, 25, 25] and lightness == "15":
+            continue
+        dot["c"] = [25, 25, 25]
+        dot["lightness"] = "15"
+        patched.append((space.get("name"), c, [25, 25, 25]))
+
+if not patched:
+    print(f"[zen-workspace-theme] {profile_name}: all workspace gradients already dark monochrome")
+    sys.exit(0)
+
+import shutil
+backup = path + ".bak-pre-monochrome"
+if not __import__("os").path.exists(backup):
+    shutil.copy2(path, backup)
+
+body = json.dumps(data, separators=(",", ":")).encode("utf-8")
+bound = lz4.LZ4_compressBound(len(body))
+buf = ctypes.create_string_buffer(bound)
+lz4.LZ4_compress_default.restype = ctypes.c_int
+comp_size = lz4.LZ4_compress_default(body, buf, len(body), bound)
+with open(path, "wb") as f:
+    f.write(MAGIC + struct.pack("<I", len(body)) + buf.raw[:comp_size])
+
+for name, old, gray in patched:
+    print(f"[zen-workspace-theme] {profile_name}: workspace {name!r} gradient {old} -> [{gray}, {gray}, {gray}]")
+PYEOF
+    done < <(grep "^Path=" "${ZEN_DIR}/profiles.ini")
+
+    log_success "Zen workspace gradients de-colorized where needed."
+}
+
+# -----------------------------------------------------------------------------
 # Deploy Plasma Layout Configuration
 # -----------------------------------------------------------------------------
 apply_panel_layout() {
@@ -768,6 +1279,11 @@ apply_panel_layout() {
         return 0
     fi
 
+    log_info "Rebuilding KDE service cache..."
+    if command -v kbuildsycoca6 >/dev/null 2>&1; then
+        kbuildsycoca6 --noincremental >/dev/null 2>&1 || true
+    fi
+
     log_info "Restarting plasmashell..."
     # plasma-plasmashell.service is Type=dbus: "systemctl start" already blocks
     # in the foreground until plasmashell registers its bus name, which is the
@@ -796,7 +1312,7 @@ apply_panel_layout() {
 # Main Entry Point
 # -----------------------------------------------------------------------------
 main() {
-    log_step "Starting Deployment of Plasma Monochrome Rice"
+    log_step "Starting Deployment of null-sector-plasma"
 
     check_system
 
@@ -805,10 +1321,17 @@ main() {
         deploy_components
         apply_symlinks
         apply_kde_settings
+        configure_zen_extensions
+        configure_zen_kwin_rule
+        configure_zen_mods_registry
+        configure_zen_workspace_theme
         if [[ "$APPLY_LAYOUT" == true ]]; then
             apply_panel_layout
         else
             log_info "Skipping panel layout deployment (--no-layout)."
+        fi
+        if [[ "$OPEN_ZEN_MODS" == true ]]; then
+            "${SCRIPT_DIR}/scripts/open_zen_mods.sh" || log_warn "Could not open Zen Mod install pages."
         fi
         log_step "Symlinks and Configurations Applied Successfully!"
         return 0
@@ -829,10 +1352,17 @@ main() {
     apply_kde_settings
     install_sddm_theme
     install_plymouth_theme
+    configure_zen_extensions
+    configure_zen_kwin_rule
+    configure_zen_mods_registry
+    configure_zen_workspace_theme
     if [[ "$APPLY_LAYOUT" == true ]]; then
         apply_panel_layout
     else
         log_info "Skipping panel layout deployment (--no-layout)."
+    fi
+    if [[ "$OPEN_ZEN_MODS" == true ]]; then
+        "${SCRIPT_DIR}/scripts/open_zen_mods.sh" || log_warn "Could not open Zen Mod install pages."
     fi
 
     log_step "Installation Completed Successfully!"

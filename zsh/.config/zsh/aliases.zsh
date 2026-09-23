@@ -1,6 +1,6 @@
 # ==============================================================================
 # Zsh Aliases & Helpers
-# Rice: petrolal-kde-rice
+# Rice: null-sector-plasma
 # ==============================================================================
 
 # File listing (eza if available, otherwise ls with colors)

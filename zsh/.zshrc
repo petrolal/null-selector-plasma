@@ -1,6 +1,6 @@
 # ==============================================================================
 # Zsh Configuration
-# Rice: petrolal-kde-rice
+# Rice: null-sector-plasma
 # ==============================================================================
 
 # Ensure ~/.cache/zsh exists for clean history storage
@@ -34,8 +34,8 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-$ZSH_VERSION"
 
 # Environment Defaults
-export EDITOR="${EDITOR:-nano}"
-export VISUAL="$EDITOR"
+export EDITOR="emacs"
+export VISUAL="emacs"
 export PAGER="less"
 export LESS="-R"
 
