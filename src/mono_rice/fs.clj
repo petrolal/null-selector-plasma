@@ -1,7 +1,7 @@
 (ns mono-rice.fs
   (:require [babashka.fs :as fs]
             [clojure.string :as str]
-            [mono-rice.proc :refer [log-info log-success log-warn log-step sh!]]))
+            [mono-rice.proc :refer [command-exists? log-info log-success log-warn log-step sh! ask-confirm?]]))
 
 (defn home-dir []
   (fs/expand-home "~"))
@@ -16,7 +16,7 @@
     (.format now fmt)))
 
 ;; -----------------------------------------------------------------------------
-;; Symlink & File Utilities
+;; Symlink & Directory Helpers
 ;; -----------------------------------------------------------------------------
 
 (defn ensure-dir! [path & [{:keys [dry-run]}]]
@@ -36,7 +36,9 @@
       (do
         (ensure-dir! (fs/parent link-p))
         (when (or (fs/sym-link? link-p) (fs/exists? link-p))
-          (fs/delete link-p))
+          (if (fs/directory? link-p)
+            (fs/delete-tree link-p)
+            (fs/delete link-p)))
         (fs/create-sym-link link-p target-p)
         (log-success "Linked:" (str (fs/file-name link-p)) "->" (str target-p))))))
 
@@ -122,3 +124,138 @@
                 (log-info "Removing dangling symlink:" (str p))
                 (fs/delete p)))))
         (log-success "Broken symlinks cleaned." (str "(" (count @broken-links) " removed)"))))))
+
+;; -----------------------------------------------------------------------------
+;; Deploy Rice Components, Plasmoids, Presets, Wallpapers & Modular Dotfiles
+;; -----------------------------------------------------------------------------
+
+(defn deploy-components! [root & [{:keys [dry-run]}]]
+  (log-step "Deploying Rice Components, Plasmoids & Themes")
+  (let [home (home-dir)]
+    ;; 1. Bundled Plasmoids
+    (link-dir-children! (fs/path root "plasma" ".local" "share" "plasma" "plasmoids")
+                        (fs/path home ".local" "share" "plasma" "plasmoids")
+                        {:dry-run dry-run})
+
+    ;; 2. Colorschemes, Desktop themes, Aurorae themes
+    (link-dir-children! (fs/path root "plasma" ".local" "share" "color-schemes")
+                        (fs/path home ".local" "share" "color-schemes")
+                        {:dry-run dry-run})
+    (link-dir-children! (fs/path root "plasma" ".local" "share" "plasma" "desktoptheme")
+                        (fs/path home ".local" "share" "plasma" "desktoptheme")
+                        {:dry-run dry-run})
+    (link-dir-children! (fs/path root "plasma" ".local" "share" "aurorae" "themes")
+                        (fs/path home ".local" "share" "aurorae" "themes")
+                        {:dry-run dry-run})
+
+    ;; 3. Panel Colorizer Presets
+    (link-dir-children! (fs/path root "plasma" ".config" "panel-colorizer" "presets")
+                        (fs/path home ".config" "panel-colorizer" "presets")
+                        {:dry-run dry-run})
+
+    ;; 4. Wallpapers (.png, .mp4)
+    (link-dir-children! (fs/path root "assets" "wallpapers")
+                        (fs/path home ".local" "share" "wallpapers")
+                        {:dry-run dry-run
+                         :filter-fn (fn [p] (let [s (str p)]
+                                              (or (str/ends-with? s ".png")
+                                                  (str/ends-with? s ".mp4"))))})
+
+    ;; 5. YAMIS Icon Fallback
+    (let [yamis-sys (fs/path "/usr/share/icons/yet-another-monochrome-icon-set")]
+      (when (fs/exists? yamis-sys)
+        (symlink! yamis-sys (fs/path home ".local" "share" "icons" "YAMIS") {:dry-run dry-run})
+        (symlink! yamis-sys (fs/path home ".local" "share" "icons" "yet-another-monochrome-icon-set") {:dry-run dry-run})))
+
+    (log-success "Components, plasmoids, presets and wallpapers deployed.")))
+
+(defn apply-dotfile-symlinks! [root & [{:keys [dry-run]}]]
+  (log-step "Deploying Modular Configuration Symlinks")
+  (let [home (home-dir)]
+    ;; Core Plasma Configs
+    (symlink! (fs/path root "plasma" ".config" "kdeglobals")
+              (fs/path home ".config" "kdeglobals") {:dry-run dry-run})
+    (symlink! (fs/path root "plasma" ".config" "kglobalshortcutsrc")
+              (fs/path home ".config" "kglobalshortcutsrc") {:dry-run dry-run})
+    (symlink! (fs/path root "plasma" ".config" "kwinrc")
+              (fs/path home ".config" "kwinrc") {:dry-run dry-run})
+    (when (fs/exists? (fs/path root "plasma" ".config" "kscreenlockerrc"))
+      (symlink! (fs/path root "plasma" ".config" "kscreenlockerrc")
+                (fs/path home ".config" "kscreenlockerrc") {:dry-run dry-run}))
+    (when (fs/exists? (fs/path root "plasma" ".config" "klassy" "klassyrc"))
+      (symlink! (fs/path root "plasma" ".config" "klassy" "klassyrc")
+                (fs/path home ".config" "klassy" "klassyrc") {:dry-run dry-run}))
+    (when (fs/exists? (fs/path root "plasma" ".config" "plasma-workspace" "env" "rice-env.sh"))
+      (symlink! (fs/path root "plasma" ".config" "plasma-workspace" "env" "rice-env.sh")
+                (fs/path home ".config" "plasma-workspace" "env" "rice-env.sh") {:dry-run dry-run}))
+
+    ;; Fastfetch
+    (when (fs/exists? (fs/path root "fastfetch" ".config" "fastfetch" "config.jsonc"))
+      (symlink! (fs/path root "fastfetch" ".config" "fastfetch" "config.jsonc")
+                (fs/path home ".config" "fastfetch" "config.jsonc") {:dry-run dry-run}))
+
+    ;; Starship
+    (when (fs/exists? (fs/path root "starship" ".config" "starship.toml"))
+      (symlink! (fs/path root "starship" ".config" "starship.toml")
+                (fs/path home ".config" "starship.toml") {:dry-run dry-run}))
+
+    ;; CAVA
+    (when (fs/exists? (fs/path root "cava" ".config" "cava" "config"))
+      (symlink! (fs/path root "cava" ".config" "cava" "config")
+                (fs/path home ".config" "cava" "config") {:dry-run dry-run}))
+
+    ;; Zsh
+    (when (fs/exists? (fs/path root "zsh" ".zshrc"))
+      (symlink! (fs/path root "zsh" ".zshrc")
+                (fs/path home ".zshrc") {:dry-run dry-run}))
+    (when (fs/exists? (fs/path root "zsh" ".config" "zsh" "aliases.zsh"))
+      (symlink! (fs/path root "zsh" ".config" "zsh" "aliases.zsh")
+                (fs/path home ".config" "zsh" "aliases.zsh") {:dry-run dry-run}))
+
+    ;; Kvantum
+    (link-dir-children! (fs/path root "kvantum" ".config" "Kvantum")
+                        (fs/path home ".config" "Kvantum")
+                        {:dry-run dry-run})
+
+    (log-success "All configuration symlinks applied successfully.")))
+
+;; -----------------------------------------------------------------------------
+;; SDDM and Plymouth Installers
+;; -----------------------------------------------------------------------------
+
+(defn install-sddm-theme! [root & [{:keys [dry-run auto-yes]}]]
+  (log-step "Installing Monochrome SDDM Login Theme")
+  (let [src-dir (fs/path root "assets" "sddm-theme")]
+    (if (fs/exists? src-dir)
+      (if dry-run
+        (log-info "[DRY-RUN] Would install SDDM theme to /usr/share/sddm/themes/monochrome")
+        (if (or auto-yes
+                (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+                (ask-confirm? "Install SDDM Monochrome Theme (requires sudo)?" {:auto-yes auto-yes}))
+          (do
+            (sh! ["mkdir" "-p" "/usr/share/sddm/themes/monochrome" "/etc/sddm.conf.d"] {:sudo true})
+            (sh! ["cp" "-rf" (str (fs/path src-dir "*")) "/usr/share/sddm/themes/monochrome/"] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf" "--group" "Theme" "--key" "Current" "monochrome"] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf.d/theme.conf" "--group" "Theme" "--key" "Current" "monochrome"] {:sudo true :throw? false})
+            (log-success "SDDM Monochrome theme installed and set as default."))
+          (log-warn "Skipped SDDM installation (sudo access declined).")))
+      (log-warn "SDDM theme directory not found at assets/sddm-theme"))))
+
+(defn install-plymouth-theme! [root & [{:keys [dry-run auto-yes]}]]
+  (log-step "Installing dotLock Plymouth Boot Splash Theme")
+  (let [src-dir (fs/path root "assets" "plymouth-theme" "dotLock")]
+    (if (fs/exists? src-dir)
+      (if dry-run
+        (log-info "[DRY-RUN] Would install dotLock Plymouth theme to /usr/share/plymouth/themes/dotLock")
+        (if (or auto-yes
+                (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+                (ask-confirm? "Install dotLock Plymouth Boot Splash (requires sudo)?" {:auto-yes auto-yes}))
+          (do
+            (sh! ["mkdir" "-p" "/usr/share/plymouth/themes/dotLock" "/etc/plymouth"] {:sudo true})
+            (sh! ["cp" "-rf" (str (fs/path src-dir "*")) "/usr/share/plymouth/themes/dotLock/"] {:sudo true :throw? false})
+            (when (command-exists? "plymouth-set-default-theme")
+              (sh! ["plymouth-set-default-theme" "dotLock"] {:sudo true :throw? false}))
+            (sh! ["kwriteconfig6" "--file" "/etc/plymouth/plymouthd.conf" "--group" "Daemon" "--key" "Theme" "dotLock"] {:sudo true :throw? false})
+            (log-success "dotLock Plymouth theme installed and configured."))
+          (log-warn "Skipped Plymouth installation (sudo access declined).")))
+      (log-warn "Plymouth theme directory not found at assets/plymouth-theme/dotLock"))))

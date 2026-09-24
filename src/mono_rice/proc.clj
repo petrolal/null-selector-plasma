@@ -53,8 +53,8 @@
 (defn ask-confirm?
   "Prompts user for yes/no confirmation. Returns true on yes or if auto-yes."
   ([prompt] (ask-confirm? prompt {}))
-  ([prompt {:keys [auto-yes]}]
-   (if auto-yes
+  ([prompt {:keys [auto-yes yes]}]
+   (if (or auto-yes yes)
      true
      (if (nil? (System/console))
        true
