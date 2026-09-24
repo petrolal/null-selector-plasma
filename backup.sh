@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# backup.sh: Alias/Wrapper for harvest.sh
-# Scrapes active configs from local system into repository.
+# backup.sh (DEPRECATED -> mono-rice / Babashka Engine)
 # ==============================================================================
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "$SCRIPT_DIR/harvest.sh" "$@"
+
+if command -v bb &>/dev/null; then
+    exec bb backup "$@"
+elif [[ -x "$SCRIPT_DIR/mono-rice" ]]; then
+    exec "$SCRIPT_DIR/mono-rice" backup "$@"
+else
+    echo "[INFO] Babashka not found in PATH. Bootstrapping..."
+    exec "$SCRIPT_DIR/bootstrap.sh" backup "$@"
+fi

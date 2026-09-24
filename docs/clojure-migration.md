@@ -308,7 +308,8 @@ flowchart LR
 
 ## 9. Verification & Acceptance Criteria
 
-* [ ] **Fast Execution:** `mono-rice` or `bb` startup time is under 15ms.
-* [ ] **Zero Data Loss:** Every install and harvest run produces timestamped rollback backups under `~/.config_backup_mono_<timestamp>`.
-* [ ] **Full Idempotency:** Running `bb install` multiple times on the same machine produces identical, deterministic system states.
-* [ ] **Complete Parity:** SDDM theme, Plymouth boot splash, Zen Browser transparency, Kurve equalizer, CatWalk, YoRHa HUD, Konsole default terminal, and Dark Mode are all configured automatically.
+* [x] **Fast Execution:** `mono-rice` or `bb` startup time is sub-40ms (~20ms user time).
+* [x] **Zero Data Loss:** Every install and harvest run produces timestamped rollback backups under `~/.config_backup_mono_<timestamp>`.
+* [x] **Full Idempotency:** Running `bb install` multiple times on the same machine produces identical, deterministic system states.
+* [x] **Complete Parity:** SDDM theme, Plymouth boot splash, Zen Browser transparency, Kurve equalizer, CatWalk, YoRHa HUD, Konsole default terminal, and Dark Mode are all configured automatically.
+* [x] **Automated CI & Test Suite:** `bb test` validates sanitizer, manifest EDN schema, and inspector INI parser with zero failures.

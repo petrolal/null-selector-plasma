@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# null-sector-plasma - One-Liner Bootstrap Entrypoint
+# null-sector-plasma - One-Liner Bootstrap Entrypoint (Clojure / Babashka)
 # Repository: https://github.com/petrolal/null-sector-plasma
 # ==============================================================================
 
@@ -15,5 +15,18 @@ if [[ ! -d "$TARGET_DIR" ]]; then
 fi
 
 cd "$TARGET_DIR"
-chmod +x install.sh
-exec ./install.sh "$@"
+
+# Ensure Babashka (bb) runtime is available
+if ! command -v bb &>/dev/null; then
+    echo "[INFO] Babashka (bb) runtime not detected. Installing via pacman/installer..."
+    if command -v pacman &>/dev/null; then
+        sudo pacman -S --needed --noconfirm babashka || {
+            curl -s https://raw.githubusercontent.com/babashka/babashka/master/install | bash
+        }
+    else
+        curl -s https://raw.githubusercontent.com/babashka/babashka/master/install | bash
+    fi
+fi
+
+echo "[INFO] Launching null-sector-plasma deployment via Babashka..."
+exec bb install "$@"

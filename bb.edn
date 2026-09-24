@@ -1,4 +1,4 @@
-{:paths ["src"]
+{:paths ["src" "test"]
  :tasks
  {:init (require '[mono-rice.core :as core])
   install {:doc "Deploy and install complete null-sector-plasma rice"
@@ -12,4 +12,26 @@
   dump-widgets {:doc "Pretty-print active containment/plasmoid tree"
                 :task (apply core/-main "dump-widgets" *command-line-args*)}
   open-zen-mods {:doc "Open Zen Browser mod install pages"
-                 :task (apply core/-main "open-zen-mods" *command-line-args*)}}}
+                 :task (apply core/-main "open-zen-mods" *command-line-args*)}
+  test {:doc "Run test suite across sanitizer, inspector, and manifest modules"
+        :task (do
+                (require 'mono-rice.sanitizer-test
+                         'mono-rice.manifest-test
+                         'mono-rice.inspector-test
+                         'clojure.test)
+                (let [{:keys [fail error]} (clojure.test/run-tests 'mono-rice.sanitizer-test
+                                                                   'mono-rice.manifest-test
+                                                                   'mono-rice.inspector-test)]
+                  (when (or (pos? fail) (pos? error))
+                    (System/exit 1))))}
+  check {:doc "Run dry-run verification check on all core flows"
+         :task (do
+                 (println "==> Running dry-run validation checks...")
+                 (core/-main "verify")
+                 (core/-main "backup" "--dry-run")
+                 (println "==> All checks passed successfully!"))}
+  repl {:doc "Start an interactive Babashka REPL server"
+        :override-builtin true
+        :task (do
+                (println "Starting Babashka nREPL server on port 1667...")
+                (babashka.nrepl.server/start-server! {:port 1667}))}}}

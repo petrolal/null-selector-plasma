@@ -1,0 +1,5 @@
+#!/usr/bin/env bb
+(ns mono-rice.main
+  (:require [mono-rice.core :as core]))
+
+(apply core/-main *command-line-args*)

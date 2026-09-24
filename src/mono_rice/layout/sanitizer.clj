@@ -41,19 +41,13 @@
 (defn panel-containment-ids
   "Returns set of containment ID strings for containments that are panels (plugin=org.kde.panel)."
   [appletsrc-text]
-  (let [sections (str/split appletsrc-text #"(?m)^\[Containments\]\[(\d+)\]")]
-    ;; str/split on capturing group produces [pre id1 body1 id2 body2 ...]
-    (loop [parts (rest sections)
-           ids   #{}]
-      (if (empty? parts)
-        ids
-        (let [cid  (first parts)
-              body (or (second parts) "")
-              ;; Stop body at next section header
-              body-head (first (str/split body #"\n\s*\["))]
-          (if (re-find #"(?m)^plugin=org\.kde\.panel$" body-head)
-            (recur (drop 2 parts) (conj ids cid))
-            (recur (drop 2 parts) ids)))))))
+  (let [matches (re-seq #"(?ms)^\[Containments\]\[(\d+)\](.*?)(?=\n\[|\z)" appletsrc-text)]
+    (reduce (fn [ids [_ cid body]]
+              (if (re-find #"(?m)^plugin=org\.kde\.panel$" body)
+                (conj ids cid)
+                ids))
+            #{}
+            matches)))
 
 (defn prune-stale-panels
   "Prunes [PlasmaViews][Panel N] blocks not in live-panel-ids and [Updates] blocks."

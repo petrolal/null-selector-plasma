@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Babashka
+        uses: turtlequeue/setup-babashka@v1.5.0
+        with:
+          babashka-version: 1.13.224
+
+      - name: Run Test Suite
+        run: bb test
+
+      - name: Run Sanity Checks
+        run: bb check
