@@ -3,8 +3,12 @@
             [babashka.fs :as fs]
             [clojure.edn :as edn]
             [mono-rice.cmd.backup :as cmd-backup]
+            [mono-rice.cmd.bundle :as cmd-bundle]
+            [mono-rice.cmd.diff :as cmd-diff]
             [mono-rice.cmd.harvest :as cmd-harvest]
             [mono-rice.cmd.install :as cmd-install]
+            [mono-rice.cmd.plasmoid :as cmd-plasmoid]
+            [mono-rice.cmd.rollback :as cmd-rollback]
             [mono-rice.cmd.theme :as cmd-theme]
             [mono-rice.cmd.verify :as cmd-verify]
             [mono-rice.cmd.watch :as cmd-watch]
@@ -27,9 +31,13 @@
   (println "  install       Deploy and install complete null-sector-plasma rice")
   (println "  harvest       Scrape live $HOME configs back into repository with template sanitization")
   (println "  backup        Create timestamped backup snapshot of current configurations")
+  (println "  rollback      List and restore timestamped rollback configuration snapshots")
+  (println "  diff          Inspect line-by-line visual differences between repo and $HOME")
   (println "  verify        Verify system health, package dependencies, and layout integrity")
   (println "  theme         List or switch active theme profile (list | set <name>)")
   (println "  watch         Monitor configuration drift against repository templates")
+  (println "  bundle        Export or import portable rice configuration archive (export | import)")
+  (println "  plasmoid      Manage KDE 6 desktop plasmoids (list | install <path> | remove <id>)")
   (println "  dump-widgets  Pretty-print active containment and plasmoid tree")
   (println "  open-zen-mods Open Zen Browser mod install pages for one-click setup")
   (println)
@@ -75,10 +83,14 @@
         (case cmd
           "install"       (cmd-install/install! manifest opts)
           "backup"        (cmd-backup/backup! manifest opts)
+          "rollback"      (cmd-rollback/run-rollback-cmd! rest-args opts)
+          "diff"          (cmd-diff/run-diff-cmd! manifest rest-args opts)
           "harvest"       (cmd-harvest/harvest! manifest opts)
           "verify"        (cmd-verify/verify! manifest opts)
           "theme"         (cmd-theme/run-theme-cmd! manifest rest-args opts)
           "watch"         (cmd-watch/run-watch-cmd! manifest opts)
+          "bundle"        (cmd-bundle/run-bundle-cmd! manifest rest-args opts)
+          "plasmoid"      (cmd-plasmoid/run-plasmoid-cmd! rest-args opts)
           "dump-widgets"  (insp/dump-widgets)
           "open-zen-mods" (zmods/open-zen-mods! manifest)
           (do

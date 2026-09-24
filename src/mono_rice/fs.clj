@@ -94,6 +94,46 @@
         (log-success "Backup complete.")
         backup-dir))))
 
+(defn list-backups
+  "Discovers and returns all available configuration backup snapshots in $HOME sorted newest first."
+  []
+  (let [home (home-dir)]
+    (if (fs/exists? home)
+      (->> (fs/list-dir home)
+           (filter #(and (fs/directory? %)
+                         (str/starts-with? (str (fs/file-name %)) ".config_backup_mono_")))
+           (sort-by str)
+           reverse
+           vec)
+      [])))
+
+(defn restore-backup!
+  "Restores all configuration files from the specified backup snapshot back to $HOME."
+  [backup-path & [{:keys [dry-run]}]]
+  (let [home (home-dir)
+        backup-p (fs/path backup-path)]
+    (if-not (fs/exists? backup-p)
+      (do
+        (log-warn "Backup snapshot not found:" (str backup-p))
+        false)
+      (do
+        (log-step (str "Restoring Snapshot -> " (str backup-p)))
+        (let [files (fs/glob backup-p "**")]
+          (doseq [f files]
+            (when (not (fs/directory? f))
+              (let [rel-path (fs/relativize backup-p f)
+                    dest     (fs/path home rel-path)]
+                (if dry-run
+                  (log-info "[DRY-RUN] Would restore:" (str rel-path) "->" (str dest))
+                  (do
+                    (ensure-dir! (fs/parent dest))
+                    (when (fs/sym-link? dest)
+                      (fs/delete dest))
+                    (fs/copy f dest {:replace-existing true})
+                    (log-info "Restored:" (str rel-path)))))))
+          (log-success "Snapshot restoration complete.")
+          true)))))
+
 ;; -----------------------------------------------------------------------------
 ;; Broken Symlink Cleaner
 ;; -----------------------------------------------------------------------------

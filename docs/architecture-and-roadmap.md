@@ -8,7 +8,7 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
 
 ---
 
-## 2. Implementation State (Completed Phases 1–8)
+## 2. Implementation State (Completed Phases 1–12)
 
 * **Phase 1: Foundation Setup**
   * Task configuration: [`bb.edn`](file:///home/petrolal/null-sector-plasma/bb.edn)
@@ -49,6 +49,22 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
   * Live drift detection & monitoring loop: [`mono_rice.cmd.watch`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/watch.clj)
   * CLI command: `mono-rice watch [--once | --interval <sec>]` / `bb watch`
 
+* **Phase 9: Rollback & Snapshot Restore Engine**
+  * Snapshot discovery and restoration: [`mono_rice.cmd.rollback`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/rollback.clj) and [`mono_rice.fs`](file:///home/petrolal/null-sector-plasma/src/mono_rice/fs.clj)
+  * CLI command: `mono-rice rollback [list | restore <name>]` / `bb rollback`
+
+* **Phase 10: Unified Visual Diff Engine**
+  * Line-by-line visual difference inspector: [`mono_rice.cmd.diff`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/diff.clj)
+  * CLI command: `mono-rice diff [file]` / `bb diff`
+
+* **Phase 11: Standalone Rice Bundle Export & Import**
+  * Portable `.tar.gz` bundle archiver and extractor: [`mono_rice.cmd.bundle`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/bundle.clj)
+  * CLI command: `mono-rice bundle [export | import <archive>]` / `bb bundle`
+
+* **Phase 12: Declarative Plasmoid Widget Store & Manager**
+  * Plasma 6 applet package inspector and manager: [`mono_rice.cmd.plasmoid`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/plasmoid.clj)
+  * CLI command: `mono-rice plasmoid [list | install <path> | remove <id>]` / `bb plasmoid`
+
 ---
 
 ## 3. Codebase Source Tree Map
@@ -71,7 +87,7 @@ null-sector-plasma/
 ├── src/mono_rice/
 │   ├── core.clj                          # CLI option parsing (babashka.cli) & command router
 │   ├── proc.clj                          # Shell execution helper (sh!), sudo wrapping, logging
-│   ├── fs.clj                            # GNU Stow symlink engine, directory creation, backups
+│   ├── fs.clj                            # GNU Stow symlink engine, directory creation, backups & rollbacks
 │   ├── deps.clj                          # Pacman / AUR (yay/paru) / Git dependency management
 │   ├── kde.clj                           # kwriteconfig6, shortcuts, themes, KWin force-blur
 │   ├── theme.clj                         # Dynamic theme engine & multi-profile switcher
@@ -90,9 +106,13 @@ null-sector-plasma/
 │       ├── install.clj                   # mono-rice install workflow
 │       ├── harvest.clj                   # mono-rice harvest workflow
 │       ├── backup.clj                    # mono-rice backup workflow
+│       ├── rollback.clj                  # mono-rice rollback workflow
+│       ├── diff.clj                      # mono-rice visual diff workflow
 │       ├── verify.clj                    # mono-rice verify workflow
 │       ├── theme.clj                     # mono-rice theme workflow
-│       └── watch.clj                     # mono-rice watch drift sentinel
+│       ├── watch.clj                     # mono-rice watch drift sentinel
+│       ├── bundle.clj                    # mono-rice bundle packaging workflow
+│       └── plasmoid.clj                  # mono-rice plasmoid package manager
 │
 ├── test/mono_rice/
 │   ├── sanitizer_test.clj                # Unit tests for template replacement & panel pruning
@@ -100,7 +120,11 @@ null-sector-plasma/
 │   ├── inspector_test.clj                # Unit tests for INI parsing
 │   ├── theme_test.clj                    # Unit tests for theme switching and resolution
 │   ├── scaling_test.clj                  # Unit tests for resolution scaling engine
-│   └── watch_test.clj                    # Unit tests for configuration drift sentinel
+│   ├── watch_test.clj                    # Unit tests for configuration drift sentinel
+│   ├── rollback_test.clj                 # Unit tests for snapshot rollback & restoration
+│   ├── diff_test.clj                     # Unit tests for template diffing
+│   ├── bundle_test.clj                   # Unit tests for archive export/import
+│   └── plasmoid_test.clj                 # Unit tests for plasmoid package manager
 │
 ├── plasma/                               # Modular tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -120,19 +144,24 @@ bb install --dry-run      # Preview full installation without changes
 bb install                # Execute full installation
 bb harvest                # Scrape active configurations from $HOME into repository
 bb backup                 # Create timestamped configuration snapshot
+bb rollback list          # List available rollback snapshots
+bb rollback restore <id>  # Restore a snapshot to $HOME
+bb diff                   # Visual line-by-line diff of repo templates vs $HOME
 bb verify                 # Check system dependencies, layout widgets, and symlinks
 bb theme list             # List available theme profiles
 bb theme set <name>       # Switch active theme profile on the fly
 bb watch --once           # Check live configuration drift
 bb watch                  # Run continuous configuration drift sentinel
+bb bundle export          # Export portable rice bundle (.tar.gz)
+bb plasmoid list          # List installed user plasmoids
 bb dump-widgets           # Print containment and plasmoid tree
 bb open-zen-mods          # Open Zen Mod install URLs in browser
 ```
 
 ### Running Tests & Linting
 ```bash
-bb test                   # Run full Clojure test suite across all modules
-bb check                  # Run dry-run verification, backup checks, theme and drift validation
+bb test                   # Run full Clojure test suite across all 10 modules
+bb check                  # Run dry-run verification, backup checks, theme, diff, and bundle checks
 bb repl                   # Start nREPL server on port 1667
 ```
 
@@ -149,4 +178,4 @@ bb repl                   # Start nREPL server on port 1667
    * Never overwrite user files without first triggering a snapshot via `mono-rice.fs/backup-configs!`.
 
 3. **Keep Tests Green:**
-   * Whenever adding features or modifying sanitizer/inspector/theme/scaling logic, add matching tests in `test/mono_rice/` and run `bb test`.
+   * Whenever adding features or modifying modules, add matching tests in `test/mono_rice/` and run `bb test`.

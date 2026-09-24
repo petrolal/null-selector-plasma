@@ -7,12 +7,20 @@
            :task (apply core/-main "harvest" *command-line-args*)}
   backup {:doc "Create a timestamped backup snapshot of current configurations"
           :task (apply core/-main "backup" *command-line-args*)}
+  rollback {:doc "List and restore rollback snapshots (bb rollback list | bb rollback restore <name>)"
+            :task (apply core/-main "rollback" *command-line-args*)}
+  diff {:doc "Inspect visual differences between repo templates and live $HOME configurations"
+        :task (apply core/-main "diff" *command-line-args*)}
   verify {:doc "Verify configuration drift and required rice components against rice.edn"
           :task (apply core/-main "verify" *command-line-args*)}
   theme {:doc "List or switch active theme profile (bb theme list | bb theme set <name>)"
          :task (apply core/-main "theme" *command-line-args*)}
   watch {:doc "Monitor configuration drift against repository templates"
          :task (apply core/-main "watch" *command-line-args*)}
+  bundle {:doc "Export or import portable rice bundles (bb bundle export | bb bundle import <file>)"
+          :task (apply core/-main "bundle" *command-line-args*)}
+  plasmoid {:doc "Manage KDE 6 desktop plasmoids (bb plasmoid list | bb plasmoid install <path>)"
+            :task (apply core/-main "plasmoid" *command-line-args*)}
   dump-widgets {:doc "Pretty-print active containment/plasmoid tree"
                 :task (apply core/-main "dump-widgets" *command-line-args*)}
   open-zen-mods {:doc "Open Zen Browser mod install pages"
@@ -25,13 +33,21 @@
                          'mono-rice.theme-test
                          'mono-rice.scaling-test
                          'mono-rice.watch-test
+                         'mono-rice.rollback-test
+                         'mono-rice.diff-test
+                         'mono-rice.bundle-test
+                         'mono-rice.plasmoid-test
                          'clojure.test)
                 (let [{:keys [fail error]} (clojure.test/run-tests 'mono-rice.sanitizer-test
                                                                    'mono-rice.manifest-test
                                                                    'mono-rice.inspector-test
                                                                    'mono-rice.theme-test
                                                                    'mono-rice.scaling-test
-                                                                   'mono-rice.watch-test)]
+                                                                   'mono-rice.watch-test
+                                                                   'mono-rice.rollback-test
+                                                                   'mono-rice.diff-test
+                                                                   'mono-rice.bundle-test
+                                                                   'mono-rice.plasmoid-test)]
                   (when (or (pos? fail) (pos? error))
                     (System/exit 1))))}
   check {:doc "Run dry-run verification check on all core flows"
@@ -41,6 +57,9 @@
                  (core/-main "backup" "--dry-run")
                  (core/-main "theme" "list")
                  (core/-main "watch" "--once")
+                 (core/-main "rollback" "list")
+                 (core/-main "diff")
+                 (core/-main "bundle" "export" "/tmp/test-check-bundle.tar.gz" "--dry-run")
                  (println "==> All checks passed successfully!"))}
   repl {:doc "Start an interactive Babashka REPL server"
         :override-builtin true

@@ -96,8 +96,12 @@ null-sector-plasma/
 │       ├── harvest.clj                   # Scrape active configs into repo
 │       ├── backup.clj                    # Snapshot creation
 │       ├── verify.clj                    # Diagnostic health verification
-│       ├── theme.clj                     # Dynamic theme switching CLI
-│       └── watch.clj                     # Live configuration drift sentinel
+│       ├── theme.clj                         # Dynamic theme switching CLI
+│       ├── watch.clj                         # Live configuration drift sentinel
+│       ├── rollback.clj                      # Snapshot rollback & restore CLI
+│       ├── diff.clj                          # Unified visual diff engine
+│       ├── bundle.clj                        # Portable archive export & import CLI
+│       └── plasmoid.clj                      # Plasma 6 applet package manager
 │
 ├── test/mono_rice/                       # Automated test suite
 │   ├── sanitizer_test.clj
@@ -105,7 +109,11 @@ null-sector-plasma/
 │   ├── inspector_test.clj
 │   ├── theme_test.clj
 │   ├── scaling_test.clj
-│   └── watch_test.clj
+│   ├── watch_test.clj
+│   ├── rollback_test.clj
+│   ├── diff_test.clj
+│   ├── bundle_test.clj
+│   └── plasmoid_test.clj
 │
 ├── plasma/                               # Tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -151,13 +159,17 @@ bb verify
 | `bb install --symlinks-only` | Deploys dotfiles and configuration symlinks only |
 | `bb harvest` (or `./mono-rice harvest`) | Scrapes live `$HOME` configurations back into repository with template sanitization |
 | `bb backup` (or `./mono-rice backup`) | Creates timestamped backup snapshot under `~/.config_backup_mono_<timestamp>` |
+| `bb rollback` / `bb rollback restore <name>` | Lists and restores timestamped configuration rollback snapshots |
+| `bb diff` (or `./mono-rice diff [file]`) | Visual unified diff comparing repository templates with active `$HOME` dotfiles |
 | `bb verify` (or `./mono-rice verify`) | Diagnostic health check of packages, plasma widgets, and symlinks |
 | `bb theme list` / `bb theme set <name>` | Dynamic theme profile switcher (`monochrome-dark`, `monochrome-light`, `amber-crt`, `cyberpunk-red`) |
 | `bb watch` / `bb watch --once` | Configuration drift sentinel monitoring tracked dotfiles against templates |
+| `bb bundle export` / `bb bundle import <file>` | Exports or imports complete portable `.tar.gz` rice bundles |
+| `bb plasmoid list` / `bb plasmoid install <path>` | Plasma 6 plasmoid applet installer, updater, and manager |
 | `bb dump-widgets` | Pretty-prints live Plasma containments and plasmoid tree |
 | `bb open-zen-mods` | Dispatches Zen Browser Mod install pages |
-| `bb test` | Runs the automated Clojure test suite across all modules |
-| `bb check` | Runs automated verification, backup checks, theme and drift validation |
+| `bb test` | Runs the automated Clojure test suite across all 10 modules |
+| `bb check` | Runs automated verification, backup checks, theme, diff, and bundle checks |
 
 ---
 
