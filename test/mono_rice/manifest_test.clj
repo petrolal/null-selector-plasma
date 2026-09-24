@@ -11,6 +11,8 @@
         (is (map? data))
         (is (= (:rice/name data) "null-sector-plasma"))
         (is (map? (:theme data)))
+        (is (map? (:theme-profiles data)))
+        (is (contains? (:theme-profiles data) :monochrome-dark))
         (is (map? (:terminal data)))
         (is (map? (:browser data)))
         (is (map? (:dependencies data)))

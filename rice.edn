@@ -26,6 +26,59 @@
    :toolBarFont         "JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0"
    :windowTitleFont     "JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold"}}
 
+ :theme-profiles
+ {:monochrome-dark
+  {:name             "Monochrome Dark"
+   :description      "Cyberpunk NieR: Automata high-contrast dark palette"
+   :color-scheme     "Monochrome"
+   :fallback-scheme  "BreezeDark"
+   :look-and-feel    "org.kde.breezedark.desktop"
+   :widget-style     "kvantum-dark"
+   :icon-theme       "yet-another-monochrome-icon-set"
+   :cursor-theme     "Bibata-Modern-Ice"
+   :splash-theme     "a2n.kuro"
+   :gtk-color-scheme "prefer-dark"
+   :gtk-theme        "Breeze-Dark"}
+
+  :monochrome-light
+  {:name             "Monochrome Light"
+   :description      "High-clarity clean light monochrome palette"
+   :color-scheme     "BreezeLight"
+   :fallback-scheme  "Breeze"
+   :look-and-feel    "org.kde.breeze.desktop"
+   :widget-style     "kvantum"
+   :icon-theme       "yet-another-monochrome-icon-set"
+   :cursor-theme     "Bibata-Modern-Classic"
+   :splash-theme     "a2n.kuro"
+   :gtk-color-scheme "prefer-light"
+   :gtk-theme        "Breeze"}
+
+  :amber-crt
+  {:name             "Amber CRT"
+   :description      "Retro phosphor glow monochrome amber profile"
+   :color-scheme     "Monochrome"
+   :fallback-scheme  "BreezeDark"
+   :look-and-feel    "org.kde.breezedark.desktop"
+   :widget-style     "kvantum-dark"
+   :icon-theme       "yet-another-monochrome-icon-set"
+   :cursor-theme     "Bibata-Modern-Amber"
+   :splash-theme     "a2n.kuro"
+   :gtk-color-scheme "prefer-dark"
+   :gtk-theme        "Breeze-Dark"}
+
+  :cyberpunk-red
+  {:name             "Cyberpunk Crimson"
+   :description      "High-contrast crimson and onyx cyberpunk theme"
+   :color-scheme     "Monochrome"
+   :fallback-scheme  "BreezeDark"
+   :look-and-feel    "org.kde.breezedark.desktop"
+   :widget-style     "kvantum-dark"
+   :icon-theme       "yet-another-monochrome-icon-set"
+   :cursor-theme     "Bibata-Modern-Ice"
+   :splash-theme     "a2n.kuro"
+   :gtk-color-scheme "prefer-dark"
+   :gtk-theme        "Breeze-Dark"}}
+
  :terminal
  {:default    "konsole"
   :service    "org.kde.konsole.desktop"

@@ -9,19 +9,29 @@
           :task (apply core/-main "backup" *command-line-args*)}
   verify {:doc "Verify configuration drift and required rice components against rice.edn"
           :task (apply core/-main "verify" *command-line-args*)}
+  theme {:doc "List or switch active theme profile (bb theme list | bb theme set <name>)"
+         :task (apply core/-main "theme" *command-line-args*)}
+  watch {:doc "Monitor configuration drift against repository templates"
+         :task (apply core/-main "watch" *command-line-args*)}
   dump-widgets {:doc "Pretty-print active containment/plasmoid tree"
                 :task (apply core/-main "dump-widgets" *command-line-args*)}
   open-zen-mods {:doc "Open Zen Browser mod install pages"
                  :task (apply core/-main "open-zen-mods" *command-line-args*)}
-  test {:doc "Run test suite across sanitizer, inspector, and manifest modules"
+  test {:doc "Run test suite across all engine modules"
         :task (do
                 (require 'mono-rice.sanitizer-test
                          'mono-rice.manifest-test
                          'mono-rice.inspector-test
+                         'mono-rice.theme-test
+                         'mono-rice.scaling-test
+                         'mono-rice.watch-test
                          'clojure.test)
                 (let [{:keys [fail error]} (clojure.test/run-tests 'mono-rice.sanitizer-test
                                                                    'mono-rice.manifest-test
-                                                                   'mono-rice.inspector-test)]
+                                                                   'mono-rice.inspector-test
+                                                                   'mono-rice.theme-test
+                                                                   'mono-rice.scaling-test
+                                                                   'mono-rice.watch-test)]
                   (when (or (pos? fail) (pos? error))
                     (System/exit 1))))}
   check {:doc "Run dry-run verification check on all core flows"
@@ -29,6 +39,8 @@
                  (println "==> Running dry-run validation checks...")
                  (core/-main "verify")
                  (core/-main "backup" "--dry-run")
+                 (core/-main "theme" "list")
+                 (core/-main "watch" "--once")
                  (println "==> All checks passed successfully!"))}
   repl {:doc "Start an interactive Babashka REPL server"
         :override-builtin true

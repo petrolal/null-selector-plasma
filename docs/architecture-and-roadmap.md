@@ -8,7 +8,7 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
 
 ---
 
-## 2. Current Implementation State (Completed Phases 1–4)
+## 2. Implementation State (Completed Phases 1–8)
 
 * **Phase 1: Foundation Setup**
   * Task configuration: [`bb.edn`](file:///home/petrolal/null-sector-plasma/bb.edn)
@@ -33,6 +33,22 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
   * GitHub Actions CI pipeline: [`.github/workflows/ci.yml`](file:///home/petrolal/null-sector-plasma/.github/workflows/ci.yml)
   * Compatibility shims for legacy scripts (`install.sh`, `harvest.sh`, `backup.sh`) forwarding to `bb`
 
+* **Phase 5: Packaging & Distribution**
+  * Arch Linux / CachyOS package manifest: [`PKGBUILD`](file:///home/petrolal/null-sector-plasma/PKGBUILD)
+  * Automated release workflow: [`.github/workflows/release.yml`](file:///home/petrolal/null-sector-plasma/.github/workflows/release.yml)
+
+* **Phase 6: Multi-Profile & Dynamic Theming Engine**
+  * Dynamic palette registry in [`rice.edn`](file:///home/petrolal/null-sector-plasma/rice.edn) (`:monochrome-dark`, `:monochrome-light`, `:amber-crt`, `:cyberpunk-red`)
+  * Theme switching logic: [`mono_rice.theme`](file:///home/petrolal/null-sector-plasma/src/mono_rice/theme.clj) and [`mono_rice.cmd.theme`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/theme.clj)
+  * CLI command: `mono-rice theme [list | set <name>]` / `bb theme [list | set <name>]`
+
+* **Phase 7: Multi-Monitor & Resolution Scaling Engine**
+  * Display resolution auto-detection and geometry scaling engine: [`mono_rice.layout.scaling`](file:///home/petrolal/null-sector-plasma/src/mono_rice/layout/scaling.clj)
+
+* **Phase 8: Configuration Drift Sentinel**
+  * Live drift detection & monitoring loop: [`mono_rice.cmd.watch`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/watch.clj)
+  * CLI command: `mono-rice watch [--once | --interval <sec>]` / `bb watch`
+
 ---
 
 ## 3. Codebase Source Tree Map
@@ -40,15 +56,17 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
 ```text
 null-sector-plasma/
 ├── bb.edn                                # Babashka task manifest, test runner & nREPL task
-├── rice.edn                              # Master EDN rice manifest
+├── rice.edn                              # Master EDN rice manifest with multi-theme profiles
 ├── mono-rice                             # Direct executable wrapper (#!/usr/bin/env bb)
+├── PKGBUILD                              # Arch Linux / AUR package specification
 ├── bootstrap.sh                          # Non-interactive shell bootstrapper
 ├── install.sh                            # Compatibility forwarder -> bb install
 ├── harvest.sh                            # Compatibility forwarder -> bb harvest
 ├── backup.sh                             # Compatibility forwarder -> bb backup
 │
 ├── .github/workflows/
-│   └── ci.yml                            # GitHub Actions CI (bb test & bb check)
+│   ├── ci.yml                            # GitHub Actions CI (bb test & bb check)
+│   └── release.yml                       # GitHub Actions Release pipeline
 │
 ├── src/mono_rice/
 │   ├── core.clj                          # CLI option parsing (babashka.cli) & command router
@@ -56,10 +74,12 @@ null-sector-plasma/
 │   ├── fs.clj                            # GNU Stow symlink engine, directory creation, backups
 │   ├── deps.clj                          # Pacman / AUR (yay/paru) / Git dependency management
 │   ├── kde.clj                           # kwriteconfig6, shortcuts, themes, KWin force-blur
+│   ├── theme.clj                         # Dynamic theme engine & multi-profile switcher
 │   │
 │   ├── layout/
 │   │   ├── sanitizer.clj                 # Plasma desktop-appletsrc template & pruning engine
-│   │   └── inspector.clj                 # Live containment & plasmoid tree introspection
+│   │   ├── inspector.clj                 # Live containment & plasmoid tree introspection
+│   │   └── scaling.clj                   # Resolution detection & panel geometry auto-scaling
 │   │
 │   ├── zen/
 │   │   ├── profile.clj                   # Profile discovery, CSS symlinks, KWin window rules
@@ -70,12 +90,17 @@ null-sector-plasma/
 │       ├── install.clj                   # mono-rice install workflow
 │       ├── harvest.clj                   # mono-rice harvest workflow
 │       ├── backup.clj                    # mono-rice backup workflow
-│       └── verify.clj                    # mono-rice verify workflow
+│       ├── verify.clj                    # mono-rice verify workflow
+│       ├── theme.clj                     # mono-rice theme workflow
+│       └── watch.clj                     # mono-rice watch drift sentinel
 │
 ├── test/mono_rice/
 │   ├── sanitizer_test.clj                # Unit tests for template replacement & panel pruning
 │   ├── manifest_test.clj                 # Unit tests for rice.edn structure
-│   └── inspector_test.clj                # Unit tests for INI parsing
+│   ├── inspector_test.clj                # Unit tests for INI parsing
+│   ├── theme_test.clj                    # Unit tests for theme switching and resolution
+│   ├── scaling_test.clj                  # Unit tests for resolution scaling engine
+│   └── watch_test.clj                    # Unit tests for configuration drift sentinel
 │
 ├── plasma/                               # Modular tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -96,60 +121,24 @@ bb install                # Execute full installation
 bb harvest                # Scrape active configurations from $HOME into repository
 bb backup                 # Create timestamped configuration snapshot
 bb verify                 # Check system dependencies, layout widgets, and symlinks
+bb theme list             # List available theme profiles
+bb theme set <name>       # Switch active theme profile on the fly
+bb watch --once           # Check live configuration drift
+bb watch                  # Run continuous configuration drift sentinel
 bb dump-widgets           # Print containment and plasmoid tree
 bb open-zen-mods          # Open Zen Mod install URLs in browser
 ```
 
 ### Running Tests & Linting
 ```bash
-bb test                   # Run full Clojure test suite
-bb check                  # Run dry-run verification and backup checks
+bb test                   # Run full Clojure test suite across all modules
+bb check                  # Run dry-run verification, backup checks, theme and drift validation
 bb repl                   # Start nREPL server on port 1667
 ```
 
 ---
 
-## 5. Future Phases Roadmap (Phases 5–8)
-
-```mermaid
-flowchart TD
-    Phase5["Phase 5: Packaging & Distribution\n• AUR PKGBUILD package\n• GraalVM Native Binary Releases"]
-    Phase6["Phase 6: Multi-Profile & Dynamic Theming\n• Multi-palette rice.edn specifications\n• On-the-fly theme switcher (bb theme set <name>)"]
-    Phase7["Phase 7: Multi-Monitor & Resolution Adaptation\n• Auto-scaling panel thickness & YoRHa HUD (1080p/1440p/4K)\n• Dynamic multi-screen containment assignment"]
-    Phase8["Phase 8: Drift Sentinel & Live Diff Watcher\n• inotify background watcher (bb watch)\n• Interactive visual diff and rollback CLI"]
-
-    Phase5 --> Phase6 --> Phase7 --> Phase8
-```
-
-### 📦 Phase 5: Distribution & Binary Releases
-* **Goal:** Allow zero-dependency distribution on Arch Linux / CachyOS and GitHub releases.
-* **Tasks:**
-  1. Create `PKGBUILD` for `null-sector-plasma-git` installing `mono-rice` to `/usr/bin/mono-rice` and shared assets to `/usr/share/null-sector-plasma/`.
-  2. Implement GitHub Actions release pipeline building standalone GraalVM native binary (`mono-rice-linux-x86_64`).
-
-### 🎨 Phase 6: Multi-Profile & Dynamic Theming Engine
-* **Goal:** Enable live palette switching without restarting sessions.
-* **Tasks:**
-  1. Extend `rice.edn` to support multiple theme profiles (e.g., `:monochrome-dark`, `:monochrome-light`, `:amber-crt`, `:cyberpunk-red`).
-  2. Implement `mono-rice.theme` namespace with `switch-theme!` function updating Kvantum colors, CAVA colors, Konsole color schemes, and Panel Colorizer presets on the fly.
-  3. Expose CLI command: `bb theme set <profile-name>`.
-
-### 🖥️ Phase 7: Multi-Monitor & Resolution Scaling Engine
-* **Goal:** Automatically adjust panel dimensions and desktop HUD positions across arbitrary monitor setups.
-* **Tasks:**
-  1. Detect screen resolutions via `kscreen-doctor -o` or Wayland DBus protocols.
-  2. Implement dynamic geometry scaling in `mono-rice.layout.sanitizer` (scaling panel height, font sizes, Kurve block heights, and YoRHa coordinates for 1080p, 1440p, 4K).
-  3. Support secondary/tertiary monitor containment replication.
-
-### 🛡️ Phase 8: Configuration Drift Sentinel (`bb watch`)
-* **Goal:** Monitor system configuration files for unauthorized drift or widget corruption in real time.
-* **Tasks:**
-  1. Implement background daemon using `babashka.fs/watch` or `inotifywait`.
-  2. Provide interactive CLI visual diff comparing `$HOME` configs against tracked repo templates with one-key merge or rollback.
-
----
-
-## 6. Guidelines for Future AI Agents & Contributors
+## 5. Guidelines for Future AI Agents & Contributors
 
 1. **Maintain Pure Clojure / EDN Architecture:**
    * Keep configuration data in `rice.edn` as EDN data structures rather than hardcoded script strings.
@@ -160,4 +149,4 @@ flowchart TD
    * Never overwrite user files without first triggering a snapshot via `mono-rice.fs/backup-configs!`.
 
 3. **Keep Tests Green:**
-   * Whenever adding features or modifying sanitizer/inspector logic, add matching tests in `test/mono_rice/` and run `bb test`.
+   * Whenever adding features or modifying sanitizer/inspector/theme/scaling logic, add matching tests in `test/mono_rice/` and run `bb test`.

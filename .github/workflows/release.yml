@@ -1,0 +1,42 @@
+name: Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Babashka
+        uses: turtlequeue/setup-babashka@v1.5.0
+        with:
+          babashka-version: 1.12.196
+
+      - name: Run Test Suite
+        run: bb test
+
+      - name: Run Manifest Validation
+        run: bb check
+
+      - name: Package Distribution Archive
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          ARCHIVE_NAME="null-sector-plasma-${VERSION}.tar.gz"
+          tar --exclude='.git' --exclude='.github' -czf "${ARCHIVE_NAME}" .
+          echo "ARCHIVE_NAME=${ARCHIVE_NAME}" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ARCHIVE_NAME }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true

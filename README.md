@@ -82,23 +82,30 @@ null-sector-plasma/
 │   ├── fs.clj                            # Symlink deployment & backup engine
 │   ├── deps.clj                          # Pacman / AUR / Git dependency resolver
 │   ├── kde.clj                           # KDE Plasma 6 / KWin look & feel automation
+│   ├── theme.clj                         # Dynamic theme engine & multi-profile switcher
 │   ├── layout/
 │   │   ├── sanitizer.clj                 # Deterministic appletsrc template engine
-│   │   └── inspector.clj                 # DBus & INI widget introspection
+│   │   ├── inspector.clj                 # DBus & INI widget introspection
+│   │   └── scaling.clj                   # Resolution detection & panel geometry auto-scaling
 │   ├── zen/
 │   │   ├── profile.clj                   # Zen Browser profile manager & window rules
-│   │   ├── policies.clj                  # Enterprise policies.json extension injector
-│   │   └── mods.clj                      # Registry seeding & workspace gradient neutralizer
+│   │   ├── policies.clj                  # Enterprise policies.json force-install extension setup
+│   │   └── mods.clj                      # Mod registry seeding & workspace gradient neutralizer
 │   └── cmd/
 │       ├── install.clj                   # Full deployment workflow
 │       ├── harvest.clj                   # Scrape active configs into repo
 │       ├── backup.clj                    # Snapshot creation
-│       └── verify.clj                    # Diagnostic health verification
+│       ├── verify.clj                    # Diagnostic health verification
+│       ├── theme.clj                     # Dynamic theme switching CLI
+│       └── watch.clj                     # Live configuration drift sentinel
 │
 ├── test/mono_rice/                       # Automated test suite
 │   ├── sanitizer_test.clj
 │   ├── manifest_test.clj
-│   └── inspector_test.clj
+│   ├── inspector_test.clj
+│   ├── theme_test.clj
+│   ├── scaling_test.clj
+│   └── watch_test.clj
 │
 ├── plasma/                               # Tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -145,10 +152,12 @@ bb verify
 | `bb harvest` (or `./mono-rice harvest`) | Scrapes live `$HOME` configurations back into repository with template sanitization |
 | `bb backup` (or `./mono-rice backup`) | Creates timestamped backup snapshot under `~/.config_backup_mono_<timestamp>` |
 | `bb verify` (or `./mono-rice verify`) | Diagnostic health check of packages, plasma widgets, and symlinks |
+| `bb theme list` / `bb theme set <name>` | Dynamic theme profile switcher (`monochrome-dark`, `monochrome-light`, `amber-crt`, `cyberpunk-red`) |
+| `bb watch` / `bb watch --once` | Configuration drift sentinel monitoring tracked dotfiles against templates |
 | `bb dump-widgets` | Pretty-prints live Plasma containments and plasmoid tree |
 | `bb open-zen-mods` | Dispatches Zen Browser Mod install pages |
-| `bb test` | Runs the automated Clojure test suite |
-| `bb check` | Runs automated verification and backup sanity checks |
+| `bb test` | Runs the automated Clojure test suite across all modules |
+| `bb check` | Runs automated verification, backup checks, theme and drift validation |
 
 ---
 
