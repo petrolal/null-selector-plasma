@@ -1,4 +1,4 @@
-# 🪐 Architecture & Future Phases Roadmap
+# 🪐 Architecture & Complete Implementation Roadmap
 
 ## 1. Project Overview & Philosophy
 
@@ -8,7 +8,7 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
 
 ---
 
-## 2. Implementation State (Completed Phases 1–12)
+## 2. Implementation State (Completed Phases 1–16)
 
 * **Phase 1: Foundation Setup**
   * Task configuration: [`bb.edn`](file:///home/petrolal/null-sector-plasma/bb.edn)
@@ -61,9 +61,25 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
   * Portable `.tar.gz` bundle archiver and extractor: [`mono_rice.cmd.bundle`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/bundle.clj)
   * CLI command: `mono-rice bundle [export | import <archive>]` / `bb bundle`
 
-* **Phase 12: Declarative Plasmoid Widget Store & Manager**
+* **Phase 12: Declarative Plasmoid Package Manager**
   * Plasma 6 applet package inspector and manager: [`mono_rice.cmd.plasmoid`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/plasmoid.clj)
   * CLI command: `mono-rice plasmoid [list | install <path> | remove <id>]` / `bb plasmoid`
+
+* **Phase 13: Interactive Terminal Dashboard & TUI**
+  * ANSI cybernetic terminal menu & dashboard: [`mono_rice.cmd.tui`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/tui.clj)
+  * CLI command: `mono-rice tui` / `bb tui`
+
+* **Phase 14: Systemd Sentinel Service & Desktop Notifications**
+  * User systemd unit automation & desktop notifications: [`mono_rice.cmd.daemon`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/daemon.clj)
+  * CLI command: `mono-rice daemon [start | install-service | uninstall-service]` / `bb daemon`
+
+* **Phase 15: Wallpaper & Lockscreen Video Sync Engine**
+  * Simultaneous synchronization for desktop & lockscreen 4K video wallpapers: [`mono_rice.cmd.wallpaper`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/wallpaper.clj)
+  * CLI command: `mono-rice wallpaper [list | set <name> | random]` / `bb wallpaper`
+
+* **Phase 16: Hardware Telemetry & Audio Equalizer Profiler**
+  * Dynamic CAVA & Kurve spectrum equalizer profile switcher: [`mono_rice.cmd.audio`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/audio.clj)
+  * CLI command: `mono-rice audio [list | preset <name>]` / `bb audio`
 
 ---
 
@@ -103,6 +119,7 @@ null-sector-plasma/
 │   │   └── mods.clj                      # Mod registry seeding & mozLz4 gradient neutralizer
 │   │
 │   └── cmd/
+│       ├── tui.clj                       # Interactive Cyberpunk terminal dashboard
 │       ├── install.clj                   # mono-rice install workflow
 │       ├── harvest.clj                   # mono-rice harvest workflow
 │       ├── backup.clj                    # mono-rice backup workflow
@@ -110,7 +127,10 @@ null-sector-plasma/
 │       ├── diff.clj                      # mono-rice visual diff workflow
 │       ├── verify.clj                    # mono-rice verify workflow
 │       ├── theme.clj                     # mono-rice theme workflow
+│       ├── wallpaper.clj                 # mono-rice wallpaper & lockscreen sync
+│       ├── audio.clj                     # mono-rice audio equalizer presets
 │       ├── watch.clj                     # mono-rice watch drift sentinel
+│       ├── daemon.clj                    # mono-rice systemd service & notifications
 │       ├── bundle.clj                    # mono-rice bundle packaging workflow
 │       └── plasmoid.clj                  # mono-rice plasmoid package manager
 │
@@ -124,7 +144,11 @@ null-sector-plasma/
 │   ├── rollback_test.clj                 # Unit tests for snapshot rollback & restoration
 │   ├── diff_test.clj                     # Unit tests for template diffing
 │   ├── bundle_test.clj                   # Unit tests for archive export/import
-│   └── plasmoid_test.clj                 # Unit tests for plasmoid package manager
+│   ├── plasmoid_test.clj                 # Unit tests for plasmoid package manager
+│   ├── tui_test.clj                      # Unit tests for TUI rendering
+│   ├── daemon_test.clj                   # Unit tests for systemd service generator
+│   ├── wallpaper_test.clj                # Unit tests for wallpaper manager
+│   └── audio_test.clj                    # Unit tests for CAVA equalizer presets
 │
 ├── plasma/                               # Modular tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -140,6 +164,7 @@ null-sector-plasma/
 
 ### Running Commands
 ```bash
+bb tui                    # Launch interactive Cyberpunk terminal dashboard
 bb install --dry-run      # Preview full installation without changes
 bb install                # Execute full installation
 bb harvest                # Scrape active configurations from $HOME into repository
@@ -150,8 +175,10 @@ bb diff                   # Visual line-by-line diff of repo templates vs $HOME
 bb verify                 # Check system dependencies, layout widgets, and symlinks
 bb theme list             # List available theme profiles
 bb theme set <name>       # Switch active theme profile on the fly
+bb wallpaper set <name>   # Switch desktop and 4K video lockscreen wallpaper
+bb audio preset <name>    # Switch audio equalizer preset
 bb watch --once           # Check live configuration drift
-bb watch                  # Run continuous configuration drift sentinel
+bb daemon install-service # Install background systemd drift sentinel
 bb bundle export          # Export portable rice bundle (.tar.gz)
 bb plasmoid list          # List installed user plasmoids
 bb dump-widgets           # Print containment and plasmoid tree
@@ -160,7 +187,7 @@ bb open-zen-mods          # Open Zen Mod install URLs in browser
 
 ### Running Tests & Linting
 ```bash
-bb test                   # Run full Clojure test suite across all 10 modules
+bb test                   # Run full Clojure test suite across all 14 modules
 bb check                  # Run dry-run verification, backup checks, theme, diff, and bundle checks
 bb repl                   # Start nREPL server on port 1667
 ```

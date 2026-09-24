@@ -101,7 +101,11 @@ null-sector-plasma/
 │       ├── rollback.clj                      # Snapshot rollback & restore CLI
 │       ├── diff.clj                          # Unified visual diff engine
 │       ├── bundle.clj                        # Portable archive export & import CLI
-│       └── plasmoid.clj                      # Plasma 6 applet package manager
+│       ├── plasmoid.clj                      # Plasma 6 applet package manager
+│       ├── tui.clj                           # Interactive terminal dashboard & menu
+│       ├── daemon.clj                        # Systemd sentinel service & desktop notifications
+│       ├── wallpaper.clj                     # Desktop & lockscreen 4K video wallpaper sync
+│       └── audio.clj                         # CAVA / Kurve audio equalizer presets
 │
 ├── test/mono_rice/                       # Automated test suite
 │   ├── sanitizer_test.clj
@@ -113,7 +117,11 @@ null-sector-plasma/
 │   ├── rollback_test.clj
 │   ├── diff_test.clj
 │   ├── bundle_test.clj
-│   └── plasmoid_test.clj
+│   ├── plasmoid_test.clj
+│   ├── tui_test.clj
+│   ├── daemon_test.clj
+│   ├── wallpaper_test.clj
+│   └── audio_test.clj
 │
 ├── plasma/                               # Tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -127,12 +135,17 @@ null-sector-plasma/
 
 ## ⚡ Quick Start
 
-### 1. One-Liner Bootstrap
+### 1. Interactive TUI Menu
+```bash
+bb tui (or ./mono-rice tui)
+```
+
+### 2. One-Liner Bootstrap
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/petrolal/null-sector-plasma/main/bootstrap.sh)
 ```
 
-### 2. Manual Clone & Deployment
+### 3. Manual Clone & Deployment
 ```bash
 git clone git@github.com:petrolal/null-sector-plasma.git
 cd null-sector-plasma
@@ -153,6 +166,7 @@ bb verify
 
 | Task / Command | Description |
 | :--- | :--- |
+| `bb tui` (or `./mono-rice tui`) | Launches interactive Cyberpunk terminal dashboard and action menu |
 | `bb install` (or `./mono-rice install`) | Deploys dependencies, plasmoids, wallpapers, themes, and panel layouts |
 | `bb install --dry-run` | Simulates installation without modifying files |
 | `bb install --deps-only` | Installs system packages and AUR extensions only |
@@ -163,12 +177,15 @@ bb verify
 | `bb diff` (or `./mono-rice diff [file]`) | Visual unified diff comparing repository templates with active `$HOME` dotfiles |
 | `bb verify` (or `./mono-rice verify`) | Diagnostic health check of packages, plasma widgets, and symlinks |
 | `bb theme list` / `bb theme set <name>` | Dynamic theme profile switcher (`monochrome-dark`, `monochrome-light`, `amber-crt`, `cyberpunk-red`) |
+| `bb wallpaper list` / `bb wallpaper set <name>` | Manages and syncs desktop & lockscreen 4K video wallpapers |
+| `bb audio list` / `bb audio preset <name>` | Configures CAVA / Kurve audio equalizer presets on the fly |
 | `bb watch` / `bb watch --once` | Configuration drift sentinel monitoring tracked dotfiles against templates |
+| `bb daemon` / `bb daemon install-service` | Background systemd sentinel daemon with desktop notification alerts |
 | `bb bundle export` / `bb bundle import <file>` | Exports or imports complete portable `.tar.gz` rice bundles |
 | `bb plasmoid list` / `bb plasmoid install <path>` | Plasma 6 plasmoid applet installer, updater, and manager |
 | `bb dump-widgets` | Pretty-prints live Plasma containments and plasmoid tree |
 | `bb open-zen-mods` | Dispatches Zen Browser Mod install pages |
-| `bb test` | Runs the automated Clojure test suite across all 10 modules |
+| `bb test` | Runs the automated Clojure test suite across all 14 modules |
 | `bb check` | Runs automated verification, backup checks, theme, diff, and bundle checks |
 
 ---

@@ -1,6 +1,8 @@
 {:paths ["src" "test"]
  :tasks
  {:init (require '[mono-rice.core :as core])
+  tui {:doc "Launch interactive Cyberpunk terminal dashboard menu"
+       :task (apply core/-main "tui" *command-line-args*)}
   install {:doc "Deploy and install complete null-sector-plasma rice"
            :task (apply core/-main "install" *command-line-args*)}
   harvest {:doc "Scrape live $HOME configs back into repository with template sanitization"
@@ -15,8 +17,14 @@
           :task (apply core/-main "verify" *command-line-args*)}
   theme {:doc "List or switch active theme profile (bb theme list | bb theme set <name>)"
          :task (apply core/-main "theme" *command-line-args*)}
+  wallpaper {:doc "Manage and sync desktop and lockscreen 4K video wallpapers"
+             :task (apply core/-main "wallpaper" *command-line-args*)}
+  audio {:doc "Configure and switch CAVA / Kurve audio equalizer presets"
+         :task (apply core/-main "audio" *command-line-args*)}
   watch {:doc "Monitor configuration drift against repository templates"
          :task (apply core/-main "watch" *command-line-args*)}
+  daemon {:doc "Background sentinel service and desktop notification manager"
+          :task (apply core/-main "daemon" *command-line-args*)}
   bundle {:doc "Export or import portable rice bundles (bb bundle export | bb bundle import <file>)"
           :task (apply core/-main "bundle" *command-line-args*)}
   plasmoid {:doc "Manage KDE 6 desktop plasmoids (bb plasmoid list | bb plasmoid install <path>)"
@@ -37,6 +45,10 @@
                          'mono-rice.diff-test
                          'mono-rice.bundle-test
                          'mono-rice.plasmoid-test
+                         'mono-rice.tui-test
+                         'mono-rice.daemon-test
+                         'mono-rice.wallpaper-test
+                         'mono-rice.audio-test
                          'clojure.test)
                 (let [{:keys [fail error]} (clojure.test/run-tests 'mono-rice.sanitizer-test
                                                                    'mono-rice.manifest-test
@@ -47,15 +59,22 @@
                                                                    'mono-rice.rollback-test
                                                                    'mono-rice.diff-test
                                                                    'mono-rice.bundle-test
-                                                                   'mono-rice.plasmoid-test)]
+                                                                   'mono-rice.plasmoid-test
+                                                                   'mono-rice.tui-test
+                                                                   'mono-rice.daemon-test
+                                                                   'mono-rice.wallpaper-test
+                                                                   'mono-rice.audio-test)]
                   (when (or (pos? fail) (pos? error))
                     (System/exit 1))))}
   check {:doc "Run dry-run verification check on all core flows"
          :task (do
                  (println "==> Running dry-run validation checks...")
+                 (core/-main "tui" "--dry-run")
                  (core/-main "verify")
                  (core/-main "backup" "--dry-run")
                  (core/-main "theme" "list")
+                 (core/-main "wallpaper" "list")
+                 (core/-main "audio" "list")
                  (core/-main "watch" "--once")
                  (core/-main "rollback" "list")
                  (core/-main "diff")

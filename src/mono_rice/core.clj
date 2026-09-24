@@ -2,15 +2,19 @@
   (:require [babashka.cli :as cli]
             [babashka.fs :as fs]
             [clojure.edn :as edn]
+            [mono-rice.cmd.audio :as cmd-audio]
             [mono-rice.cmd.backup :as cmd-backup]
             [mono-rice.cmd.bundle :as cmd-bundle]
+            [mono-rice.cmd.daemon :as cmd-daemon]
             [mono-rice.cmd.diff :as cmd-diff]
             [mono-rice.cmd.harvest :as cmd-harvest]
             [mono-rice.cmd.install :as cmd-install]
             [mono-rice.cmd.plasmoid :as cmd-plasmoid]
             [mono-rice.cmd.rollback :as cmd-rollback]
             [mono-rice.cmd.theme :as cmd-theme]
+            [mono-rice.cmd.tui :as cmd-tui]
             [mono-rice.cmd.verify :as cmd-verify]
+            [mono-rice.cmd.wallpaper :as cmd-wallpaper]
             [mono-rice.cmd.watch :as cmd-watch]
             [mono-rice.fs :as rfs]
             [mono-rice.layout.inspector :as insp]
@@ -28,6 +32,7 @@
   (println "Usage: mono-rice <command> [options]")
   (println)
   (println "Commands:")
+  (println "  tui           Launch interactive Cyberpunk terminal dashboard menu")
   (println "  install       Deploy and install complete null-sector-plasma rice")
   (println "  harvest       Scrape live $HOME configs back into repository with template sanitization")
   (println "  backup        Create timestamped backup snapshot of current configurations")
@@ -35,7 +40,10 @@
   (println "  diff          Inspect line-by-line visual differences between repo and $HOME")
   (println "  verify        Verify system health, package dependencies, and layout integrity")
   (println "  theme         List or switch active theme profile (list | set <name>)")
+  (println "  wallpaper     Manage and sync desktop and lockscreen 4K video wallpapers")
+  (println "  audio         Configure and switch CAVA / Kurve audio equalizer presets")
   (println "  watch         Monitor configuration drift against repository templates")
+  (println "  daemon        Background sentinel service and desktop notification manager")
   (println "  bundle        Export or import portable rice configuration archive (export | import)")
   (println "  plasmoid      Manage KDE 6 desktop plasmoids (list | install <path> | remove <id>)")
   (println "  dump-widgets  Pretty-print active containment and plasmoid tree")
@@ -47,7 +55,7 @@
   (println "  -s, --symlinks-only  Deploy symlinks and configurations only (skip package manager)")
   (println "  -d, --deps-only      Install package dependencies only")
   (println "      --once           Run watch sentinel once and exit immediately")
-  (println "      --interval <sec> Set polling interval for watch sentinel (default: 5)")
+  (println "      --interval <sec> Set polling interval for watch/daemon (default: 10)")
   (println "      --no-backup      Skip backing up existing configuration files")
   (println "      --no-layout      Skip applying desktop and panel layout")
   (println "      --sddm           Install SDDM Monochrome theme")
@@ -81,6 +89,7 @@
       (print-help)
       (let [manifest (load-manifest!)]
         (case cmd
+          "tui"           (cmd-tui/run-tui! manifest opts)
           "install"       (cmd-install/install! manifest opts)
           "backup"        (cmd-backup/backup! manifest opts)
           "rollback"      (cmd-rollback/run-rollback-cmd! rest-args opts)
@@ -88,7 +97,10 @@
           "harvest"       (cmd-harvest/harvest! manifest opts)
           "verify"        (cmd-verify/verify! manifest opts)
           "theme"         (cmd-theme/run-theme-cmd! manifest rest-args opts)
+          "wallpaper"     (cmd-wallpaper/run-wallpaper-cmd! rest-args opts)
+          "audio"         (cmd-audio/run-audio-cmd! rest-args opts)
           "watch"         (cmd-watch/run-watch-cmd! manifest opts)
+          "daemon"        (cmd-daemon/run-daemon-cmd! manifest rest-args opts)
           "bundle"        (cmd-bundle/run-bundle-cmd! manifest rest-args opts)
           "plasmoid"      (cmd-plasmoid/run-plasmoid-cmd! rest-args opts)
           "dump-widgets"  (insp/dump-widgets)
