@@ -154,8 +154,10 @@ Theme=yet-another-monochrome-icon-set
 LookAndFeelPackage=org.kde.breezedark.desktop
 ShowDeleteCommand=true
 SingleClick=false
+colorScheme=Monochrome
 contrast=4
 frameContrast=0.2
+widgetStyle=kvantum-dark
 
 [KFileDialog Settings]
 Allow Expansion=false
