@@ -3,6 +3,8 @@
  {:init (require '[mono-rice.core :as core])
   tui {:doc "Launch interactive Cyberpunk terminal dashboard menu"
        :task (apply core/-main "tui" *command-line-args*)}
+  doctor {:doc "Run deep health diagnostics and auto-repair (bb doctor --fix)"
+          :task (apply core/-main "doctor" *command-line-args*)}
   install {:doc "Deploy and install complete null-sector-plasma rice"
            :task (apply core/-main "install" *command-line-args*)}
   harvest {:doc "Scrape live $HOME configs back into repository with template sanitization"
@@ -17,6 +19,12 @@
           :task (apply core/-main "verify" *command-line-args*)}
   theme {:doc "List or switch active theme profile (bb theme list | bb theme set <name>)"
          :task (apply core/-main "theme" *command-line-args*)}
+  kwin {:doc "Manage declarative window rules, translucency, and blur (bb kwin rules | bb kwin apply-rules)"
+        :task (apply core/-main "kwin" *command-line-args*)}
+  fetch {:doc "Fastfetch and terminal ASCII aesthetic logo synchronizer (bb fetch list | bb fetch set <name>)"
+         :task (apply core/-main "fetch" *command-line-args*)}
+  profile {:doc "Hardware environment detector and form-factor profile tuner (bb profile detect)"
+           :task (apply core/-main "profile" *command-line-args*)}
   wallpaper {:doc "Manage and sync desktop and lockscreen 4K video wallpapers"
              :task (apply core/-main "wallpaper" *command-line-args*)}
   audio {:doc "Configure and switch CAVA / Kurve audio equalizer presets"
@@ -49,6 +57,10 @@
                          'mono-rice.daemon-test
                          'mono-rice.wallpaper-test
                          'mono-rice.audio-test
+                         'mono-rice.doctor-test
+                         'mono-rice.kwin-test
+                         'mono-rice.fetch-test
+                         'mono-rice.profile-test
                          'clojure.test)
                 (let [{:keys [fail error]} (clojure.test/run-tests 'mono-rice.sanitizer-test
                                                                    'mono-rice.manifest-test
@@ -63,16 +75,24 @@
                                                                    'mono-rice.tui-test
                                                                    'mono-rice.daemon-test
                                                                    'mono-rice.wallpaper-test
-                                                                   'mono-rice.audio-test)]
+                                                                   'mono-rice.audio-test
+                                                                   'mono-rice.doctor-test
+                                                                   'mono-rice.kwin-test
+                                                                   'mono-rice.fetch-test
+                                                                   'mono-rice.profile-test)]
                   (when (or (pos? fail) (pos? error))
                     (System/exit 1))))}
   check {:doc "Run dry-run verification check on all core flows"
          :task (do
                  (println "==> Running dry-run validation checks...")
                  (core/-main "tui" "--dry-run")
+                 (core/-main "doctor")
                  (core/-main "verify")
                  (core/-main "backup" "--dry-run")
                  (core/-main "theme" "list")
+                 (core/-main "kwin" "rules")
+                 (core/-main "fetch" "list")
+                 (core/-main "profile" "detect")
                  (core/-main "wallpaper" "list")
                  (core/-main "audio" "list")
                  (core/-main "watch" "--once")

@@ -8,7 +8,7 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
 
 ---
 
-## 2. Implementation State (Completed Phases 1–16)
+## 2. Implementation State (Completed Phases 1–20)
 
 * **Phase 1: Foundation Setup**
   * Task configuration: [`bb.edn`](file:///home/petrolal/null-sector-plasma/bb.edn)
@@ -81,6 +81,22 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
   * Dynamic CAVA & Kurve spectrum equalizer profile switcher: [`mono_rice.cmd.audio`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/audio.clj)
   * CLI command: `mono-rice audio [list | preset <name>]` / `bb audio`
 
+* **Phase 17: Rice Doctor & Auto-Repair Engine**
+  * Deep system diagnostics & one-click automatic remediation: [`mono_rice.cmd.doctor`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/doctor.clj)
+  * CLI command: `mono-rice doctor [--fix]` / `bb doctor [--fix]`
+
+* **Phase 18: KWin Window Rules & Tiling Manager**
+  * Declarative translucency rules & blur effect shader tuning: [`mono_rice.cmd.kwin`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/kwin.clj)
+  * CLI command: `mono-rice kwin [rules | apply-rules | set-blur <val>]` / `bb kwin`
+
+* **Phase 19: Terminal, Fastfetch & Shell Aesthetic Synchronizer**
+  * Fastfetch ASCII emblem switcher (NieR, Cyberpunk, Null-Sector, Arch): [`mono_rice.cmd.fetch`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/fetch.clj)
+  * CLI command: `mono-rice fetch [list | preview <preset> | set <preset>]` / `bb fetch`
+
+* **Phase 20: Multi-Machine Hardware Profiler & Laptop Adaptations**
+  * Form factor detection & hardware telemetry tuning: [`mono_rice.cmd.profile`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/profile.clj)
+  * CLI command: `mono-rice profile [detect | apply]` / `bb profile`
+
 ---
 
 ## 3. Codebase Source Tree Map
@@ -120,6 +136,7 @@ null-sector-plasma/
 │   │
 │   └── cmd/
 │       ├── tui.clj                       # Interactive Cyberpunk terminal dashboard
+│       ├── doctor.clj                    # Deep diagnostic health checks & auto-repair engine
 │       ├── install.clj                   # mono-rice install workflow
 │       ├── harvest.clj                   # mono-rice harvest workflow
 │       ├── backup.clj                    # mono-rice backup workflow
@@ -127,6 +144,9 @@ null-sector-plasma/
 │       ├── diff.clj                      # mono-rice visual diff workflow
 │       ├── verify.clj                    # mono-rice verify workflow
 │       ├── theme.clj                     # mono-rice theme workflow
+│       ├── kwin.clj                      # mono-rice KWin window rules & blur tuning
+│       ├── fetch.clj                     # mono-rice Fastfetch ASCII aesthetic manager
+│       ├── profile.clj                   # mono-rice hardware profiler & form factor tuner
 │       ├── wallpaper.clj                 # mono-rice wallpaper & lockscreen sync
 │       ├── audio.clj                     # mono-rice audio equalizer presets
 │       ├── watch.clj                     # mono-rice watch drift sentinel
@@ -148,7 +168,11 @@ null-sector-plasma/
 │   ├── tui_test.clj                      # Unit tests for TUI rendering
 │   ├── daemon_test.clj                   # Unit tests for systemd service generator
 │   ├── wallpaper_test.clj                # Unit tests for wallpaper manager
-│   └── audio_test.clj                    # Unit tests for CAVA equalizer presets
+│   ├── audio_test.clj                    # Unit tests for CAVA equalizer presets
+│   ├── doctor_test.clj                   # Unit tests for diagnostic health & repair
+│   ├── kwin_test.clj                     # Unit tests for KWin window rules & blur
+│   ├── fetch_test.clj                    # Unit tests for Fastfetch ASCII presets
+│   └── profile_test.clj                  # Unit tests for hardware profiling
 │
 ├── plasma/                               # Modular tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -165,6 +189,8 @@ null-sector-plasma/
 ### Running Commands
 ```bash
 bb tui                    # Launch interactive Cyberpunk terminal dashboard
+bb doctor                 # Run system health diagnostics
+bb doctor --fix           # Auto-repair broken symlinks, stale cache & missing links
 bb install --dry-run      # Preview full installation without changes
 bb install                # Execute full installation
 bb harvest                # Scrape active configurations from $HOME into repository
@@ -175,6 +201,13 @@ bb diff                   # Visual line-by-line diff of repo templates vs $HOME
 bb verify                 # Check system dependencies, layout widgets, and symlinks
 bb theme list             # List available theme profiles
 bb theme set <name>       # Switch active theme profile on the fly
+bb kwin rules             # List declarative KWin window rules
+bb kwin apply-rules       # Apply window transparency and borderless rules
+bb kwin set-blur <val>    # Adjust KWin background blur strength (1-10)
+bb fetch list             # List Fastfetch ASCII presets
+bb fetch set <preset>     # Apply Fastfetch ASCII logo (NieR, Cyberpunk, Null-Sector, Arch)
+bb profile detect         # Detect hardware environment (CPU/GPU/Form-factor)
+bb profile apply          # Apply hardware-optimized widget settings
 bb wallpaper set <name>   # Switch desktop and 4K video lockscreen wallpaper
 bb audio preset <name>    # Switch audio equalizer preset
 bb watch --once           # Check live configuration drift
@@ -187,8 +220,8 @@ bb open-zen-mods          # Open Zen Mod install URLs in browser
 
 ### Running Tests & Linting
 ```bash
-bb test                   # Run full Clojure test suite across all 14 modules
-bb check                  # Run dry-run verification, backup checks, theme, diff, and bundle checks
+bb test                   # Run full Clojure test suite across all 18 modules
+bb check                  # Run comprehensive validation routines
 bb repl                   # Start nREPL server on port 1667
 ```
 

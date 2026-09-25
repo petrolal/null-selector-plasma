@@ -7,9 +7,13 @@
             [mono-rice.cmd.bundle :as cmd-bundle]
             [mono-rice.cmd.daemon :as cmd-daemon]
             [mono-rice.cmd.diff :as cmd-diff]
+            [mono-rice.cmd.doctor :as cmd-doctor]
+            [mono-rice.cmd.fetch :as cmd-fetch]
             [mono-rice.cmd.harvest :as cmd-harvest]
             [mono-rice.cmd.install :as cmd-install]
+            [mono-rice.cmd.kwin :as cmd-kwin]
             [mono-rice.cmd.plasmoid :as cmd-plasmoid]
+            [mono-rice.cmd.profile :as cmd-profile]
             [mono-rice.cmd.rollback :as cmd-rollback]
             [mono-rice.cmd.theme :as cmd-theme]
             [mono-rice.cmd.tui :as cmd-tui]
@@ -33,6 +37,7 @@
   (println)
   (println "Commands:")
   (println "  tui           Launch interactive Cyberpunk terminal dashboard menu")
+  (println "  doctor        Deep system diagnostic health checks and auto-repair (--fix)")
   (println "  install       Deploy and install complete null-sector-plasma rice")
   (println "  harvest       Scrape live $HOME configs back into repository with template sanitization")
   (println "  backup        Create timestamped backup snapshot of current configurations")
@@ -40,6 +45,9 @@
   (println "  diff          Inspect line-by-line visual differences between repo and $HOME")
   (println "  verify        Verify system health, package dependencies, and layout integrity")
   (println "  theme         List or switch active theme profile (list | set <name>)")
+  (println "  kwin          Declarative window rules, translucency, and blur effects manager")
+  (println "  fetch         Fastfetch and terminal ASCII aesthetic logo synchronizer")
+  (println "  profile       Hardware environment detector and form-factor profile tuner")
   (println "  wallpaper     Manage and sync desktop and lockscreen 4K video wallpapers")
   (println "  audio         Configure and switch CAVA / Kurve audio equalizer presets")
   (println "  watch         Monitor configuration drift against repository templates")
@@ -54,6 +62,7 @@
   (println "  -y, --yes            Non-interactive mode (answer yes to all prompts)")
   (println "  -s, --symlinks-only  Deploy symlinks and configurations only (skip package manager)")
   (println "  -d, --deps-only      Install package dependencies only")
+  (println "      --fix            Automatically remediate detected issues in doctor command")
   (println "      --once           Run watch sentinel once and exit immediately")
   (println "      --interval <sec> Set polling interval for watch/daemon (default: 10)")
   (println "      --no-backup      Skip backing up existing configuration files")
@@ -70,6 +79,7 @@
     :yes           {:alias :y :coerce :boolean :desc "Non-interactive mode"}
     :symlinks-only {:alias :s :coerce :boolean :desc "Deploy symlinks only"}
     :deps-only     {:alias :d :coerce :boolean :desc "Install dependencies only"}
+    :fix           {:alias :f :coerce :boolean :desc "Auto-repair detected issues"}
     :once          {:coerce :boolean :desc "Run once and exit"}
     :interval      {:coerce :int :desc "Interval in seconds"}
     :no-backup     {:coerce :boolean :desc "Skip backing up existing configs"}
@@ -90,6 +100,7 @@
       (let [manifest (load-manifest!)]
         (case cmd
           "tui"           (cmd-tui/run-tui! manifest opts)
+          "doctor"        (cmd-doctor/run-doctor-cmd! manifest rest-args opts)
           "install"       (cmd-install/install! manifest opts)
           "backup"        (cmd-backup/backup! manifest opts)
           "rollback"      (cmd-rollback/run-rollback-cmd! rest-args opts)
@@ -97,6 +108,9 @@
           "harvest"       (cmd-harvest/harvest! manifest opts)
           "verify"        (cmd-verify/verify! manifest opts)
           "theme"         (cmd-theme/run-theme-cmd! manifest rest-args opts)
+          "kwin"          (cmd-kwin/run-kwin-cmd! manifest rest-args opts)
+          "fetch"         (cmd-fetch/run-fetch-cmd! rest-args opts)
+          "profile"       (cmd-profile/run-profile-cmd! rest-args opts)
           "wallpaper"     (cmd-wallpaper/run-wallpaper-cmd! rest-args opts)
           "audio"         (cmd-audio/run-audio-cmd! rest-args opts)
           "watch"         (cmd-watch/run-watch-cmd! manifest opts)

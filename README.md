@@ -96,16 +96,20 @@ null-sector-plasma/
 │       ├── harvest.clj                   # Scrape active configs into repo
 │       ├── backup.clj                    # Snapshot creation
 │       ├── verify.clj                    # Diagnostic health verification
-│       ├── theme.clj                         # Dynamic theme switching CLI
-│       ├── watch.clj                         # Live configuration drift sentinel
-│       ├── rollback.clj                      # Snapshot rollback & restore CLI
-│       ├── diff.clj                          # Unified visual diff engine
-│       ├── bundle.clj                        # Portable archive export & import CLI
-│       ├── plasmoid.clj                      # Plasma 6 applet package manager
-│       ├── tui.clj                           # Interactive terminal dashboard & menu
-│       ├── daemon.clj                        # Systemd sentinel service & desktop notifications
-│       ├── wallpaper.clj                     # Desktop & lockscreen 4K video wallpaper sync
-│       └── audio.clj                         # CAVA / Kurve audio equalizer presets
+│       ├── doctor.clj                    # System health checks & auto-repair engine
+│       ├── theme.clj                     # Dynamic theme switching CLI
+│       ├── kwin.clj                      # Declarative KWin window rules & blur tuning
+│       ├── fetch.clj                     # Fastfetch & terminal ASCII aesthetic manager
+│       ├── profile.clj                   # Hardware profiler & form factor tuner
+│       ├── watch.clj                     # Live configuration drift sentinel
+│       ├── rollback.clj                  # Snapshot rollback & restore CLI
+│       ├── diff.clj                      # Unified visual diff engine
+│       ├── bundle.clj                    # Portable archive export & import CLI
+│       ├── plasmoid.clj                  # Plasma 6 applet package manager
+│       ├── tui.clj                       # Interactive terminal dashboard & menu
+│       ├── daemon.clj                    # Systemd sentinel service & desktop notifications
+│       ├── wallpaper.clj                 # Desktop & lockscreen 4K video wallpaper sync
+│       └── audio.clj                     # CAVA / Kurve audio equalizer presets
 │
 ├── test/mono_rice/                       # Automated test suite
 │   ├── sanitizer_test.clj
@@ -121,7 +125,11 @@ null-sector-plasma/
 │   ├── tui_test.clj
 │   ├── daemon_test.clj
 │   ├── wallpaper_test.clj
-│   └── audio_test.clj
+│   ├── audio_test.clj
+│   ├── doctor_test.clj
+│   ├── kwin_test.clj
+│   ├── fetch_test.clj
+│   └── profile_test.clj
 │
 ├── plasma/                               # Tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -156,8 +164,8 @@ bb install --dry-run
 # Run complete deployment:
 bb install
 
-# Run diagnostic verification:
-bb verify
+# Run diagnostic verification & health check:
+bb doctor
 ```
 
 ---
@@ -167,6 +175,8 @@ bb verify
 | Task / Command | Description |
 | :--- | :--- |
 | `bb tui` (or `./mono-rice tui`) | Launches interactive Cyberpunk terminal dashboard and action menu |
+| `bb doctor` (or `./mono-rice doctor`) | Runs deep health diagnostics across fonts, audio, compositor, and symlinks |
+| `bb doctor --fix` | Automatically repairs broken symlinks, recreates configs, and refreshes caches |
 | `bb install` (or `./mono-rice install`) | Deploys dependencies, plasmoids, wallpapers, themes, and panel layouts |
 | `bb install --dry-run` | Simulates installation without modifying files |
 | `bb install --deps-only` | Installs system packages and AUR extensions only |
@@ -177,6 +187,10 @@ bb verify
 | `bb diff` (or `./mono-rice diff [file]`) | Visual unified diff comparing repository templates with active `$HOME` dotfiles |
 | `bb verify` (or `./mono-rice verify`) | Diagnostic health check of packages, plasma widgets, and symlinks |
 | `bb theme list` / `bb theme set <name>` | Dynamic theme profile switcher (`monochrome-dark`, `monochrome-light`, `amber-crt`, `cyberpunk-red`) |
+| `bb kwin rules` / `bb kwin apply-rules` | Declarative window rules manager (Zen, Konsole, Discord, Spotify translucency) |
+| `bb kwin set-blur <val>` | Adjusts KWin background blur shader strength (1-10) |
+| `bb fetch list` / `bb fetch set <name>` | Fastfetch ASCII logo emblem switcher (NieR, Cyberpunk, Null-Sector, Arch) |
+| `bb profile detect` / `bb profile apply` | Hardware profiler detecting CPU/GPU/Form-factor with adaptive widget tuning |
 | `bb wallpaper list` / `bb wallpaper set <name>` | Manages and syncs desktop & lockscreen 4K video wallpapers |
 | `bb audio list` / `bb audio preset <name>` | Configures CAVA / Kurve audio equalizer presets on the fly |
 | `bb watch` / `bb watch --once` | Configuration drift sentinel monitoring tracked dotfiles against templates |
@@ -185,7 +199,7 @@ bb verify
 | `bb plasmoid list` / `bb plasmoid install <path>` | Plasma 6 plasmoid applet installer, updater, and manager |
 | `bb dump-widgets` | Pretty-prints live Plasma containments and plasmoid tree |
 | `bb open-zen-mods` | Dispatches Zen Browser Mod install pages |
-| `bb test` | Runs the automated Clojure test suite across all 14 modules |
+| `bb test` | Runs the automated Clojure test suite across all 18 modules |
 | `bb check` | Runs automated verification, backup checks, theme, diff, and bundle checks |
 
 ---
