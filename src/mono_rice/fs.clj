@@ -1,14 +1,25 @@
 (ns mono-rice.fs
   (:require [babashka.fs :as fs]
+            [clojure.edn :as edn]
             [clojure.string :as str]
             [mono-rice.proc :refer [command-exists? log-info log-success log-warn log-step sh! ask-confirm?]]))
 
 (defn home-dir []
   (fs/expand-home "~"))
 
+(defn expand-home [path]
+  (str (fs/expand-home (str path))))
+
 (defn repo-root []
   (fs/path (or (System/getenv "MONO_RICE_ROOT")
                (System/getProperty "user.dir"))))
+
+(defn read-manifest []
+  (let [root (repo-root)
+        manifest-path (fs/path root "rice.edn")]
+    (if (fs/exists? manifest-path)
+      (edn/read-string (slurp (str manifest-path)))
+      {})))
 
 (defn timestamp []
   (let [fmt (java.time.format.DateTimeFormatter/ofPattern "yyyyMMdd_HHmmss")

@@ -8,7 +8,7 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
 
 ---
 
-## 2. Implementation State (Completed Phases 1–20)
+## 2. Implementation State (Completed Phases 1–24)
 
 * **Phase 1: Foundation Setup**
   * Task configuration: [`bb.edn`](file:///home/petrolal/null-sector-plasma/bb.edn)
@@ -97,6 +97,38 @@ The codebase is driven by a pure functional **Clojure / Babashka** automation en
   * Form factor detection & hardware telemetry tuning: [`mono_rice.cmd.profile`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/profile.clj)
   * CLI command: `mono-rice profile [detect | apply]` / `bb profile`
 
+* **Phase 21: Plasma Keybinding & Shortcut Orchestrator**
+  * Declarative hotkey schema & `kglobalshortcutsrc` batch injection: [`mono_rice.cmd.shortcut`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/shortcut.clj)
+  * CLI command: `mono-rice shortcut [list | apply | export]` / `bb shortcut`
+
+* **Phase 22: Zen Browser Deep Sync & Workspace Engine**
+  * Glass CSS hot-reloader and enterprise extension injector: [`mono_rice.cmd.zen`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/zen.clj)
+  * CLI command: `mono-rice zen [status | sync-css | install-extensions | open-mods]` / `bb zen`
+
+* **Phase 23: Panel Colorizer Capsule Presets & Hot-Reloader**
+  * Segmented pill & capsule style presets with auto-switch triggers: [`mono_rice.cmd.panel`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/panel.clj)
+  * CLI command: `mono-rice panel [list | set <name> | reload]` / `bb panel`
+
+* **Phase 24: Remote Rice Sync & Multi-Machine Git Hub**
+  * Two-way remote Git synchronization and automated commit formatting: [`mono_rice.cmd.sync`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/sync.clj)
+  * CLI command: `mono-rice sync [status | pull | push]` / `bb sync`
+
+* **Phase 25: Boot & Display Manager Orchestrator**
+  * SDDM greeter preview/deploy and Plymouth graphical boot splash installer: [`mono_rice.cmd.boot`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/boot.clj)
+  * CLI command: `mono-rice boot [status | list | preview-sddm | apply-sddm | apply-plymouth <theme>]` / `bb boot`
+
+* **Phase 26: Shell Completion Generator**
+  * Fast dynamic auto-completions for Zsh, Bash, and Fish shells: [`mono_rice.cmd.completion`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/completion.clj)
+  * CLI command: `mono-rice completion [zsh | bash | fish] [--install]` / `bb completion`
+
+* **Phase 27: Security, Credential Leak Scanner & Vault Engine**
+  * Dotfile credential leak scanner & placeholder sanitizer: [`mono_rice.cmd.vault`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/vault.clj)
+  * CLI command: `mono-rice vault [scan | sanitize | restore]` / `bb vault`
+
+* **Phase 28: DBus Event Monitor & Dynamic Display Sentinel**
+  * DBus desktop signal listener for dynamic multi-screen resizing and lock events: [`mono_rice.cmd.events`](file:///home/petrolal/null-sector-plasma/src/mono_rice/cmd/events.clj)
+  * CLI command: `mono-rice event [listen | emit <signal>]` / `bb event`
+
 ---
 
 ## 3. Codebase Source Tree Map
@@ -144,9 +176,17 @@ null-sector-plasma/
 │       ├── diff.clj                      # mono-rice visual diff workflow
 │       ├── verify.clj                    # mono-rice verify workflow
 │       ├── theme.clj                     # mono-rice theme workflow
+│       ├── shortcut.clj                  # mono-rice shortcut orchestrator
+│       ├── zen.clj                       # mono-rice Zen Browser manager
+│       ├── panel.clj                     # mono-rice panel colorizer preset manager
 │       ├── kwin.clj                      # mono-rice KWin window rules & blur tuning
 │       ├── fetch.clj                     # mono-rice Fastfetch ASCII aesthetic manager
 │       ├── profile.clj                   # mono-rice hardware profiler & form factor tuner
+│       ├── sync.clj                      # mono-rice remote Git dotfile hub
+│       ├── boot.clj                      # mono-rice SDDM and Plymouth boot splash orchestrator
+│       ├── completion.clj                # mono-rice shell completion generator
+│       ├── vault.clj                     # mono-rice security audit & credential sanitizer
+│       ├── events.clj                    # mono-rice DBus event monitor & dynamic sentinel
 │       ├── wallpaper.clj                 # mono-rice wallpaper & lockscreen sync
 │       ├── audio.clj                     # mono-rice audio equalizer presets
 │       ├── watch.clj                     # mono-rice watch drift sentinel
@@ -172,7 +212,15 @@ null-sector-plasma/
 │   ├── doctor_test.clj                   # Unit tests for diagnostic health & repair
 │   ├── kwin_test.clj                     # Unit tests for KWin window rules & blur
 │   ├── fetch_test.clj                    # Unit tests for Fastfetch ASCII presets
-│   └── profile_test.clj                  # Unit tests for hardware profiling
+│   ├── profile_test.clj                  # Unit tests for hardware profiling
+│   ├── shortcut_test.clj                 # Unit tests for shortcut orchestrator
+│   ├── zen_cmd_test.clj                  # Unit tests for Zen Browser CLI module
+│   ├── panel_test.clj                    # Unit tests for panel colorizer preset manager
+│   ├── sync_test.clj                     # Unit tests for remote Git dotfile hub
+│   ├── boot_test.clj                     # Unit tests for SDDM and Plymouth boot themes
+│   ├── completion_test.clj               # Unit tests for shell auto-completions
+│   ├── vault_test.clj                    # Unit tests for security audit & dotfile sanitizer
+│   └── events_test.clj                   # Unit tests for DBus desktop events
 │
 ├── plasma/                               # Modular tracked KDE configurations
 ├── kvantum/                              # Kvantum translucent theme engine
@@ -201,6 +249,12 @@ bb diff                   # Visual line-by-line diff of repo templates vs $HOME
 bb verify                 # Check system dependencies, layout widgets, and symlinks
 bb theme list             # List available theme profiles
 bb theme set <name>       # Switch active theme profile on the fly
+bb shortcut list          # List declarative hotkeys
+bb shortcut apply         # Apply shortcuts to kglobalshortcutsrc
+bb zen status             # Check Zen Browser integration state
+bb zen sync-css           # Synchronize userChrome.css translucency
+bb panel list             # List panel capsule presets
+bb panel set <name>       # Switch active panel capsule preset
 bb kwin rules             # List declarative KWin window rules
 bb kwin apply-rules       # Apply window transparency and borderless rules
 bb kwin set-blur <val>    # Adjust KWin background blur strength (1-10)
@@ -208,6 +262,16 @@ bb fetch list             # List Fastfetch ASCII presets
 bb fetch set <preset>     # Apply Fastfetch ASCII logo (NieR, Cyberpunk, Null-Sector, Arch)
 bb profile detect         # Detect hardware environment (CPU/GPU/Form-factor)
 bb profile apply          # Apply hardware-optimized widget settings
+bb sync status            # Check remote Git dotfile sync state
+bb sync pull              # Pull upstream updates safely
+bb sync push              # Commit and push dotfile mutations
+bb boot status            # Check active SDDM and Plymouth boot splash state
+bb boot apply-sddm        # Install and activate SDDM theme
+bb boot preview-sddm      # Live test preview SDDM login screen
+bb completion zsh         # Generate Zsh completion script (--install)
+bb vault scan             # Scan dotfiles for credentials or secret leaks
+bb vault sanitize         # Replace leaked secrets with placeholders
+bb event listen           # Listen to DBus signals for multi-monitor adaptation
 bb wallpaper set <name>   # Switch desktop and 4K video lockscreen wallpaper
 bb audio preset <name>    # Switch audio equalizer preset
 bb watch --once           # Check live configuration drift
@@ -220,7 +284,7 @@ bb open-zen-mods          # Open Zen Mod install URLs in browser
 
 ### Running Tests & Linting
 ```bash
-bb test                   # Run full Clojure test suite across all 18 modules
+bb test                   # Run full Clojure test suite across all 26 modules
 bb check                  # Run comprehensive validation routines
 bb repl                   # Start nREPL server on port 1667
 ```
@@ -239,3 +303,4 @@ bb repl                   # Start nREPL server on port 1667
 
 3. **Keep Tests Green:**
    * Whenever adding features or modifying modules, add matching tests in `test/mono_rice/` and run `bb test`.
+

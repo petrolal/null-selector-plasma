@@ -31,6 +31,9 @@
 (defn log-success [& args]
   (println (colorize :green "[OK]") (str/join " " args)))
 
+(defn log-ok [& args]
+  (apply log-success args))
+
 (defn log-warn [& args]
   (println (colorize :yellow "[WARN]") (str/join " " args)))
 
@@ -89,3 +92,13 @@
                            :err  (:err result)
                            :cmd  final-cmd}))
           result)))))
+
+(defn exec!
+  "Convenience wrapper around sh! with variable arguments or sequence."
+  [& args]
+  (let [opts (when (map? (last args)) (last args))
+        cmd-args (if opts (butlast args) args)
+        flat-cmd (if (and (= 1 (count cmd-args)) (sequential? (first cmd-args)))
+                   (first cmd-args)
+                   cmd-args)]
+    (sh! flat-cmd (merge {:throw? false} opts))))

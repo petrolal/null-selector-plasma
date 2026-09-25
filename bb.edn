@@ -19,12 +19,28 @@
           :task (apply core/-main "verify" *command-line-args*)}
   theme {:doc "List or switch active theme profile (bb theme list | bb theme set <name>)"
          :task (apply core/-main "theme" *command-line-args*)}
+  shortcut {:doc "Declarative Plasma shortcut and hotkey manager (bb shortcut list | bb shortcut apply)"
+            :task (apply core/-main "shortcut" *command-line-args*)}
+  zen {:doc "Zen Browser profile discovery, glass styling, and extensions manager (bb zen status | bb zen sync-css)"
+       :task (apply core/-main "zen" *command-line-args*)}
+  panel {:doc "Panel Colorizer capsule preset manager and reloader (bb panel list | bb panel set <name>)"
+         :task (apply core/-main "panel" *command-line-args*)}
   kwin {:doc "Manage declarative window rules, translucency, and blur (bb kwin rules | bb kwin apply-rules)"
         :task (apply core/-main "kwin" *command-line-args*)}
   fetch {:doc "Fastfetch and terminal ASCII aesthetic logo synchronizer (bb fetch list | bb fetch set <name>)"
          :task (apply core/-main "fetch" *command-line-args*)}
   profile {:doc "Hardware environment detector and form-factor profile tuner (bb profile detect)"
            :task (apply core/-main "profile" *command-line-args*)}
+  sync {:doc "Remote Git dotfile synchronization hub (bb sync status | bb sync pull | bb sync push)"
+        :task (apply core/-main "sync" *command-line-args*)}
+  boot {:doc "SDDM display manager and Plymouth splash theme orchestrator (bb boot status | bb boot list)"
+        :task (apply core/-main "boot" *command-line-args*)}
+  completion {:doc "Generate shell completions for zsh, bash, or fish (bb completion zsh)"
+              :task (apply core/-main "completion" *command-line-args*)}
+  vault {:doc "Security audit, secret scanner and dotfile sanitizer (bb vault scan | bb vault sanitize)"
+         :task (apply core/-main "vault" *command-line-args*)}
+  event {:doc "DBus desktop event listener & dynamic display sentinel (bb event listen | bb event emit)"
+         :task (apply core/-main "event" *command-line-args*)}
   wallpaper {:doc "Manage and sync desktop and lockscreen 4K video wallpapers"
              :task (apply core/-main "wallpaper" *command-line-args*)}
   audio {:doc "Configure and switch CAVA / Kurve audio equalizer presets"
@@ -61,6 +77,14 @@
                          'mono-rice.kwin-test
                          'mono-rice.fetch-test
                          'mono-rice.profile-test
+                         'mono-rice.shortcut-test
+                         'mono-rice.zen-cmd-test
+                         'mono-rice.panel-test
+                         'mono-rice.sync-test
+                         'mono-rice.boot-test
+                         'mono-rice.completion-test
+                         'mono-rice.vault-test
+                         'mono-rice.events-test
                          'clojure.test)
                 (let [{:keys [fail error]} (clojure.test/run-tests 'mono-rice.sanitizer-test
                                                                    'mono-rice.manifest-test
@@ -79,7 +103,15 @@
                                                                    'mono-rice.doctor-test
                                                                    'mono-rice.kwin-test
                                                                    'mono-rice.fetch-test
-                                                                   'mono-rice.profile-test)]
+                                                                   'mono-rice.profile-test
+                                                                   'mono-rice.shortcut-test
+                                                                   'mono-rice.zen-cmd-test
+                                                                   'mono-rice.panel-test
+                                                                   'mono-rice.sync-test
+                                                                   'mono-rice.boot-test
+                                                                   'mono-rice.completion-test
+                                                                   'mono-rice.vault-test
+                                                                   'mono-rice.events-test)]
                   (when (or (pos? fail) (pos? error))
                     (System/exit 1))))}
   check {:doc "Run dry-run verification check on all core flows"
@@ -90,9 +122,17 @@
                  (core/-main "verify")
                  (core/-main "backup" "--dry-run")
                  (core/-main "theme" "list")
+                 (core/-main "shortcut" "list")
+                 (core/-main "zen" "status")
+                 (core/-main "panel" "list")
                  (core/-main "kwin" "rules")
                  (core/-main "fetch" "list")
                  (core/-main "profile" "detect")
+                 (core/-main "sync" "status")
+                 (core/-main "boot" "status")
+                 (core/-main "completion" "zsh")
+                 (core/-main "vault" "scan")
+                 (core/-main "event" "emit" "org.kde.KScreen" "--dry-run")
                  (core/-main "wallpaper" "list")
                  (core/-main "audio" "list")
                  (core/-main "watch" "--once")

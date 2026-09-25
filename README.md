@@ -187,10 +187,18 @@ bb doctor
 | `bb diff` (or `./mono-rice diff [file]`) | Visual unified diff comparing repository templates with active `$HOME` dotfiles |
 | `bb verify` (or `./mono-rice verify`) | Diagnostic health check of packages, plasma widgets, and symlinks |
 | `bb theme list` / `bb theme set <name>` | Dynamic theme profile switcher (`monochrome-dark`, `monochrome-light`, `amber-crt`, `cyberpunk-red`) |
+| `bb shortcut list` / `bb shortcut apply` | Declarative Plasma hotkeys and application shortcut orchestrator |
+| `bb zen status` / `bb zen sync-css` | Zen Browser profile status, glass styling, and extension manager |
+| `bb panel list` / `bb panel set <name>` | Panel Colorizer segmented capsule preset selector and hot-reloader |
 | `bb kwin rules` / `bb kwin apply-rules` | Declarative window rules manager (Zen, Konsole, Discord, Spotify translucency) |
 | `bb kwin set-blur <val>` | Adjusts KWin background blur shader strength (1-10) |
 | `bb fetch list` / `bb fetch set <name>` | Fastfetch ASCII logo emblem switcher (NieR, Cyberpunk, Null-Sector, Arch) |
 | `bb profile detect` / `bb profile apply` | Hardware profiler detecting CPU/GPU/Form-factor with adaptive widget tuning |
+| `bb sync status` / `bb sync pull` / `bb sync push` | Remote Git dotfile synchronization hub |
+| `bb boot status` / `bb boot apply-sddm` | SDDM display manager & Plymouth boot splash theme orchestrator |
+| `bb completion [zsh\|bash\|fish]` | Generates shell auto-completions for all 28+ subcommands (`--install`) |
+| `bb vault scan` / `bb vault sanitize` | Security audit, credential leak scanner & dotfile secret sanitizer |
+| `bb event listen` / `bb event emit <signal>` | DBus desktop event listener & dynamic display scaling sentinel |
 | `bb wallpaper list` / `bb wallpaper set <name>` | Manages and syncs desktop & lockscreen 4K video wallpapers |
 | `bb audio list` / `bb audio preset <name>` | Configures CAVA / Kurve audio equalizer presets on the fly |
 | `bb watch` / `bb watch --once` | Configuration drift sentinel monitoring tracked dotfiles against templates |
@@ -199,7 +207,7 @@ bb doctor
 | `bb plasmoid list` / `bb plasmoid install <path>` | Plasma 6 plasmoid applet installer, updater, and manager |
 | `bb dump-widgets` | Pretty-prints live Plasma containments and plasmoid tree |
 | `bb open-zen-mods` | Dispatches Zen Browser Mod install pages |
-| `bb test` | Runs the automated Clojure test suite across all 18 modules |
+| `bb test` | Runs the automated Clojure test suite across all 26 modules |
 | `bb check` | Runs automated verification, backup checks, theme, diff, and bundle checks |
 
 ---

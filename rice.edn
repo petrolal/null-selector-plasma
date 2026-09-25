@@ -79,6 +79,19 @@
    :gtk-color-scheme "prefer-dark"
    :gtk-theme        "Breeze-Dark"}}
 
+ :shortcuts
+ {:terminal    ["Ctrl+Alt+T" "Meta+Return"]
+  :launcher    ["Meta"]
+  :tiles-editor "none"
+  :spectacle   ["Print" "Meta+Shift+S"]
+  :krunner     ["Alt+Space"]}
+
+ :panel-presets
+ {:main-setup  {:name "Main Setup (Capsules)" :desc "Floating segmented capsule island preset"}
+  :main-blur   {:name "Main Blur (Translucent)" :desc "Frosted blur bar for maximized windows"}
+  :cyber-hud   {:name "Cyber HUD (NieR)" :desc "High-contrast segmented cyberpunk borders"}
+  :minimal-dock {:name "Minimal Centered Dock" :desc "Compact centered panel dock aesthetic"}}
+
  :terminal
  {:default    "konsole"
   :service    "org.kde.konsole.desktop"
@@ -171,4 +184,21 @@
   ".config/Kvantum"
   ".config/fastfetch"
   ".config/starship.toml"
-  ".zshrc"]}
+  ".zshrc"]
+
+ :boot
+ {:sddm     {:theme-name "null-sector-sddm"
+             :source     "assets/sddm-theme"
+             :target     "/usr/share/sddm/themes/null-sector-sddm"
+             :config     "/etc/sddm.conf.d/kde_settings.conf"}
+  :plymouth {:themes       {:dot-lock  {:name "dotLock"  :source "assets/plymouth-theme/dotLock"  :target "/usr/share/plymouth/themes/dotLock"}
+                            :dot-lock-g {:name "dotLockG" :source "assets/plymouth-theme/dotLockG" :target "/usr/share/plymouth/themes/dotLockG"}}
+             :active-theme :dot-lock
+             :config       "/etc/plymouth/plymouthd.conf"}}
+
+ :vault
+ {:rules [{:name "SSH Private Key" :pattern "BEGIN [A-Z0-9_-]+ PRIVATE KEY"}
+          {:name "GitHub Token"    :pattern "gh[pousr]_[A-Za-z0-9_]{36,}"}
+          {:name "Generic API Key" :pattern "(?i)(api[_-]?key|secret[_-]?key|access[_-]?token)[\"']?\\s*[:=]\\s*[\"'][a-zA-Z0-9_\\-]{16,}[\"']"}
+          {:name "Wi-Fi Password"  :pattern "(?i)psk=[a-zA-Z0-9!@#$%^&*()_+=-]{8,}"}]
+  :ignore-paths [".git" ".repo" "target"]}}
