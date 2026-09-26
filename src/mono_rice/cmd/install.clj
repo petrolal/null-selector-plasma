@@ -6,7 +6,7 @@
             [mono-rice.fs :as rfs]
             [mono-rice.kde :as rkde]
             [mono-rice.layout.sanitizer :as san]
-            [mono-rice.proc :refer [command-exists? log-info log-step log-success log-warn sh! sudo-validate!]]
+            [mono-rice.proc :refer [ask-confirm? command-exists? log-info log-step log-success log-warn sh! sudo-validate!]]
             [mono-rice.zen.mods :as zmods]
             [mono-rice.zen.policies :as zpol]
             [mono-rice.zen.profile :as zprof]))
@@ -164,8 +164,15 @@
         (when-not (:no-shell-change opts)
           (set-default-shell-fish! opts))
 
-        ;; 12. Open Zen Mods if requested
-        (when (:open-zen-mods opts)
-          (zmods/open-zen-mods! manifest))
-
-        (log-step "Installation Completed Successfully!")))))
+        (log-step "Installation Completed Successfully!")
+        (println)
+        (log-info "Default login shell is configured to Fish (/usr/bin/fish).")
+        (log-info "A system reboot or session logout is recommended to activate all environment changes.")
+        (when-not (or (:dry-run opts) (:no-reboot opts))
+          (if (:reboot opts)
+            (do
+              (log-info "Reboot requested via flag. Rebooting system now...")
+              (sh! ["systemctl" "reboot"] {:throw? false}))
+            (when (ask-confirm? "Would you like to reboot the system now to apply all session changes?" (assoc opts :default false))
+              (log-info "Rebooting system...")
+              (sh! ["systemctl" "reboot"] {:throw? false}))))))))

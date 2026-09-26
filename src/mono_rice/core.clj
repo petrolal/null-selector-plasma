@@ -89,6 +89,8 @@
   (println "      --open-zen-mods  Open Zen Mod pages after installation")
   (println "      --no-restart     Skip restarting plasmashell after layout deploy")
   (println "      --no-shell-change Skip automatically setting Fish as default shell")
+  (println "      --reboot         Reboot system immediately after installation")
+  (println "      --no-reboot      Do not prompt or reboot after installation")
   (println "  -h, --help           Show this help message"))
 
 (def cli-spec
@@ -108,6 +110,8 @@
     :open-zen-mods    {:coerce :boolean :desc "Open Zen Mod pages"}
     :no-restart       {:coerce :boolean :desc "Skip restarting plasmashell"}
     :no-shell-change  {:coerce :boolean :desc "Skip setting default shell to fish"}
+    :reboot           {:coerce :boolean :desc "Reboot immediately after installation"}
+    :no-reboot        {:coerce :boolean :desc "Skip reboot prompt after installation"}
     :help             {:alias :h :coerce :boolean :desc "Show help"}}})
 
 (defn- run-boot-cmd! [args opts]

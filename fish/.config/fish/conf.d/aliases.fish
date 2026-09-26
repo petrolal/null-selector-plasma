@@ -39,6 +39,11 @@ alias gd='git diff'
 
 # System & Rice Maintenance
 alias ff='fastfetch'
-alias reload-plasma='systemctl --user restart plasma-plasmashell.service 2>/dev/null; or begin; kquitapp6 plasmashell 2>/dev/null; kstart plasmashell >/dev/null 2>&1 &; end'
+function reload-plasma -d "Reload KDE Plasma Shell"
+    if not systemctl --user restart plasma-plasmashell.service 2>/dev/null
+        kquitapp6 plasmashell 2>/dev/null
+        kstart plasmashell >/dev/null 2>&1 &
+    end
+end
 alias reload-kwin='qdbus6 org.kde.KWin /KWin reconfigure'
 alias font-refresh='fc-cache -fv'

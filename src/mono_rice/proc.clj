@@ -56,16 +56,18 @@
 (defn ask-confirm?
   "Prompts user for yes/no confirmation. Returns true on yes or if auto-yes."
   ([prompt] (ask-confirm? prompt {}))
-  ([prompt {:keys [auto-yes yes]}]
+  ([prompt {:keys [auto-yes yes default] :or {default false}}]
    (if (or auto-yes yes)
      true
      (if (nil? (System/console))
-       true
+       default
        (do
-         (print (colorize :yellow (str prompt " [y/N]: ")))
+         (print (colorize :yellow (str prompt (if default " [Y/n]: " " [y/N]: "))))
          (flush)
          (let [resp (read-line)]
-           (boolean (re-matches #"^[yY]([eE][sS])?$" (str/trim (or resp ""))))))))))
+           (if (str/blank? resp)
+             default
+             (boolean (re-matches #"^[yY]([eE][sS])?$" (str/trim resp))))))))))
 
 (defn sh!
   "Executes a system process with optional :sudo, :dry-run, :dir, :env, :throw?, :out, :err, :inherit.
