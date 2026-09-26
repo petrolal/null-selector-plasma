@@ -68,9 +68,9 @@
            (boolean (re-matches #"^[yY]([eE][sS])?$" (str/trim (or resp ""))))))))))
 
 (defn sh!
-  "Executes a system process with optional :sudo, :dry-run, :dir, :env, :throw?, :out, :err.
+  "Executes a system process with optional :sudo, :dry-run, :dir, :env, :throw?, :out, :err, :inherit.
    Returns a map with :exit, :out, :err."
-  [cmd & [{:keys [sudo dry-run dir env throw? out err]
+  [cmd & [{:keys [sudo dry-run dir env throw? out err inherit]
            :or   {throw? true out :string err :string}}]]
   (let [cmd-vec   (if (sequential? cmd) (mapv str cmd) (vec (str/split (str cmd) #"\s+")))
         final-cmd (cond->> cmd-vec
@@ -80,18 +80,21 @@
       (do
         (log-info "[DRY-RUN] Would run:" cmd-str)
         {:exit 0 :out "" :err ""})
-      (let [result (apply p/shell {:dir dir
-                                   :env env
-                                   :out out
-                                   :err err
-                                   :continue true}
-                          final-cmd)]
+      (let [shell-opts (cond-> {:dir dir :env env :continue true}
+                         inherit (assoc :inherit true)
+                         (not inherit) (assoc :out out :err err))
+            result (apply p/shell shell-opts final-cmd)]
         (if (and (not (zero? (:exit result))) throw?)
           (throw (ex-info (str "Command failed: " cmd-str)
                           {:exit (:exit result)
                            :err  (:err result)
                            :cmd  final-cmd}))
           result)))))
+
+(defn sudo-validate! []
+  (when (command-exists? "sudo")
+    (log-step "Requesting Administrator (sudo) Privileges")
+    (sh! ["sudo" "-v"] {:inherit true :throw? false})))
 
 (defn exec!
   "Convenience wrapper around sh! with variable arguments or sequence."

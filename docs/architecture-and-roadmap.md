@@ -226,7 +226,7 @@ null-sector-plasma/
 ├── kvantum/                              # Kvantum translucent theme engine
 ├── fastfetch/                            # Fastfetch configuration
 ├── starship/                             # Starship prompt configuration
-├── zsh/                                  # Zsh shell configuration
+├── fish/                                 # Fish shell configuration
 └── assets/                               # Wallpapers, SDDM & Plymouth themes
 ```
 
@@ -268,7 +268,7 @@ bb sync push              # Commit and push dotfile mutations
 bb boot status            # Check active SDDM and Plymouth boot splash state
 bb boot apply-sddm        # Install and activate SDDM theme
 bb boot preview-sddm      # Live test preview SDDM login screen
-bb completion zsh         # Generate Zsh completion script (--install)
+bb completion fish        # Generate Fish completion script (--install)
 bb vault scan             # Scan dotfiles for credentials or secret leaks
 bb vault sanitize         # Replace leaked secrets with placeholders
 bb event listen           # Listen to DBus signals for multi-monitor adaptation

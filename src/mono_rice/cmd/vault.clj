@@ -57,7 +57,7 @@
         rules (or (map (fn [r] (update r :pattern re-pattern)) (get-in manifest [:vault :rules]))
                   default-rules)
         ignore-list (or (get-in manifest [:vault :ignore-paths]) [".git" "target" ".repo"])
-        scan-paths ["fastfetch" "kvantum" "plasma" "starship" "zsh" "rice.edn"]
+        scan-paths ["fastfetch" "kvantum" "plasma" "starship" "fish" "rice.edn"]
         findings (flatten (map #(scan-directory % rules ignore-list) scan-paths))]
     (println "Security Audit & Dotfile Credential Scanner:")
     (println "============================================")

@@ -16,12 +16,12 @@
   "Checks drift between repo tracked file and live home config."
   [repo-root home rel-path]
   (let [live-path (fs/path home rel-path)
-        ;; Look for repo file in plasma/, kvantum/, fastfetch/, starship/, zsh/, or root
+        ;; Look for repo file in plasma/, kvantum/, fastfetch/, starship/, fish/, or root
         repo-candidates [(fs/path repo-root "plasma" rel-path)
                          (fs/path repo-root "kvantum" rel-path)
                          (fs/path repo-root "fastfetch" rel-path)
                          (fs/path repo-root "starship" rel-path)
-                         (fs/path repo-root "zsh" rel-path)
+                         (fs/path repo-root "fish" rel-path)
                          (fs/path repo-root rel-path)]
         repo-path (first (filter fs/exists? repo-candidates))]
     (cond

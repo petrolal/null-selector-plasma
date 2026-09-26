@@ -18,7 +18,7 @@
       (do
         (let [{:keys [exit out err]}
               (sh! ["tar" "--exclude=.git" "--exclude=.github" "-czf" out-file
-                    "rice.edn" "plasma" "kvantum" "fastfetch" "starship" "zsh" "cava" "assets"]
+                    "rice.edn" "plasma" "kvantum" "fastfetch" "starship" "fish" "cava" "assets"]
                    {:dir (str root) :throw? false})]
           (if (zero? exit)
             (do

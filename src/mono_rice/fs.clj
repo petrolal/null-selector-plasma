@@ -255,13 +255,13 @@
       (symlink! (fs/path root "cava" ".config" "cava" "config")
                 (fs/path home ".config" "cava" "config") {:dry-run dry-run}))
 
-    ;; Zsh
-    (when (fs/exists? (fs/path root "zsh" ".zshrc"))
-      (symlink! (fs/path root "zsh" ".zshrc")
-                (fs/path home ".zshrc") {:dry-run dry-run}))
-    (when (fs/exists? (fs/path root "zsh" ".config" "zsh" "aliases.zsh"))
-      (symlink! (fs/path root "zsh" ".config" "zsh" "aliases.zsh")
-                (fs/path home ".config" "zsh" "aliases.zsh") {:dry-run dry-run}))
+    ;; Fish
+    (when (fs/exists? (fs/path root "fish" ".config" "fish" "config.fish"))
+      (symlink! (fs/path root "fish" ".config" "fish" "config.fish")
+                (fs/path home ".config" "fish" "config.fish") {:dry-run dry-run}))
+    (when (fs/exists? (fs/path root "fish" ".config" "fish" "conf.d" "aliases.fish"))
+      (symlink! (fs/path root "fish" ".config" "fish" "conf.d" "aliases.fish")
+                (fs/path home ".config" "fish" "conf.d" "aliases.fish") {:dry-run dry-run}))
 
     ;; Kvantum
     (link-dir-children! (fs/path root "kvantum" ".config" "Kvantum")

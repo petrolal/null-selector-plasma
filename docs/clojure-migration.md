@@ -115,7 +115,7 @@ Instead of hardcoded Bash arrays, all rice components are declared in `rice.edn`
  :dependencies
  {:pacman ["base-devel" "git" "cmake" "extra-cmake-modules" "stow"
            "kvantum" "ttf-jetbrains-mono-nerd" "konsole" "cava"
-           "ffmpeg" "starship" "fastfetch" "zsh" "dolphin" "discord"
+           "ffmpeg" "starship" "fastfetch" "fish" "dolphin" "discord"
            "kservice" "emacs"]
   :aur    ["yamis-icon-theme-git"
            "bibata-cursor-git"
@@ -167,7 +167,7 @@ null-sector-plasma/
 ├── kvantum/                              # Kvantum translucent theme engine
 ├── fastfetch/                            # Fastfetch configuration
 ├── starship/                             # Starship prompt configuration
-├── zsh/                                  # Zsh shell configuration
+├── fish/                                  # Zsh shell configuration
 └── assets/                               # Wallpapers, screenshots, SDDM & Plymouth themes
 ```
 

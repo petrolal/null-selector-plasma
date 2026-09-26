@@ -61,7 +61,7 @@
   (println "  profile       Hardware environment detector and form-factor profile tuner")
   (println "  sync          Two-way remote Git synchronization and dotfile hub (status | pull | push)")
   (println "  boot          SDDM display manager & Plymouth boot splash theme orchestrator")
-  (println "  completion    Generate shell auto-completions (zsh | bash | fish) [--install]")
+  (println "  completion    Generate shell auto-completions (fish | zsh | bash) [--install]")
   (println "  vault         Security audit, secret scanner & dotfile sanitizer (scan | sanitize | restore)")
   (println "  event         DBus desktop event listener & dynamic display sentinel (listen | emit)")
   (println "  wallpaper     Manage and sync desktop and lockscreen 4K video wallpapers")
@@ -88,6 +88,7 @@
   (println "      --plymouth       Install dotLock Plymouth boot splash theme")
   (println "      --open-zen-mods  Open Zen Mod pages after installation")
   (println "      --no-restart     Skip restarting plasmashell after layout deploy")
+  (println "      --no-shell-change Skip automatically setting Fish as default shell")
   (println "  -h, --help           Show this help message"))
 
 (def cli-spec
@@ -104,9 +105,10 @@
     :no-layout     {:coerce :boolean :desc "Skip panel layout"}
     :sddm          {:coerce :boolean :desc "Install SDDM theme"}
     :plymouth      {:coerce :boolean :desc "Install Plymouth theme"}
-    :open-zen-mods {:coerce :boolean :desc "Open Zen Mod pages"}
-    :no-restart    {:coerce :boolean :desc "Skip restarting plasmashell"}
-    :help          {:alias :h :coerce :boolean :desc "Show help"}}})
+    :open-zen-mods    {:coerce :boolean :desc "Open Zen Mod pages"}
+    :no-restart       {:coerce :boolean :desc "Skip restarting plasmashell"}
+    :no-shell-change  {:coerce :boolean :desc "Skip setting default shell to fish"}
+    :help             {:alias :h :coerce :boolean :desc "Show help"}}})
 
 (defn- run-boot-cmd! [args opts]
   (let [subcmd (first args)]

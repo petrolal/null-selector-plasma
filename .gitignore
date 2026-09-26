@@ -16,6 +16,8 @@
 *.token
 
 # Shell & Command History
+.fish_history*
+fish_history*
 .zsh_history*
 .bash_history*
 .histfile*

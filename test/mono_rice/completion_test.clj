@@ -20,10 +20,15 @@
   (testing "Fish completion generation"
     (let [fish (comp/generate-fish-completion)]
       (is (string? fish))
-      (is (str/includes? fish "complete -c mono-rice"))))
+      (is (str/includes? fish "complete -c mono-rice"))
+      (is (str/includes? fish "complete -c bb"))
+      (is (str/includes? fish "__fish_mono_rice_needs_command"))))
+
+  (testing "Default shell completion"
+    (is (true? (comp/generate nil {:dry-run true :install true}))))
 
   (testing "Completion install dry-run"
+    (is (true? (comp/generate "fish" {:dry-run true :install true})))
     (is (true? (comp/generate "zsh" {:dry-run true :install true})))
     (is (true? (comp/generate "bash" {:dry-run true :install true})))
-    (is (true? (comp/generate "fish" {:dry-run true :install true})))
     (is (false? (comp/generate "powershell" {:dry-run true :install true})))))

@@ -156,7 +156,7 @@
            "ffmpeg"
            "starship"
            "fastfetch"
-           "zsh"
+           "fish"
            "dolphin"
            "discord"
            "kservice"
@@ -184,7 +184,8 @@
   ".config/Kvantum"
   ".config/fastfetch"
   ".config/starship.toml"
-  ".zshrc"]
+  ".config/fish/config.fish"
+  ".config/fish/conf.d/aliases.fish"]
 
  :boot
  {:sddm     {:theme-name "null-sector-sddm"

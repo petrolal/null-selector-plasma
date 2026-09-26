@@ -35,7 +35,7 @@
         :task (apply core/-main "sync" *command-line-args*)}
   boot {:doc "SDDM display manager and Plymouth splash theme orchestrator (bb boot status | bb boot list)"
         :task (apply core/-main "boot" *command-line-args*)}
-  completion {:doc "Generate shell completions for zsh, bash, or fish (bb completion zsh)"
+  completion {:doc "Generate shell completions for fish, zsh, or bash (bb completion fish)"
               :task (apply core/-main "completion" *command-line-args*)}
   vault {:doc "Security audit, secret scanner and dotfile sanitizer (bb vault scan | bb vault sanitize)"
          :task (apply core/-main "vault" *command-line-args*)}
@@ -130,7 +130,7 @@
                  (core/-main "profile" "detect")
                  (core/-main "sync" "status")
                  (core/-main "boot" "status")
-                 (core/-main "completion" "zsh")
+                 (core/-main "completion" "fish")
                  (core/-main "vault" "scan")
                  (core/-main "event" "emit" "org.kde.KScreen" "--dry-run")
                  (core/-main "wallpaper" "list")

@@ -29,7 +29,7 @@ checksum-verified installer — same idea as Mason, lazy.nvim, or npm's
 ### Does not migrate (by design, not by limitation)
 
 - **Config/data files** — `plasma/`, `kvantum/`, `cava/`, `fastfetch/`,
-  `starship/`, `zsh/`, `zen-browser/`, `assets/`. These are data, not code.
+  `starship/`, `fish/`, `zen-browser/`, `assets/`. These are data, not code.
 - **`plasma/layout.js`** — KDE's own DBus `evaluateScript` JS dialect, not our
   code. Already kept only as historical reference per its header comment;
   superseded by the `sanitize_appletsrc` template approach.

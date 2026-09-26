@@ -135,7 +135,7 @@ null-sector-plasma/
 ├── kvantum/                              # Kvantum translucent theme engine
 ├── fastfetch/                            # Fastfetch system info
 ├── starship/                             # Minimal starship prompt
-├── zsh/                                  # Zsh shell configuration
+├── fish/                                 # Fish shell configuration
 └── assets/                               # Wallpapers, SDDM & Plymouth themes
 ```
 
@@ -196,7 +196,7 @@ bb doctor
 | `bb profile detect` / `bb profile apply` | Hardware profiler detecting CPU/GPU/Form-factor with adaptive widget tuning |
 | `bb sync status` / `bb sync pull` / `bb sync push` | Remote Git dotfile synchronization hub |
 | `bb boot status` / `bb boot apply-sddm` | SDDM display manager & Plymouth boot splash theme orchestrator |
-| `bb completion [zsh\|bash\|fish]` | Generates shell auto-completions for all 28+ subcommands (`--install`) |
+| `bb completion [fish\|zsh\|bash]` | Generates shell auto-completions for all 28+ subcommands (`--install`) |
 | `bb vault scan` / `bb vault sanitize` | Security audit, credential leak scanner & dotfile secret sanitizer |
 | `bb event listen` / `bb event emit <signal>` | DBus desktop event listener & dynamic display scaling sentinel |
 | `bb wallpaper list` / `bb wallpaper set <name>` | Manages and syncs desktop & lockscreen 4K video wallpapers |

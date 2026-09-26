@@ -152,37 +152,79 @@
 
 (defn generate-fish-completion []
   (let [entries (map (fn [{:keys [cmd desc]}]
-                       (format "complete -c mono-rice -n '__fish_use_subcommand' -a '%s' -d '%s'"
+                       (format "complete -c mono-rice -n '__fish_mono_rice_needs_command' -a '%s' -d '%s'\ncomplete -c bb -n '__fish_mono_rice_needs_command' -a '%s' -d '%s'"
+                               cmd (str/replace desc "'" "\\'")
                                cmd (str/replace desc "'" "\\'")))
                      commands)]
     (str/join
      "\n"
      (concat
-      ["# Fish completion for mono-rice"
+      ["# Fish completion for mono-rice and bb"
        "function __fish_mono_rice_needs_command"
-       "  set cmd (commandline -opc)"
-       "  if [ (count $cmd) -eq 1 ]"
+       "  set -l cmd (commandline -opc)"
+       "  if test (count $cmd) -eq 1"
        "    return 0"
+       "  end"
+       "  return 1"
+       "end"
+       ""
+       "function __fish_mono_rice_using_subcommand"
+       "  set -l cmd (commandline -opc)"
+       "  if test (count $cmd) -ge 2"
+       "    if test \"$argv[1]\" = \"$cmd[2]\""
+       "      return 0"
+       "    end"
        "  end"
        "  return 1"
        "end"
        ""]
       entries
-      ["complete -c mono-rice -s n -l dry-run -d 'Preview execution without changing system'"
+      [""
+       "# Global options"
+       "complete -c mono-rice -s n -l dry-run -d 'Preview execution without changing system'"
        "complete -c mono-rice -s v -l verbose -d 'Enable verbose telemetry logging'"
-       "complete -c mono-rice -s h -l help -d 'Show help'"]))))
+       "complete -c mono-rice -s h -l help -d 'Show help'"
+       "complete -c bb -s n -l dry-run -d 'Preview execution without changing system'"
+       "complete -c bb -s v -l verbose -d 'Enable verbose telemetry logging'"
+       "complete -c bb -s h -l help -d 'Show help'"
+       ""
+       "# Subcommand arguments"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand theme' -a 'list set apply preview'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand theme' -a 'list set apply preview'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand boot' -a 'status list preview-sddm apply-sddm apply-plymouth'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand boot' -a 'status list preview-sddm apply-sddm apply-plymouth'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand panel' -a 'list set reload'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand panel' -a 'list set reload'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand shortcut' -a 'list apply export'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand shortcut' -a 'list apply export'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand zen' -a 'status sync-css list-mods open-mods inject-policies'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand zen' -a 'status sync-css list-mods open-mods inject-policies'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand kwin' -a 'rules apply-rules set-blur'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand kwin' -a 'rules apply-rules set-blur'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand fetch' -a 'list set preview'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand fetch' -a 'list set preview'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand profile' -a 'detect apply'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand profile' -a 'detect apply'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand sync' -a 'status pull push'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand sync' -a 'status pull push'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand vault' -a 'scan sanitize restore'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand vault' -a 'scan sanitize restore'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand event' -a 'listen emit'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand event' -a 'listen emit'"
+       "complete -c mono-rice -n '__fish_mono_rice_using_subcommand rollback' -a 'list restore purge'"
+       "complete -c bb -n '__fish_mono_rice_using_subcommand rollback' -a 'list restore purge'"]))))
 
 (defn install-completion
   "Install shell completion file to appropriate user path."
   [shell {:keys [dry-run] :as opts}]
   (let [target-info (case (keyword shell)
+                      :fish {:path "~/.config/fish/completions/mono-rice.fish" :content (generate-fish-completion)}
                       :zsh  {:path "~/.zsh/completions/_mono-rice" :content (generate-zsh-completion)}
                       :bash {:path "~/.bash_completion.d/mono-rice" :content (generate-bash-completion)}
-                      :fish {:path "~/.config/fish/completions/mono-rice.fish" :content (generate-fish-completion)}
                       nil)]
     (if-not target-info
       (do
-        (proc/log-warn (format "Unsupported shell: %s. Choose: zsh, bash, fish" shell))
+        (proc/log-warn (format "Unsupported shell: %s. Choose: fish, zsh, bash" shell))
         false)
       (let [target-path (fs/expand-home (:path target-info))
             parent-dir (.getParent (io/file target-path))]
@@ -200,13 +242,13 @@
 (defn generate
   "Print or install auto-completion scripts for shell."
   [shell-str {:keys [install dry-run] :as opts}]
-  (let [shell (keyword (or shell-str "zsh"))]
+  (let [shell (keyword (or shell-str "fish"))]
     (if install
       (install-completion shell opts)
       (case shell
+        :fish (do (println (generate-fish-completion)) true)
         :zsh  (do (println (generate-zsh-completion)) true)
         :bash (do (println (generate-bash-completion)) true)
-        :fish (do (println (generate-fish-completion)) true)
         (do
-          (proc/log-warn (format "Unknown shell: %s. Use zsh, bash, or fish" shell-str))
+          (proc/log-warn (format "Unknown shell: %s. Use fish, zsh, or bash" shell-str))
           false)))))

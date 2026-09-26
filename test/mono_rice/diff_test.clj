@@ -8,5 +8,5 @@
   (let [root (rfs/repo-root)]
     (testing "find-repo-template discovers core configs in repo"
       (is (some? (diff/find-repo-template root ".config/kdeglobals")))
-      (is (some? (diff/find-repo-template root ".zshrc")))
+      (is (some? (diff/find-repo-template root ".config/fish/config.fish")))
       (is (nil? (diff/find-repo-template root ".nonexistent_config_file"))))))

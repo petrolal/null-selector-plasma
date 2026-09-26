@@ -14,7 +14,8 @@
                         [(fs/path home ".config" "fastfetch" "config.jsonc") (fs/path root "fastfetch" ".config" "fastfetch" "config.jsonc")]
                         [(fs/path home ".config" "starship.toml") (fs/path root "starship" ".config" "starship.toml")]
                         [(fs/path home ".config" "cava" "config") (fs/path root "cava" ".config" "cava" "config")]
-                        [(fs/path home ".zshrc") (fs/path root "zsh" ".zshrc")]]]
+                        [(fs/path home ".config" "fish" "config.fish") (fs/path root "fish" ".config" "fish" "config.fish")]
+                        [(fs/path home ".config" "fish" "conf.d" "aliases.fish") (fs/path root "fish" ".config" "fish" "conf.d" "aliases.fish")]]]
     (println)
     (println "Symlink Integrity Verification:")
     (doseq [[link target] expected-links]

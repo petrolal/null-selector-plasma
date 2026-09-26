@@ -51,8 +51,8 @@
 
       ;; Harvest Shell & Terminal Configs
       (harvest-file ".config/cava/config" "cava/.config/cava/config")
-      (harvest-file ".zshrc" "zsh/.zshrc")
-      (harvest-file ".config/zsh/aliases.zsh" "zsh/.config/zsh/aliases.zsh")
+      (harvest-file ".config/fish/config.fish" "fish/.config/fish/config.fish")
+      (harvest-file ".config/fish/conf.d/aliases.fish" "fish/.config/fish/conf.d/aliases.fish")
       (harvest-file ".config/fastfetch/config.jsonc" "fastfetch/.config/fastfetch/config.jsonc")
       (harvest-file ".config/starship.toml" "starship/.config/starship.toml")
 

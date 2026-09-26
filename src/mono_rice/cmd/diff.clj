@@ -9,7 +9,7 @@
                     (fs/path repo-root "kvantum" rel-path)
                     (fs/path repo-root "fastfetch" rel-path)
                     (fs/path repo-root "starship" rel-path)
-                    (fs/path repo-root "zsh" rel-path)
+                    (fs/path repo-root "fish" rel-path)
                     (fs/path repo-root rel-path)]]
     (first (filter fs/exists? candidates))))
 

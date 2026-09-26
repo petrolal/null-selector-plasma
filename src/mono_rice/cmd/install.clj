@@ -1,13 +1,48 @@
 (ns mono-rice.cmd.install
   (:require [babashka.fs :as fs]
+            [clojure.string :as str]
+            [mono-rice.cmd.completion :as rcomp]
             [mono-rice.deps :as rdeps]
             [mono-rice.fs :as rfs]
             [mono-rice.kde :as rkde]
             [mono-rice.layout.sanitizer :as san]
-            [mono-rice.proc :refer [command-exists? log-info log-step log-success log-warn sh!]]
+            [mono-rice.proc :refer [command-exists? log-info log-step log-success log-warn sh! sudo-validate!]]
             [mono-rice.zen.mods :as zmods]
             [mono-rice.zen.policies :as zpol]
             [mono-rice.zen.profile :as zprof]))
+
+;; -----------------------------------------------------------------------------
+;; Default Shell Configuration
+;; -----------------------------------------------------------------------------
+
+(defn- get-user-login-shell [user]
+  (try
+    (let [passwd (slurp "/etc/passwd")
+          user-line (first (filter #(str/starts-with? % (str user ":")) (str/split-lines passwd)))]
+      (when user-line
+        (str/trim (last (str/split user-line #":")))))
+    (catch Exception _ nil)))
+
+(defn set-default-shell-fish! [& [{:keys [dry-run]}]]
+  (log-step "Configuring Default Login Shell -> Fish")
+  (if (command-exists? "fish")
+    (let [user        (or (System/getenv "USER") (System/getProperty "user.name"))
+          fish-bin    (str/trim (or (:out (sh! ["which" "fish"] {:throw? false})) "/usr/bin/fish"))
+          login-shell (or (get-user-login-shell user) (System/getenv "SHELL"))]
+      (if (and (not (str/blank? login-shell)) (str/ends-with? login-shell "fish"))
+        (log-success "Fish is already your default login shell (" login-shell ").")
+        (if dry-run
+          (log-info "[DRY-RUN] Would set default login shell to:" fish-bin "for user:" user)
+          (do
+            (log-info "Requesting sudo authorization to set default shell for" user "to" fish-bin "...")
+            (let [sudo-res (sh! ["chsh" "-s" fish-bin user] {:sudo true :inherit true :throw? false})]
+              (if (zero? (:exit sudo-res))
+                (log-success "Default login shell successfully set to Fish (" fish-bin ") for user" user ".")
+                (let [user-res (sh! ["chsh" "-s" fish-bin] {:inherit true :throw? false})]
+                  (if (zero? (:exit user-res))
+                    (log-success "Default shell set to Fish (" fish-bin ").")
+                    (log-warn "Could not change default shell automatically. Please run: chsh -s" fish-bin)))))))))
+    (log-warn "Fish executable not detected in PATH. Skipping default shell configuration.")))
 
 ;; -----------------------------------------------------------------------------
 ;; Plasma Layout Application
@@ -75,6 +110,8 @@
   (log-step "Starting Deployment of null-sector-plasma")
   (let [root (rfs/repo-root)]
     (rkde/check-system! opts)
+    (when-not (or (:dry-run opts) (:symlinks-only opts))
+      (sudo-validate!))
 
     (if (:deps-only opts)
       (do
@@ -120,7 +157,14 @@
           (log-info "Skipping panel layout deployment (--no-layout).")
           (apply-panel-layout! root opts))
 
-        ;; 10. Open Zen Mods if requested
+        ;; 10. Install Fish completions
+        (rcomp/install-completion :fish opts)
+
+        ;; 11. Configure Fish as default user shell
+        (when-not (:no-shell-change opts)
+          (set-default-shell-fish! opts))
+
+        ;; 12. Open Zen Mods if requested
         (when (:open-zen-mods opts)
           (zmods/open-zen-mods! manifest))
 
