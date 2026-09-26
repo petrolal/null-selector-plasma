@@ -67,10 +67,7 @@ Item {
     RowLayout {
       id: row
       spacing: 8
-      anchors {
-        verticalCenter: userField
-        horizontalCenter: parent.horizontalCenter
-      }
+      width: parent.width
       PasswordField {
         id: passwordField
         Layout.preferredWidth: (inputWidth - loginButton.width - row.spacing)

@@ -18,7 +18,10 @@
 (defn set-lockscreen-wallpaper! [wallpaper-file & [{:keys [dry-run]}]]
   (let [home (rfs/home-dir)
         is-video? (str/ends-with? wallpaper-file ".mp4")
-        video-path (str "file://" (fs/path home ".local" "share" "wallpapers" wallpaper-file))
+        sys-file  (str "/usr/share/wallpapers/" wallpaper-file)
+        video-path (if (fs/exists? sys-file)
+                     (str "file://" sys-file)
+                     (str "file://" (fs/path home ".local" "share" "wallpapers" wallpaper-file)))
         video-data [{:filename video-path
                      :enabled true
                      :duration 0
@@ -36,7 +39,17 @@
       (do
         (kde/set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "VideoUrls" :value video-json :dry-run dry-run})
         (kde/set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "LastVideo" :value video-path :dry-run dry-run}))
-      (kde/set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "Image" :value video-path :dry-run dry-run}))))
+      (kde/set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "Image" :value video-path :dry-run dry-run}))
+    ;; Sync to system-level Plasma Login Manager
+    (when-not dry-run
+      (when (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+        (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--key" "WallpaperPluginId" plugin] {:sudo true :throw? false})
+        (if is-video?
+          (do
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" video-path] {:sudo true :throw? false}))
+          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "Image" video-path] {:sudo true :throw? false}))
+        (sh! ["chmod" "644" "/etc/plasmalogin.conf"] {:sudo true :throw? false})))))
 
 (defn set-desktop-wallpaper! [wallpaper-file & [{:keys [dry-run]}]]
   (let [home (rfs/home-dir)

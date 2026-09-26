@@ -146,8 +146,12 @@
           :else
           (log-warn "Neither kwin-effects-better-blur-dx nor forceblur found; skipping blur effect config.")))
 
-      ;; Lockscreen Video Wallpaper
-      (let [video-path (str "file://" (fs/path home ".local" "share" "wallpapers" (:video-file lockscreen)))
+      ;; Lockscreen Video Wallpaper & Boot Login Screen Sync
+      (let [user-video-path (str "file://" (fs/path home ".local" "share" "wallpapers" (:video-file lockscreen)))
+            sys-video-path  (str "file:///usr/share/wallpapers/" (:video-file lockscreen))
+            video-path      (if (fs/exists? (str "/usr/share/wallpapers/" (:video-file lockscreen)))
+                              sys-video-path
+                              user-video-path)
             video-data [{:filename video-path
                          :enabled true
                          :duration 0
@@ -158,11 +162,26 @@
                          :dayNightPhase 4}]
             video-json (json/generate-string video-data)
             plugin     (:wallpaper-plugin lockscreen)]
+        ;; 1. User kscreenlockerrc
         (set-kconfig! {:file "kscreenlockerrc" :group "Greeter" :key "WallpaperPlugin" :value plugin :dry-run dry-run})
         (set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "VideoUrls" :value video-json :dry-run dry-run})
         (set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "LastVideo" :value video-path :dry-run dry-run})
         (set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "FillMode" :value (:fill-mode lockscreen) :type :int :dry-run dry-run})
-        (set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "MuteMode" :value (:mute-mode lockscreen) :type :int :dry-run dry-run}))
+        (set-kconfig! {:file "kscreenlockerrc" :group ["Greeter" "Wallpaper" plugin "General"] :key "MuteMode" :value (:mute-mode lockscreen) :type :int :dry-run dry-run})
+
+        ;; 2. System-wide Plasma Login Manager & XDG Lockscreen Greeter Sync
+        (if dry-run
+          (log-info "[DRY-RUN] Would sync lockscreen wallpaper to /etc/plasmalogin.conf and /etc/xdg/kscreenlockerrc")
+          (when (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--key" "WallpaperPluginId" plugin] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "FillMode" (str (:fill-mode lockscreen))] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "MuteMode" (str (:mute-mode lockscreen))] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--key" "WallpaperPlugin" plugin] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
+            (sh! ["chmod" "644" "/etc/plasmalogin.conf" "/etc/xdg/kscreenlockerrc"] {:sudo true :throw? false}))))
 
       ;; Reconfigure KWin
       (when (command-exists? "qdbus6")

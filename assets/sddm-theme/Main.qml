@@ -21,7 +21,9 @@ Item {
     source: config.VideoBackground ? config.VideoBackground : ""
     videoOutput: videoBg
     loops: MediaPlayer.Infinite
-    audioTracks: []
+    audioOutput: AudioOutput {
+      muted: true
+    }
     Component.onCompleted: {
       if (config.VideoBackground && config.VideoBackground !== "") {
         player.play()

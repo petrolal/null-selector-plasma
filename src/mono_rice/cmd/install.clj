@@ -138,9 +138,9 @@
         ;; 6. Apply KDE Look and Feel Settings
         (rkde/apply-theme! manifest opts)
 
-        ;; 7. SDDM & Plymouth
+        ;; 7. Login Manager & Plymouth
         (when (or (:sddm opts) (not (:symlinks-only opts)))
-          (rfs/install-sddm-theme! root opts))
+          (rfs/install-login-manager! root opts))
         (when (or (:plymouth opts) (not (:symlinks-only opts)))
           (rfs/install-plymouth-theme! root opts))
 

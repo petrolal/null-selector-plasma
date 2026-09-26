@@ -160,7 +160,8 @@
            "dolphin"
            "discord"
            "kservice"
-           "emacs"]
+           "emacs"
+           "plasma-login-manager"]
   :aur    ["yamis-icon-theme-git"
            "bibata-cursor-git"
            "plasma6-applets-panel-colorizer"

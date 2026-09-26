@@ -273,3 +273,7 @@ _launch=, ,\s
 
 [services][org.kde.konsole.desktop]
 _launch=Ctrl+Alt+T\tMeta+Return, \tMeta+Return, Ctrl+Alt+T
+
+[services][org.kde.spectacle.desktop]
+CurrentMonitorScreenShot=none
+OpenWithoutScreenshot=none

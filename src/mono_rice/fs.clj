@@ -1,5 +1,6 @@
 (ns mono-rice.fs
   (:require [babashka.fs :as fs]
+            [cheshire.core :as json]
             [clojure.edn :as edn]
             [clojure.string :as str]
             [mono-rice.proc :refer [command-exists? log-info log-success log-warn log-step sh! ask-confirm?]]))
@@ -211,6 +212,16 @@
                          :filter-fn (fn [p] (let [s (str p)]
                                               (or (str/ends-with? s ".png")
                                                   (str/ends-with? s ".mp4"))))})
+    (let [sys-wp-dir "/usr/share/wallpapers"
+          wp-src     (fs/path root "assets" "wallpapers")]
+      (if dry-run
+        (log-info "[DRY-RUN] Would sync rice wallpapers to /usr/share/wallpapers (for system login greeter/lockscreen)")
+        (when (or (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+                  (zero? (:exit (sh! ["id" "-u"] {:throw? false}))))
+          (sh! ["mkdir" "-p" sys-wp-dir] {:sudo true :throw? false})
+          (sh! ["cp" "-rf" (str (fs/path wp-src ".")) sys-wp-dir] {:sudo true :throw? false})
+          (sh! ["chmod" "-R" "644" sys-wp-dir] {:sudo true :throw? false})
+          (sh! ["find" sys-wp-dir "-type" "d" "-exec" "chmod" "755" "{}" "+"] {:sudo true :throw? false}))))
 
     ;; 5. YAMIS Icon Fallback
     (let [yamis-sys (fs/path "/usr/share/icons/yet-another-monochrome-icon-set")]
@@ -274,23 +285,90 @@
 ;; SDDM and Plymouth Installers
 ;; -----------------------------------------------------------------------------
 
+(defn install-plasma-login-manager! [root & [{:keys [dry-run auto-yes]}]]
+  (let [manifest (read-manifest)
+        lockscreen (:lockscreen manifest)
+        video-file (:video-file lockscreen "digital-gaze.mp4")
+        plugin (:wallpaper-plugin lockscreen "luisbocanegra.smart.video.wallpaper.reborn")
+        sys-video-path (str "file:///usr/share/wallpapers/" video-file)
+        video-data [{:filename sys-video-path
+                     :enabled true
+                     :duration 0
+                     :customDuration 0
+                     :playbackRate 0.0
+                     :alternativePlaybackRate 0.0
+                     :loop false
+                     :dayNightPhase 4}]
+        video-json (json/generate-string video-data)]
+    (log-step "Configuring Native Plasma Login Screen (Identical to Lock Screen)")
+    (if dry-run
+      (do
+        (log-info "[DRY-RUN] Would sync rice wallpapers to /usr/share/wallpapers")
+        (log-info "[DRY-RUN] Would configure /etc/plasmalogin.conf and /etc/xdg/kscreenlockerrc with lockscreen settings")
+        (log-info "[DRY-RUN] Would disable sddm.service and enable plasmalogin.service"))
+      (if (or auto-yes
+              (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+              (ask-confirm? "Configure Plasma Login Screen to match Lock Screen (requires sudo)?" {:auto-yes auto-yes}))
+        (do
+          (sh! ["mkdir" "-p" "/usr/share/wallpapers"] {:sudo true :throw? false})
+          (sh! ["cp" "-rf" (str (fs/path root "assets" "wallpapers" ".")) "/usr/share/wallpapers/"] {:sudo true :throw? false})
+          (sh! ["chmod" "-R" "644" "/usr/share/wallpapers"] {:sudo true :throw? false})
+          (sh! ["find" "/usr/share/wallpapers" "-type" "d" "-exec" "chmod" "755" "{}" "+"] {:sudo true :throw? false})
+          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--key" "WallpaperPluginId" plugin] {:sudo true :throw? false})
+          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
+          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
+          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "FillMode" (str (:fill-mode lockscreen 2))] {:sudo true :throw? false})
+          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "MuteMode" (str (:mute-mode lockscreen 5))] {:sudo true :throw? false})
+          (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--key" "WallpaperPlugin" plugin] {:sudo true :throw? false})
+          (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
+          (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
+          (sh! ["chmod" "644" "/etc/plasmalogin.conf" "/etc/xdg/kscreenlockerrc"] {:sudo true :throw? false})
+          (when (zero? (:exit (sh! ["systemctl" "is-enabled" "sddm.service"] {:throw? false})))
+            (log-info "Disabling sddm.service...")
+            (sh! ["systemctl" "disable" "sddm.service"] {:sudo true :throw? false}))
+          (log-info "Enabling plasmalogin.service (native lock screen greeter)...")
+          (sh! ["systemctl" "enable" "plasmalogin.service" "--force"] {:sudo true :throw? false})
+          (log-success "Plasma Login Screen configured and set to match Lock Screen."))
+        (log-warn "Skipped Plasma Login configuration (sudo access declined).")))))
+
 (defn install-sddm-theme! [root & [{:keys [dry-run auto-yes]}]]
-  (log-step "Installing Monochrome SDDM Login Theme")
-  (let [src-dir (fs/path root "assets" "sddm-theme")]
+  (let [manifest (read-manifest)
+        boot-cfg (:boot manifest)
+        theme-name (get-in boot-cfg [:sddm :theme-name] "null-sector-sddm")
+        src-dir (fs/path root (get-in boot-cfg [:sddm :source] "assets/sddm-theme"))
+        target-dir (str "/usr/share/sddm/themes/" theme-name)
+        conf-file (get-in boot-cfg [:sddm :config] "/etc/sddm.conf.d/kde_settings.conf")]
+    (log-step (format "Installing SDDM Login Theme (%s)" theme-name))
     (if (fs/exists? src-dir)
       (if dry-run
-        (log-info "[DRY-RUN] Would install SDDM theme to /usr/share/sddm/themes/monochrome")
+        (do
+          (log-info (format "[DRY-RUN] Would install SDDM theme to %s" target-dir))
+          (log-info (format "[DRY-RUN] Would configure %s setting [Theme] Current=%s" conf-file theme-name))
+          (log-info "[DRY-RUN] Would disable plasmalogin.service and enable sddm.service"))
         (if (or auto-yes
                 (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
-                (ask-confirm? "Install SDDM Monochrome Theme (requires sudo)?" {:auto-yes auto-yes}))
+                (ask-confirm? (format "Install SDDM %s Theme & enable SDDM service (requires sudo)?" theme-name) {:auto-yes auto-yes}))
           (do
-            (sh! ["mkdir" "-p" "/usr/share/sddm/themes/monochrome" "/etc/sddm.conf.d"] {:sudo true})
-            (sh! ["cp" "-rf" (str (fs/path src-dir "*")) "/usr/share/sddm/themes/monochrome/"] {:sudo true :throw? false})
-            (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf" "--group" "Theme" "--key" "Current" "monochrome"] {:sudo true :throw? false})
-            (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf.d/theme.conf" "--group" "Theme" "--key" "Current" "monochrome"] {:sudo true :throw? false})
-            (log-success "SDDM Monochrome theme installed and set as default."))
+            (sh! ["mkdir" "-p" target-dir "/etc/sddm.conf.d"] {:sudo true})
+            (sh! ["cp" "-rf" (str (fs/path src-dir ".")) (str target-dir "/")] {:sudo true :throw? false})
+            (sh! ["chmod" "-R" "755" target-dir] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" conf-file "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf" "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf.d/theme.conf" "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
+            (sh! ["chmod" "644" conf-file "/etc/sddm.conf" "/etc/sddm.conf.d/theme.conf"] {:sudo true :throw? false})
+            (when (zero? (:exit (sh! ["systemctl" "is-enabled" "plasmalogin.service"] {:throw? false})))
+              (log-info "Disabling conflicting plasmalogin.service...")
+              (sh! ["systemctl" "disable" "plasmalogin.service"] {:sudo true :throw? false}))
+            (log-info "Enabling sddm.service display manager...")
+            (sh! ["systemctl" "enable" "sddm.service" "--force"] {:sudo true :throw? false})
+            (log-success (format "SDDM %s theme installed and enabled as default display manager." theme-name)))
           (log-warn "Skipped SDDM installation (sudo access declined).")))
       (log-warn "SDDM theme directory not found at assets/sddm-theme"))))
+
+(defn install-login-manager! [root & [{:keys [sddm] :as opts}]]
+  (if sddm
+    (install-sddm-theme! root opts)
+    (install-plasma-login-manager! root opts)))
 
 (defn install-plymouth-theme! [root & [{:keys [dry-run auto-yes]}]]
   (log-step "Installing dotLock Plymouth Boot Splash Theme")

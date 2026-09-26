@@ -117,11 +117,13 @@
 (defn- run-boot-cmd! [args opts]
   (let [subcmd (first args)]
     (case subcmd
-      "status"          (cmd-boot/status opts)
-      "list"            (cmd-boot/list-themes opts)
-      "preview-sddm"    (cmd-boot/preview-sddm opts)
-      "apply-sddm"      (cmd-boot/apply-sddm opts)
-      "apply-plymouth"  (cmd-boot/apply-plymouth (second args) opts)
+      "status"              (cmd-boot/status opts)
+      "list"                (cmd-boot/list-themes opts)
+      "apply-plasma-login"  (cmd-boot/apply-plasma-login opts)
+      "apply-lockscreen"    (cmd-boot/apply-plasma-login opts)
+      "preview-sddm"        (cmd-boot/preview-sddm opts)
+      "apply-sddm"          (cmd-boot/apply-sddm opts)
+      "apply-plymouth"      (cmd-boot/apply-plymouth (second args) opts)
       (cmd-boot/status opts))))
 
 (defn- run-vault-cmd! [args opts]
