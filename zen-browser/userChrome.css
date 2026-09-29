@@ -9,6 +9,11 @@
   --toolbar-field-color: #e0e0e0 !important;
   --lwt-text-color: #e0e0e0 !important;
   --lwt-toolbar-field-color: #e0e0e0 !important;
+  --panel-background: #18181c !important;
+  --panel-border-color: #3c3c46 !important;
+  --arrowpanel-background: #18181c !important;
+  --arrowpanel-border-color: #3c3c46 !important;
+  --autocomplete-popup-background: #18181c !important;
 }
 
 /* Ensure light text color across sidebar, tabs, URL bar, and navigation toolbox */
@@ -24,4 +29,69 @@
   color: #e0e0e0 !important;
   --zen-colors-text: #e0e0e0 !important;
   --toolbar-color: #e0e0e0 !important;
+}
+
+/* Solid, high-contrast, fully opaque styling for Zen UI modals, popups, menus, dialogs, drawers, and panels */
+menupopup,
+panel,
+panel[type="arrow"],
+.panel-arrowcontent,
+.panel-subview-body,
+.panel-viewcontainer,
+panelmultiview,
+#tab-preview-panel,
+.zen-glance-popup,
+#zen-glance-overlay,
+zen-glance-panel,
+.zen-glance-sidebar-container,
+#urlbar-results,
+.urlbarView,
+.urlbarView-body-inner,
+.modal-overlay,
+.modal-container,
+#tab-notification-deck,
+.notificationbox-stack,
+dialog,
+.dialogBox,
+window[dialog="true"],
+tooltip,
+popupset,
+.sidebar-panel,
+#sidebar-box,
+#sidebar-panel-wrapper {
+  background-color: #18181c !important;
+  background-image: none !important;
+  border: 1px solid #3c3c46 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.75) !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #f0f0f0 !important;
+}
+
+menupopup,
+panel,
+dialog {
+  color: #f0f0f0 !important;
+}
+
+/* Ensure menu items and buttons inside popups/panels have solid visibility and clear hover states */
+menuitem,
+menu,
+.subviewbutton {
+  color: #e0e0e0 !important;
+}
+
+menuitem:hover,
+menuitem[_moz-menuactive="true"],
+menu:hover,
+menu[_moz-menuactive="true"],
+.subviewbutton:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+menuseparator,
+toolbarseparator {
+  border-color: #33333d !important;
+  background-color: #33333d !important;
 }

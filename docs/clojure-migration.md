@@ -116,7 +116,7 @@ Instead of hardcoded Bash arrays, all rice components are declared in `rice.edn`
  {:pacman ["base-devel" "git" "cmake" "extra-cmake-modules" "stow"
            "kvantum" "ttf-jetbrains-mono-nerd" "konsole" "cava"
            "ffmpeg" "starship" "fastfetch" "fish" "dolphin" "discord"
-           "kservice" "emacs"]
+           "kservice" "emacs" "plasma-login-manager" "kdenlive" "gwenview" "haruna"]
   :aur    ["yamis-icon-theme-git"
            "bibata-cursor-git"
            "plasma6-applets-panel-colorizer"

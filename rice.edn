@@ -161,7 +161,10 @@
            "discord"
            "kservice"
            "emacs"
-           "plasma-login-manager"]
+           "plasma-login-manager"
+           "kdenlive"
+           "gwenview"
+           "haruna"]
   :aur    ["yamis-icon-theme-git"
            "bibata-cursor-git"
            "plasma6-applets-panel-colorizer"

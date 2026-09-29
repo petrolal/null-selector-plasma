@@ -15,7 +15,8 @@
 // delivery path for anything custom, including these.
 
 // General transparency (sameerasw.com/zen)
-user_pref("browser.tabs.allow_transparent_browser", true);
+// Disable tab content transparency so web pages, dropdowns, and modals are solid
+user_pref("browser.tabs.allow_transparent_browser", false);
 user_pref("widget.transparent-windows", true);
 user_pref("zen.theme.gradient.show-custom-colors", true);
 user_pref("zen.widget.linux.transparency", true);
@@ -33,11 +34,12 @@ user_pref("zen.view.compact.show-sidebar-and-toolbar-on-hover", false);
 // Transparent Zen mod settings (schema: theme-store/themes/<uuid>/preferences.json)
 // -- mirrors ~/Downloads/older_rice/transparent-zen-settings.png exactly.
 user_pref("mod.sameerasw.zen_transparent_sidebar_enabled", true);
-user_pref("mod.sameerasw.zen_transparent_glance_enabled", true);
+user_pref("mod.sameerasw.zen_transparent_glance_enabled", false);
+user_pref("zen.theme.acrylic-panels", false);
 user_pref("mod.sameerasw.zen_bg_color_enabled", true);
 user_pref("mod.sameerasw.zen_transparency_color", "#00000000");
 user_pref("mod.sameerasw_zen_light_tint", "2");
-user_pref("mod.sameerasw.zen_no_shadow", true);
+user_pref("mod.sameerasw.zen_no_shadow", false);
 user_pref("mod.sameerasw.zen_bg_img_enabled", false);
 user_pref("mod.sameerasw.zen_bg_img_not_fullscreen", false);
 user_pref("mod.sameerasw.zen_bg_opacity", "0.8");

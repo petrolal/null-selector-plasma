@@ -5,17 +5,22 @@
             [mono-rice.fs :as rfs]
             [mono-rice.proc :refer [command-exists? log-info log-success log-warn log-step sh!]]))
 
-(defn service-unit-content [mono-rice-bin]
-  (str "[Unit]\n"
-       "Description=Null Sector Plasma Configuration Sentinel Daemon\n"
-       "After=plasma-workspace.target\n\n"
-       "[Service]\n"
-       "Type=simple\n"
-       "ExecStart=" mono-rice-bin " daemon start --interval 10\n"
-       "Restart=always\n"
-       "RestartSec=5s\n\n"
-       "[Install]\n"
-       "WantedBy=default.target\n"))
+(defn service-unit-content
+  ([mono-rice-bin]
+   (service-unit-content mono-rice-bin (str (rfs/repo-root))))
+  ([mono-rice-bin repo-root]
+   (str "[Unit]\n"
+        "Description=Null Sector Plasma Configuration Sentinel Daemon\n"
+        "After=plasma-workspace.target\n\n"
+        "[Service]\n"
+        "Type=simple\n"
+        "WorkingDirectory=" repo-root "\n"
+        "Environment=MONO_RICE_ROOT=" repo-root "\n"
+        "ExecStart=" mono-rice-bin " daemon start --interval 10\n"
+        "Restart=always\n"
+        "RestartSec=5s\n\n"
+        "[Install]\n"
+        "WantedBy=default.target\n")))
 
 (defn install-systemd-service! [& [{:keys [dry-run]}]]
   (log-step "Installing Null Sector Systemd User Service")
@@ -28,7 +33,7 @@
       (log-info "[DRY-RUN] Would create systemd service at:" (str service-file))
       (do
         (rfs/ensure-dir! service-dir)
-        (spit (str service-file) (service-unit-content mono-bin))
+        (spit (str service-file) (service-unit-content mono-bin (str root)))
         (when (command-exists? "systemctl")
           (sh! ["systemctl" "--user" "daemon-reload"] {:throw? false})
           (sh! ["systemctl" "--user" "enable" "--now" "null-sector-sentinel.service"] {:throw? false}))

@@ -7,6 +7,16 @@ This rice is designed to use **Smart Video Wallpaper Reborn** (`plasma6-wallpape
 - **Direct 4K MP4 URL:** `https://www.desktophut.com/files/bB8IrWshPO-Sequence04Htty2Prob4.mp4`
 - **Static Fallback:** Included locally as `assets/wallpapers/digital-gaze.png` (3840x2160)
 
+### Desktop Wallpaper: Infernal Biopunk (Default Desktop)
+- **File:** `assets/wallpapers/infernal_naked_girl_biopunk.mp4`
+- **Fallback / Variant:** `assets/wallpapers/biopunk_infernal_theme_01.mp4`
+- **Palette:** High-contrast Biopunk / Monochromatic Grayscale adaptation
+
+### Alternative Desktop Wallpaper: Biopunk Lightest Theme
+- **File:** `assets/wallpapers/biopunk_lightest_theme.mp4`
+- **Static Fallback:** `assets/wallpapers/biopunk_lightest_theme.png`
+- **Palette:** Monochromatic Grayscale adaptation
+
 ### Secondary Wallpaper: Synthwave Dreamwave Girl
 - **Author / Source:** [DesktopHut Synthwave Dreamwave Girl](https://www.desktophut.com/synthwave-dreamwave-girl)
 - **Direct MP4 URL:** `https://www.desktophut.com/files/JnTDdp1g89wIMRy_Synthwave Dreamwave Girl.mp4`

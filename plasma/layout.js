@@ -18,7 +18,7 @@
 
 var homeDir = "/home/petrolal";
 var videoFile =
-  "file://" + homeDir + "/.local/share/wallpapers/synthwave-dreamwave-girl.mp4";
+  "file://" + homeDir + "/.local/share/wallpapers/infernal_naked_girl_biopunk.mp4";
 var targetScreen = 0;
 
 // -----------------------------------------------------------------------------

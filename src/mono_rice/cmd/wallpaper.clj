@@ -53,12 +53,41 @@
 
 (defn set-desktop-wallpaper! [wallpaper-file & [{:keys [dry-run]}]]
   (let [home (rfs/home-dir)
-        wp-path (str (fs/path home ".local" "share" "wallpapers" wallpaper-file))]
-    (when (and (command-exists? "plasma-apply-wallpaperimage")
-               (str/ends-with? wallpaper-file ".png"))
-      (sh! ["plasma-apply-wallpaperimage" wp-path] {:dry-run dry-run :throw? false}))))
+        is-video? (str/ends-with? wallpaper-file ".mp4")
+        wp-path (str (fs/path home ".local" "share" "wallpapers" wallpaper-file))
+        file-uri (str "file://" wp-path)]
+    (if is-video?
+      (let [video-data [{:filename file-uri
+                         :enabled true
+                         :duration 0
+                         :customDuration 0
+                         :playbackRate 0.0
+                         :alternativePlaybackRate 0.0
+                         :loop false
+                         :dayNightPhase 4}]
+            video-json (json/generate-string video-data)
+            plugin "luisbocanegra.smart.video.wallpaper.reborn"
+            script (str "var allDesktops = desktops();\n"
+                        "for (var i = 0; i < allDesktops.length; i++) {\n"
+                        "    var d = allDesktops[i];\n"
+                        "    d.wallpaperPlugin = '" plugin "';\n"
+                        "    d.currentConfigGroup = ['Wallpaper', '" plugin "', 'General'];\n"
+                        "    d.writeConfig('FillMode', 2);\n"
+                        "    d.writeConfig('MuteMode', 5);\n"
+                        "    d.writeConfig('LastVideo', '" file-uri "');\n"
+                        "    d.writeConfig('VideoUrls', '" (str/replace video-json "'" "\\'") "');\n"
+                        "    d.reloadConfig();\n"
+                        "}\n")]
+        (if dry-run
+          (log-info "[DRY-RUN] Would set desktop animated video wallpaper to:" wp-path)
+          (do
+            (when (command-exists? "qdbus6")
+              (sh! ["qdbus6" "org.kde.plasmashell" "/PlasmaShell" "org.kde.PlasmaShell.evaluateScript" script] {:throw? false}))
+            (log-success "Desktop animated video wallpaper set:" wallpaper-file))))
+      (when (command-exists? "plasma-apply-wallpaperimage")
+        (sh! ["plasma-apply-wallpaperimage" wp-path] {:dry-run dry-run :throw? false})))))
 
-(defn apply-wallpaper! [wallpaper-name & [{:keys [dry-run]}]]
+(defn apply-wallpaper! [wallpaper-name & [{:keys [dry-run desktop-only]}]]
   (let [all (list-wallpapers)
         target (first (filter #(str/includes? % wallpaper-name) all))]
     (if-not target
@@ -68,9 +97,12 @@
         false)
       (do
         (log-step (str "Applying Wallpaper -> " target))
-        (set-lockscreen-wallpaper! target {:dry-run dry-run})
+        (when-not desktop-only
+          (set-lockscreen-wallpaper! target {:dry-run dry-run}))
         (set-desktop-wallpaper! target {:dry-run dry-run})
-        (log-success "Wallpaper applied successfully to lockscreen and desktop:" target)
+        (log-success (if desktop-only
+                       (str "Desktop wallpaper updated to: " target " (Lockscreen untouched)")
+                       (str "Wallpaper applied successfully to lockscreen and desktop: " target)))
         true))))
 
 (defn run-wallpaper-cmd!
@@ -94,8 +126,25 @@
       (if (str/blank? param)
         (do
           (log-warn "Please specify wallpaper filename or keyword.")
-          (println "Usage: mono-rice wallpaper set <name>"))
+          (println "Usage: mono-rice wallpaper set <name> [--desktop-only]"))
         (apply-wallpaper! param opts))
+
+      ("set-desktop" "desktop")
+      (if (str/blank? param)
+        (do
+          (log-warn "Please specify wallpaper filename or keyword.")
+          (println "Usage: mono-rice wallpaper set-desktop <name>"))
+        (apply-wallpaper! param (assoc opts :desktop-only true)))
+
+      ("set-lockscreen" "lockscreen")
+      (if (str/blank? param)
+        (do
+          (log-warn "Please specify wallpaper filename or keyword.")
+          (println "Usage: mono-rice wallpaper set-lockscreen <name>"))
+        (let [target (first (filter #(str/includes? % param) all))]
+          (if target
+            (set-lockscreen-wallpaper! target opts)
+            (log-warn "Wallpaper not found matching:" param))))
 
       ("random" "shuffle")
       (if (seq all)
@@ -109,4 +158,6 @@
         (println "Usage:")
         (println "  mono-rice wallpaper list")
         (println "  mono-rice wallpaper set <name>")
+        (println "  mono-rice wallpaper set-desktop <name>")
+        (println "  mono-rice wallpaper set-lockscreen <name>")
         (println "  mono-rice wallpaper random")))))
