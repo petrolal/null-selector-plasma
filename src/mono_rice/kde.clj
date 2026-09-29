@@ -8,7 +8,7 @@
 ;; System Compatibility Check
 ;; -----------------------------------------------------------------------------
 
-(defn check-system! [& [{:keys [auto-yes]}]]
+(defn check-system! [& [{:keys [auto-yes yes prompt? dry-run]}]]
   (log-step "Verifying Host System Compatibility")
   (let [arch-release?    (fs/exists? "/etc/arch-release")
         cachyos-release? (fs/exists? "/etc/cachyos-release")
@@ -18,8 +18,9 @@
       (log-success "Arch Linux / CachyOS base system detected.")
       (do
         (log-warn "This installer is tailored for Arch Linux and CachyOS.")
-        (when-not (ask-confirm? "Proceed anyway?" {:auto-yes auto-yes})
-          (throw (ex-info "Installation aborted by user." {})))))
+        (when (and prompt? (not (or auto-yes yes dry-run)))
+          (when-not (ask-confirm? "Proceed anyway?" {:auto-yes (or auto-yes yes)})
+            (throw (ex-info "Installation aborted by user." {}))))))
     (if (or (and desktop (str/includes? (str/lower-case desktop) "kde"))
             (and session (str/includes? (str/lower-case session) "plasma")))
       (log-success "KDE Plasma session active.")

@@ -88,6 +88,7 @@
                          'mono-rice.vault-test
                          'mono-rice.events-test
                          'mono-rice.rclone-test
+                         'mono-rice.verify-test
                          'clojure.test)
                 (let [{:keys [fail error]} (clojure.test/run-tests 'mono-rice.sanitizer-test
                                                                    'mono-rice.manifest-test
@@ -115,7 +116,8 @@
                                                                    'mono-rice.completion-test
                                                                    'mono-rice.vault-test
                                                                    'mono-rice.events-test
-                                                                   'mono-rice.rclone-test)]
+                                                                   'mono-rice.rclone-test
+                                                                   'mono-rice.verify-test)]
                   (when (or (pos? fail) (pos? error))
                     (System/exit 1))))}
   check {:doc "Run dry-run verification check on all core flows"

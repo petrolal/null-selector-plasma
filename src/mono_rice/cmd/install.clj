@@ -110,7 +110,7 @@
 (defn install! [manifest opts]
   (log-step "Starting Deployment of null-sector-plasma")
   (let [root (rfs/repo-root)]
-    (rkde/check-system! opts)
+    (rkde/check-system! (assoc opts :prompt? true))
     (when-not (or (:dry-run opts) (:symlinks-only opts))
       (sudo-validate!))
 
