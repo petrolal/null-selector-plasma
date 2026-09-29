@@ -31,6 +31,8 @@
          :task (apply core/-main "fetch" *command-line-args*)}
   profile {:doc "Hardware environment detector and form-factor profile tuner (bb profile detect)"
            :task (apply core/-main "profile" *command-line-args*)}
+  rclone {:doc "Google Drive cloud bisync & systemd timer manager (bb rclone status | bb rclone setup | bb rclone sync)"
+          :task (apply core/-main "rclone" *command-line-args*)}
   sync {:doc "Remote Git dotfile synchronization hub (bb sync status | bb sync pull | bb sync push)"
         :task (apply core/-main "sync" *command-line-args*)}
   boot {:doc "SDDM display manager and Plymouth splash theme orchestrator (bb boot status | bb boot list)"
@@ -85,6 +87,7 @@
                          'mono-rice.completion-test
                          'mono-rice.vault-test
                          'mono-rice.events-test
+                         'mono-rice.rclone-test
                          'clojure.test)
                 (let [{:keys [fail error]} (clojure.test/run-tests 'mono-rice.sanitizer-test
                                                                    'mono-rice.manifest-test
@@ -111,7 +114,8 @@
                                                                    'mono-rice.boot-test
                                                                    'mono-rice.completion-test
                                                                    'mono-rice.vault-test
-                                                                   'mono-rice.events-test)]
+                                                                   'mono-rice.events-test
+                                                                   'mono-rice.rclone-test)]
                   (when (or (pos? fail) (pos? error))
                     (System/exit 1))))}
   check {:doc "Run dry-run verification check on all core flows"

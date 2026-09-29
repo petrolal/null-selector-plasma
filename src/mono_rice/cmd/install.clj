@@ -2,6 +2,7 @@
   (:require [babashka.fs :as fs]
             [clojure.string :as str]
             [mono-rice.cmd.completion :as rcomp]
+            [mono-rice.cmd.rclone :as rclone]
             [mono-rice.deps :as rdeps]
             [mono-rice.fs :as rfs]
             [mono-rice.kde :as rkde]
@@ -163,6 +164,10 @@
         ;; 11. Configure Fish as default user shell
         (when-not (:no-shell-change opts)
           (set-default-shell-fish! opts))
+
+        ;; 12. Configure Rclone Google Drive Cloud Synchronization
+        (when-not (or (:symlinks-only opts) (:no-rclone opts))
+          (rclone/initial-setup! manifest opts))
 
         (log-step "Installation Completed Successfully!")
         (println)

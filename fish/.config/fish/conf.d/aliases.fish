@@ -47,3 +47,6 @@ function reload-plasma -d "Reload KDE Plasma Shell"
 end
 alias reload-kwin='qdbus6 org.kde.KWin /KWin reconfigure'
 alias font-refresh='fc-cache -fv'
+alias rclone-sync='rclone bisync ~/GoogleDrive gdrive: --resilient --max-delete 15 --conflict-resolve newer --log-file ~/.cache/rclone-bisync.log --log-level INFO'
+alias rclone-status='systemctl --user status rclone-bisync.timer rclone-bisync.service'
+

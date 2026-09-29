@@ -1,0 +1,8 @@
+[Unit]
+Description=Rclone Google Drive Bisync
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rclone bisync %h/GoogleDrive gdrive: --resilient --max-delete 15 --conflict-resolve newer --log-file %h/.cache/rclone-bisync.log --log-level INFO

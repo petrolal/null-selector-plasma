@@ -18,6 +18,7 @@
             [mono-rice.cmd.panel :as cmd-panel]
             [mono-rice.cmd.plasmoid :as cmd-plasmoid]
             [mono-rice.cmd.profile :as cmd-profile]
+            [mono-rice.cmd.rclone :as cmd-rclone]
             [mono-rice.cmd.rollback :as cmd-rollback]
             [mono-rice.cmd.shortcut :as cmd-shortcut]
             [mono-rice.cmd.sync :as cmd-sync]
@@ -59,6 +60,7 @@
   (println "  kwin          Declarative window rules, translucency, and blur effects manager")
   (println "  fetch         Fastfetch and terminal ASCII aesthetic logo synchronizer")
   (println "  profile       Hardware environment detector and form-factor profile tuner")
+  (println "  rclone        Google Drive cloud bisync & systemd timer manager (status | setup | sync | enable | disable)")
   (println "  sync          Two-way remote Git synchronization and dotfile hub (status | pull | push)")
   (println "  boot          SDDM display manager & Plymouth boot splash theme orchestrator")
   (println "  completion    Generate shell auto-completions (fish | zsh | bash) [--install]")
@@ -84,6 +86,7 @@
   (println "      --interval <sec> Set polling interval for watch/daemon (default: 10)")
   (println "      --no-backup      Skip backing up existing configuration files")
   (println "      --no-layout      Skip applying desktop and panel layout")
+  (println "      --no-rclone      Skip configuring rclone Google Drive cloud sync")
   (println "      --sddm           Install SDDM Monochrome theme")
   (println "      --plymouth       Install dotLock Plymouth boot splash theme")
   (println "      --open-zen-mods  Open Zen Mod pages after installation")
@@ -105,6 +108,7 @@
     :interval      {:coerce :int :desc "Interval in seconds"}
     :no-backup     {:coerce :boolean :desc "Skip backing up existing configs"}
     :no-layout     {:coerce :boolean :desc "Skip panel layout"}
+    :no-rclone     {:coerce :boolean :desc "Skip rclone cloud sync setup"}
     :sddm          {:coerce :boolean :desc "Install SDDM theme"}
     :plymouth      {:coerce :boolean :desc "Install Plymouth theme"}
     :open-zen-mods    {:coerce :boolean :desc "Open Zen Mod pages"}
@@ -165,6 +169,7 @@
           "kwin"          (cmd-kwin/run-kwin-cmd! manifest rest-args opts)
           "fetch"         (cmd-fetch/run-fetch-cmd! rest-args opts)
           "profile"       (cmd-profile/run-profile-cmd! rest-args opts)
+          "rclone"        (cmd-rclone/run-rclone-cmd! manifest rest-args opts)
           "sync"          (cmd-sync/run-sync-cmd! manifest rest-args opts)
           "boot"          (run-boot-cmd! rest-args opts)
           "completion"    (cmd-comp/generate (first rest-args) opts)

@@ -164,7 +164,8 @@
            "plasma-login-manager"
            "kdenlive"
            "gwenview"
-           "haruna"]
+           "haruna"
+           "rclone"]
   :aur    ["yamis-icon-theme-git"
            "bibata-cursor-git"
            "plasma6-applets-panel-colorizer"
@@ -206,4 +207,16 @@
           {:name "GitHub Token"    :pattern "gh[pousr]_[A-Za-z0-9_]{36,}"}
           {:name "Generic API Key" :pattern "(?i)(api[_-]?key|secret[_-]?key|access[_-]?token)[\"']?\\s*[:=]\\s*[\"'][a-zA-Z0-9_\\-]{16,}[\"']"}
           {:name "Wi-Fi Password"  :pattern "(?i)psk=[a-zA-Z0-9!@#$%^&*()_+=-]{8,}"}]
-  :ignore-paths [".git" ".repo" "target"]}}
+  :ignore-paths [".git" ".repo" "target"]}
+
+ :rclone
+ {:remote           "gdrive"
+  :type             "drive"
+  :scope            "drive"
+  :local-path       "GoogleDrive"
+  :service-name     "rclone-bisync.service"
+  :timer-name       "rclone-bisync.timer"
+  :timer-interval   "*:0/5"
+  :max-delete       15
+  :conflict-resolve "newer"
+  :log-path         ".cache/rclone-bisync.log"}}

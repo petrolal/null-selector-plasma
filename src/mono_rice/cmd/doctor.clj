@@ -1,6 +1,7 @@
 (ns mono-rice.cmd.doctor
   (:require [babashka.fs :as fs]
             [clojure.string :as str]
+            [mono-rice.cmd.rclone :as rclone]
             [mono-rice.cmd.verify :as verify]
             [mono-rice.fs :as rfs]
             [mono-rice.kde :as kde]
@@ -46,11 +47,30 @@
         {:check "KWin Compositor" :status :warn :message "KWin DBus interface not responsive"}))
     {:check "KWin Compositor" :status :ok :message "qdbus6 skipped (offline/testing mode)"}))
 
+(defn check-rclone [manifest]
+  (if (rclone/rclone-installed?)
+    (let [cfg         (rclone/get-rclone-cfg manifest)
+          remote-name (:remote cfg "gdrive")
+          timer-name  (:timer-name cfg "rclone-bisync.timer")
+          configured? (rclone/remote-configured? remote-name)
+          t-active?   (rclone/timer-active? timer-name)]
+      (cond
+        (and configured? t-active?)
+        {:check "Rclone Google Drive" :status :ok :message (str "Remote (" remote-name ":) configured and " timer-name " active")}
+
+        configured?
+        {:check "Rclone Google Drive" :status :warn :message (str "Remote (" remote-name ":) configured, but " timer-name " is not active")}
+
+        :else
+        {:check "Rclone Google Drive" :status :warn :message (str "Remote (" remote-name ":) not configured (run 'mono-rice rclone setup')")}))
+    {:check "Rclone Google Drive" :status :warn :message "rclone executable not found"}))
+
 (defn run-diagnostics [manifest]
   (let [results [(check-wayland-session)
                  (check-fonts)
                  (check-audio-pipewire)
-                 (check-gpu-compositor)]]
+                 (check-gpu-compositor)
+                 (check-rclone manifest)]]
     results))
 
 (defn auto-repair! [manifest & [{:keys [dry-run]}]]
@@ -72,6 +92,11 @@
     ;; 5. Reconfigure KWin
     (when (command-exists? "qdbus6")
       (sh! ["qdbus6" "org.kde.KWin" "/KWin" "reconfigure"] {:dry-run dry-run :throw? false}))
+
+    ;; 6. Ensure Rclone Bisync Timer is active if remote is configured
+    (let [cfg (rclone/get-rclone-cfg manifest)]
+      (when (and (rclone/rclone-installed?) (rclone/remote-configured? (:remote cfg "gdrive")))
+        (rclone/deploy-service-and-timer! manifest {:dry-run dry-run})))
 
     (log-success "Auto-repair procedures executed successfully.")))
 
