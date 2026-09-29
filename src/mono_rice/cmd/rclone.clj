@@ -99,17 +99,17 @@
         remote-type (:type cfg "drive")
         scope       (:scope cfg "drive")]
     (log-step (str "Configuring Google Drive Remote (" remote-name ":) via Web Browser Login"))
-    (if-not (rclone-installed?)
+    (if dry-run
       (do
-        (log-warn "rclone is not installed. Please install rclone (e.g. sudo pacman -S rclone) first.")
-        false)
-      (if (and (remote-configured? remote-name) (not force))
+        (log-info "[DRY-RUN] Would launch browser OAuth flow: rclone config create" remote-name remote-type (str "scope=" scope) "config_is_local=true")
+        true)
+      (if-not (rclone-installed?)
         (do
-          (log-success "Remote" (str remote-name ":") "is already configured and authorized in rclone.")
-          true)
-        (if dry-run
+          (log-warn "rclone is not installed. Please install rclone (e.g. sudo pacman -S rclone) first.")
+          false)
+        (if (and (remote-configured? remote-name) (not force))
           (do
-            (log-info "[DRY-RUN] Would launch browser OAuth flow: rclone config create" remote-name remote-type (str "scope=" scope) "config_is_local=true")
+            (log-success "Remote" (str remote-name ":") "is already configured and authorized in rclone.")
             true)
           (if (or auto-yes
                   (ask-confirm? (str "Authenticate and connect Google Drive (" remote-name ":) in your web browser now?")
@@ -192,30 +192,36 @@
         conflict     (str (:conflict-resolve cfg "newer"))
         log-path     (str (fs/path home (:log-path cfg ".cache/rclone-bisync.log")))]
     (log-step (format "Executing Rclone Google Drive Bisync (%s <-> %s)" local-path remote))
-    (if-not (rclone-installed?)
-      (log-warn "rclone is not installed.")
-      (if-not (remote-configured? (:remote cfg "gdrive"))
-        (log-warn "Remote" remote "is not configured. Run 'mono-rice rclone setup' first.")
-        (let [cmd (cond-> ["rclone" "bisync" local-path remote
-                           "--resilient"
-                           "--max-delete" max-del
-                           "--conflict-resolve" conflict
-                           "--log-file" log-path
-                           "--log-level" "INFO"
-                           "-P"]
-                    resync  (conj "--resync")
-                    dry-run (conj "--dry-run"))]
-          (if dry-run
-            (do
-              (log-info "[DRY-RUN] Would execute:" (str/join " " cmd))
-              (log-success "Dry-run synchronization simulated."))
-            (do
-              (rfs/ensure-dir! local-path)
-              (log-info "Running bisync command:" (str/join " " cmd))
-              (let [res (sh! cmd {:inherit true :throw? false})]
-                (if (zero? (:exit res))
-                  (log-success "Rclone Google Drive synchronization completed successfully.")
-                  (log-warn "Rclone bisync exited with code:" (:exit res) "(check log at:" log-path ")"))))))))))
+    (if dry-run
+      (let [cmd (cond-> ["rclone" "bisync" local-path remote
+                         "--resilient"
+                         "--max-delete" max-del
+                         "--conflict-resolve" conflict
+                         "--log-file" log-path
+                         "--log-level" "INFO"
+                         "-P"]
+                  resync  (conj "--resync")
+                  true    (conj "--dry-run"))]
+        (log-info "[DRY-RUN] Would execute:" (str/join " " cmd))
+        (log-success "Dry-run synchronization simulated."))
+      (if-not (rclone-installed?)
+        (log-warn "rclone is not installed.")
+        (if-not (remote-configured? (:remote cfg "gdrive"))
+          (log-warn "Remote" remote "is not configured. Run 'mono-rice rclone setup' first.")
+          (let [cmd (cond-> ["rclone" "bisync" local-path remote
+                             "--resilient"
+                             "--max-delete" max-del
+                             "--conflict-resolve" conflict
+                             "--log-file" log-path
+                             "--log-level" "INFO"
+                             "-P"]
+                      resync  (conj "--resync"))]
+            (rfs/ensure-dir! local-path)
+            (log-info "Running bisync command:" (str/join " " cmd))
+            (let [res (sh! cmd {:inherit true :throw? false})]
+              (if (zero? (:exit res))
+                (log-success "Rclone Google Drive synchronization completed successfully.")
+                (log-warn "Rclone bisync exited with code:" (:exit res) "(check log at:" log-path ")")))))))))
 
 (defn initial-setup!
   "Performs complete installation and first-time activation for Google Drive rclone bisync."
