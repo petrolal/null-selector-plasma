@@ -2,24 +2,19 @@
 
 This rice is designed to use **Smart Video Wallpaper Reborn** (`plasma6-wallpapers-smart-video-wallpaper-reborn`) for animated desktop and lockscreen backgrounds.
 
-### Primary Wallpaper: Digital Gaze
-- **Author / Source:** [DesktopHut Digital Gaze](https://www.desktophut.com/digital-gaze-8642)
-- **Direct 4K MP4 URL:** `https://www.desktophut.com/files/bB8IrWshPO-Sequence04Htty2Prob4.mp4`
-- **Static Fallback:** Included locally as `assets/wallpapers/digital-gaze.png` (3840x2160)
-
-### Desktop Wallpaper: Infernal Biopunk (Default Desktop)
+### Desktop Live Wallpaper: Infernal Biopunk
 - **File:** `assets/wallpapers/infernal_naked_girl_biopunk.mp4`
-- **Fallback / Variant:** `assets/wallpapers/biopunk_infernal_theme_01.mp4`
-- **Palette:** High-contrast Biopunk / Monochromatic Grayscale adaptation
+- **Static Fallback:** `assets/wallpapers/infernal_naked_girl_biopunk.png`
+- **Target:** Plasma 6 Desktop animated live wallpaper
 
-### Alternative Desktop Wallpaper: Biopunk Lightest Theme
-- **File:** `assets/wallpapers/biopunk_lightest_theme.mp4`
-- **Static Fallback:** `assets/wallpapers/biopunk_lightest_theme.png`
-- **Palette:** Monochromatic Grayscale adaptation
+### Lockscreen & Login Screen Wallpaper: Infernal Eyes
+- **File:** `assets/wallpapers/infernal_eyes.mp4`
+- **Static Fallback:** `assets/wallpapers/infernal_eyes.png`
+- **Target:** KDE Screen Locker (`kscreenlockerrc`), Plasma Login Manager (`plasmalogin.conf`), and SDDM (`theme.conf`)
 
-### Secondary Wallpaper: Synthwave Dreamwave Girl
-- **Author / Source:** [DesktopHut Synthwave Dreamwave Girl](https://www.desktophut.com/synthwave-dreamwave-girl)
-- **Direct MP4 URL:** `https://www.desktophut.com/files/JnTDdp1g89wIMRy_Synthwave Dreamwave Girl.mp4`
+### Legacy / Alternative Wallpapers
+- **Digital Gaze:** `assets/wallpapers/digital-gaze.mp4` ([DesktopHut Digital Gaze](https://www.desktophut.com/digital-gaze-8642))
+- **Synthwave Dreamwave Girl:** `assets/wallpapers/synthwave_dreamwave_girl.mp4`
 
 ### Automatic Download Command
 To download the 4K live video wallpaper locally to `~/.local/share/wallpapers/`:

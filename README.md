@@ -49,7 +49,7 @@
 | :--- | :--- | :--- |
 | **Base System** | Arch Linux / CachyOS | KDE Plasma 6.7+, Wayland native, Linux Zen kernel |
 | **Engine** | Babashka / Clojure (EDN) | Pure functional layout sanitization, sub-10ms startup |
-| **Live Wallpaper** | [Smart Video Wallpaper Reborn](https://github.com/adhec/smart-video-wallpaper-reborn) | [DesktopHut Digital Gaze](https://www.desktophut.com/digital-gaze-8642) 4K video (fallback static PNG included) |
+| **Live Wallpaper** | [Smart Video Wallpaper Reborn](https://github.com/adhec/smart-video-wallpaper-reborn) | `infernal_naked_girl_biopunk.mp4` on Desktop & `infernal_eyes.mp4` on Lockscreen / Login Screen (with static PNG fallbacks) |
 | **Theme & Colors** | [Monochrome KDE](https://github.com/pwyde/monochrome-kde) | Minimal high-contrast black & white palette |
 | **Icon Theme** | [YAMIS](https://github.com/dirn/yet-another-monochrome-icon-set) | Adaptive monochrome vector icons across panel and desktop |
 | **Cursor Theme** | `Bibata-Modern-Ice` | Crisp white minimalist cursor |

@@ -139,7 +139,7 @@
 
  :lockscreen
  {:wallpaper-plugin "luisbocanegra.smart.video.wallpaper.reborn"
-  :video-file       "digital-gaze.mp4"
+  :video-file       "infernal_eyes.mp4"
   :fill-mode        2
   :mute-mode        5}
 
