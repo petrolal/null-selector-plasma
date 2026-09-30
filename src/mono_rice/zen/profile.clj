@@ -46,15 +46,19 @@
       (log-warn "No Zen Browser profiles found in ~/.config/zen; skipping style symlinks.")
       (doseq [prof profiles]
         (let [chrome-dir (fs/path prof "chrome")
-              prof-name  (fs/file-name prof)]
+              prof-name  (fs/file-name prof)
+              modular-dir (fs/path repo-root "zen-browser" "chrome")]
           (rfs/ensure-dir! chrome-dir {:dry-run dry-run})
+          (when (fs/exists? modular-dir)
+            (doseq [f (fs/list-dir modular-dir)]
+              (rfs/symlink! f (fs/path chrome-dir (fs/file-name f)) {:dry-run dry-run})))
           (when (fs/exists? chrome-css)
             (rfs/symlink! chrome-css (fs/path chrome-dir "userChrome.css") {:dry-run dry-run}))
           (when (fs/exists? cont-css)
             (rfs/symlink! cont-css (fs/path chrome-dir "userContent.css") {:dry-run dry-run}))
           (when (fs/exists? user-js)
             (rfs/symlink! user-js (fs/path prof "user.js") {:dry-run dry-run}))
-          (log-success "Linked userChrome.css + userContent.css + user.js to Zen profile:" (str prof-name)))))))
+          (log-success "Linked modular userChrome + userContent + user.js to Zen profile:" (str prof-name)))))))
 
 (defn configure-kwin-window-rule! [& [{:keys [dry-run]}]]
   (log-step "Configuring KWin Window Rule for Zen Browser")

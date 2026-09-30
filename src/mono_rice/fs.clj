@@ -96,14 +96,17 @@
         (ensure-dir! backup-dir)
         (doseq [t targets]
           (let [target-path (if (fs/relative? t) (fs/path home t) (fs/path t))]
-            (when (and (fs/exists? target-path) (not (fs/sym-link? target-path)))
-              (let [rel-path (fs/relativize home target-path)
-                    dest     (fs/path backup-dir rel-path)]
-                (ensure-dir! (fs/parent dest))
-                (if (fs/directory? target-path)
-                  (fs/copy-tree target-path dest {:replace-existing true})
-                  (fs/copy target-path dest {:replace-existing true}))
-                (log-info "Backed up:" (str rel-path))))))
+            (when (and (not (fs/sym-link? target-path))
+                       (fs/exists? target-path))
+              (try
+                (let [rel-path (fs/relativize home target-path)
+                      dest     (fs/path backup-dir rel-path)]
+                  (ensure-dir! (fs/parent dest))
+                  (if (fs/directory? target-path)
+                    (fs/copy-tree target-path dest {:replace-existing true})
+                    (fs/copy target-path dest {:replace-existing true}))
+                  (log-info "Backed up:" (str rel-path)))
+                (catch Exception _ nil)))))
         (log-success "Backup complete.")
         backup-dir))))
 

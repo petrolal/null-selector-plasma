@@ -108,7 +108,7 @@ Scale=1
 [org.kde.kdecoration2]
 BorderSize=Normal
 BorderSizeAuto=false
-ButtonsOnLeft=M
-ButtonsOnRight=IAX
+ButtonsOnLeft=MFSE
+ButtonsOnRight=HIAX
 CloseOnDoubleClickOnMenu=false
 plugin=org.kde.klassy

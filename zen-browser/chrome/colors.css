@@ -1,0 +1,17 @@
+/* Biopunk Sinister Crimson and Obsidian Theme Tokens */
+:root {
+  color-scheme: dark !important;
+  --zen-colors-primary: #e60026 !important;
+  --zen-primary-color: #e60026 !important;
+  --zen-colors-text: #e0e0e0 !important;
+  --zen-colors-border: #3c1e24 !important;
+  --toolbar-color: #e0e0e0 !important;
+  --toolbar-field-color: #e0e0e0 !important;
+  --lwt-text-color: #e0e0e0 !important;
+  --lwt-toolbar-field-color: #e0e0e0 !important;
+  --panel-background: #141214 !important;
+  --panel-border-color: #3c1e24 !important;
+  --arrowpanel-background: #141214 !important;
+  --arrowpanel-border-color: #3c1e24 !important;
+  --autocomplete-popup-background: #141214 !important;
+}

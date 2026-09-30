@@ -109,7 +109,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn install! [manifest opts]
-  (log-step "Starting Deployment of null-sector-plasma")
+  (log-step "Starting Deployment of sanguine-node-rice")
   (let [root (rfs/repo-root)]
     (rkde/check-system! (assoc opts :prompt? true))
     (when-not (or (:dry-run opts) (:symlinks-only opts))

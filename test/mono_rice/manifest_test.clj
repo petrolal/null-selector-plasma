@@ -9,7 +9,7 @@
       (is (fs/exists? manifest-file))
       (let [data (edn/read-string (slurp (str manifest-file)))]
         (is (map? data))
-        (is (= (:rice/name data) "null-sector-plasma"))
+        (is (= (:rice/name data) "sanguine-node-rice"))
         (is (map? (:theme data)))
         (is (map? (:theme-profiles data)))
         (is (contains? (:theme-profiles data) :monochrome-dark))

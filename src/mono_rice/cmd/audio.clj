@@ -27,7 +27,7 @@
 
 (defn render-cava-config [cfg]
   (str "# ==============================================================================\n"
-       "# CAVA Configuration: null-sector-plasma (" (:name cfg) ")\n"
+       "# CAVA Configuration: sanguine-node-rice (" (:name cfg) ")\n"
        "# ==============================================================================\n\n"
        "[general]\n"
        "framerate = " (:framerate cfg) "\n"

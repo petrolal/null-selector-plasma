@@ -4,13 +4,15 @@
             [clojure.edn :as edn]
             [mono-rice.fs :as rfs]
             [mono-rice.proc :refer [log-error]]
-            [mono-rice.registry :as reg]))
+            [mono-rice.registry :as reg]
+            [mono-rice.schema :as schema]))
 
 (defn load-manifest! []
   (let [root (rfs/repo-root)
         manifest-path (fs/path root "rice.edn")]
     (if (fs/exists? manifest-path)
-      (edn/read-string (slurp (str manifest-path)))
+      (let [manifest (edn/read-string (slurp (str manifest-path)))]
+        (schema/validate! manifest))
       (throw (ex-info (str "Manifest not found: " manifest-path) {})))))
 
 (defn print-help []

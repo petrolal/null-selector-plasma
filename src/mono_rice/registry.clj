@@ -69,7 +69,7 @@
                    :doc "Deep system diagnostic health checks and auto-repair (--fix)"}
    :install       {:handler (fn [m a opts] (cmd-install/install! m opts))
                    :category :lifecycle
-                   :doc "Deploy and install complete null-sector-plasma rice"}
+                   :doc "Deploy and install complete sanguine-node-rice"}
    :harvest       {:handler (fn [m a opts] (cmd-harvest/harvest! m opts))
                    :category :lifecycle
                    :doc "Scrape live $HOME configs back into repository with template sanitization"}

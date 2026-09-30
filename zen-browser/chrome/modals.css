@@ -1,0 +1,57 @@
+/* Modals, Popups, Menus, Dialogs, and Drawers */
+menupopup,
+panel,
+panel[type="arrow"],
+.panel-arrowcontent,
+.panel-subview-body,
+.panel-viewcontainer,
+panelmultiview,
+#tab-preview-panel,
+.zen-glance-popup,
+#zen-glance-overlay,
+zen-glance-panel,
+.zen-glance-sidebar-container,
+#urlbar-results,
+.urlbarView,
+.urlbarView-body-inner,
+.modal-overlay,
+.modal-container,
+#tab-notification-deck,
+.notificationbox-stack,
+dialog,
+.dialogBox,
+window[dialog="true"],
+tooltip,
+popupset,
+.sidebar-panel,
+#sidebar-box,
+#sidebar-panel-wrapper {
+  background-color: #141214 !important;
+  background-image: none !important;
+  border: 1px solid #3c1e24 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85) !important;
+  border-radius: 8px !important;
+  opacity: 1 !important;
+  color: #f0f0f0 !important;
+}
+
+menupopup,
+panel,
+dialog {
+  color: #f0f0f0 !important;
+}
+
+menuitem,
+menu,
+.subviewbutton {
+  color: #e0e0e0 !important;
+}
+
+menuitem:hover,
+menuitem[_moz-menuactive="true"],
+menu:hover,
+menu[_moz-menuactive="true"],
+.subviewbutton:hover {
+  background-color: rgba(230, 0, 38, 0.18) !important;
+  color: #ffffff !important;
+}

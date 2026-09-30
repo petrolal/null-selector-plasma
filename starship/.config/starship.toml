@@ -1,6 +1,6 @@
 # ==============================================================================
-# Starship Prompt Configuration (Monochrome Cyberpunk Style)
-# Rice: null-sector-plasma
+# Starship Prompt Configuration (Sanguine Node Style)
+# Rice: sanguine-node-rice
 # ==============================================================================
 
 format = """

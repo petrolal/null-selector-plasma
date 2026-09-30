@@ -5,7 +5,7 @@
        :task (apply core/-main "tui" *command-line-args*)}
   doctor {:doc "Run deep health diagnostics and auto-repair (bb doctor --fix)"
           :task (apply core/-main "doctor" *command-line-args*)}
-  install {:doc "Deploy and install complete null-sector-plasma rice"
+  install {:doc "Deploy and install complete sanguine-node-rice"
            :task (apply core/-main "install" *command-line-args*)}
   harvest {:doc "Scrape live $HOME configs back into repository with template sanitization"
            :task (apply core/-main "harvest" *command-line-args*)}

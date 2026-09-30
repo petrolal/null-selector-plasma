@@ -1,7 +1,7 @@
 {:rice/version "1.0.0"
- :rice/name    "null-sector-plasma"
+ :rice/name    "sanguine-node-rice"
  :rice/author  "petrolal"
- :rice/repo    "https://github.com/petrolal/null-sector-plasma"
+ :rice/repo    "https://github.com/petrolal/sanguine-node-rice"
 
  :system
  {:compatibility [:arch :cachyos]

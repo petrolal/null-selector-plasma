@@ -1,0 +1,24 @@
+/* Base layout and browser canvas background */
+#browser {
+  background-color: #000000;
+}
+
+#navigator-toolbox,
+#TabsToolbar,
+.tabbrowser-tab,
+.tab-text,
+#zen-sidebar-top-buttons,
+#zen-sidebar-bottom-buttons,
+#urlbar,
+#urlbar-input,
+.urlbar-input-box {
+  color: #e0e0e0 !important;
+  --zen-colors-text: #e0e0e0 !important;
+  --toolbar-color: #e0e0e0 !important;
+}
+
+menuseparator,
+toolbarseparator {
+  border-color: #33333d !important;
+  background-color: #33333d !important;
+}

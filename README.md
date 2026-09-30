@@ -1,9 +1,9 @@
 <div align="center">
 
-# 🖤 null-sector-plasma
+# 🩸 sanguine-node-rice
 
-### Automated • Reproducible • Declarative KDE Plasma 6 Monochrome Rice
-*(Inspired by [agridyne/dotfiles-dt](https://github.com/agridyne/dotfiles-dt) & NieR: Automata / Cyberpunk Aesthetics)*
+### Automated • Reproducible • Declarative KDE Plasma 6 Biopunk Rice
+*(Obsidian Monochrome • Sinister Crimson Accents • High-Performance Wayland)*
 
 [![Arch Linux](https://img.shields.io/badge/Arch_Linux-1793D1?logo=arch-linux&logoColor=white&style=for-the-badge)](https://archlinux.org/)
 [![CachyOS](https://img.shields.io/badge/CachyOS-00A389?logo=linux&logoColor=white&style=for-the-badge)](https://cachyos.org/)
@@ -13,8 +13,8 @@
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0)
 
 <p align="center">
-  A high-contrast <b>monochrome cyberpunk desktop environment</b> for <b>KDE Plasma 6 on Wayland</b>.<br />
-  Engineered with <b>Panel Colorizer</b> floating capsule islands, <b>YoRHa HUD</b> telemetry, <b>Kurve</b> audio visualizer, <b>CatWalk</b> CPU monitor, <b>YAMIS</b> monochrome icons, <b>Konsole</b>, and <b>Zen Browser</b> translucent glass.<br />
+  A high-contrast <b>sanguine obsidian desktop environment</b> for <b>KDE Plasma 6 on Wayland</b>.<br />
+  Engineered with <b>Panel Colorizer</b> floating capsule islands, telemetry widgets, <b>CAVA</b> audio visualizer, <b>YAMIS</b> monochrome icons, <b>Konsole</b>, and <b>Zen Browser</b> translucent glass.<br />
   Driven by a declarative <b>Clojure (EDN) & Babashka</b> automation engine.
 </p>
 
@@ -67,7 +67,7 @@
 ## 📂 Directory Tree & Architecture
 
 ```text
-null-sector-plasma/
+sanguine-node-rice/
 ├── bb.edn                                # Babashka task configuration & test runner
 ├── rice.edn                              # Declarative rice manifest specification (EDN)
 ├── mono-rice                             # Direct standalone CLI entrypoint
@@ -150,13 +150,13 @@ bb tui (or ./mono-rice tui)
 
 ### 2. One-Liner Bootstrap
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/petrolal/null-sector-plasma/main/bootstrap.sh)
+bash <(curl -s https://raw.githubusercontent.com/petrolal/sanguine-node-rice/main/bootstrap.sh)
 ```
 
 ### 3. Manual Clone & Deployment
 ```bash
-git clone git@github.com:petrolal/null-sector-plasma.git
-cd null-sector-plasma
+git clone git@github.com:petrolal/sanguine-node-rice.git
+cd sanguine-node-rice
 
 # Preview deployment without modifications:
 bb install --dry-run

@@ -1,0 +1,25 @@
+/* Biopunk Sinister Crimson Highlights & Workspace Indicators */
+#urlbar[focused="true"],
+#urlbar:focus-within {
+  border-color: #e60026 !important;
+  box-shadow: 0 0 12px rgba(230, 0, 38, 0.45) !important;
+}
+
+.tabbrowser-tab[selected="true"],
+.tabbrowser-tab[visuallyselected="true"],
+.tabbrowser-tab[selected],
+tab[selected="true"] {
+  border-left: 3px solid #e60026 !important;
+  background-color: rgba(230, 0, 38, 0.12) !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-text,
+.tabbrowser-tab[visuallyselected="true"] .tab-text,
+tab[selected="true"] .tab-text {
+  color: #ffffff !important;
+  font-weight: bold !important;
+}
+
+#zen-current-workspace-indicator {
+  color: #e60026 !important;
+}
