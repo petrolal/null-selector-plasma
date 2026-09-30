@@ -7,3 +7,15 @@
     background-color: transparent !important;
   }
 }
+
+/* Global Dark Minimalist Scrollbars */
+:root {
+  scrollbar-color: #3b1e24 #141416 !important;
+  scrollbar-width: thin !important;
+}
+
+/* Sinister Crimson Text Selection */
+::selection {
+  background-color: #e60026 !important;
+  color: #ffffff !important;
+}

@@ -28,6 +28,24 @@ user_pref("browser.theme.toolbar-theme", 0);
 user_pref("browser.theme.content-theme", 0);
 user_pref("browser.display.background_color", "#000000");
 
+// Performance & Hardware Acceleration
+user_pref("gfx.webrender.all", true);
+user_pref("media.ffmpeg.vaapi.enabled", true);
+user_pref("media.rdd-ffmpeg.enabled", true);
+user_pref("media.navigator.mediadatadecoder_vpx_enabled", true);
+
+// 144Hz Smooth Scrolling & Responsiveness
+user_pref("general.smoothScroll", true);
+user_pref("general.smoothScroll.msdPhysics.enabled", true);
+user_pref("general.smoothScroll.msdPhysics.continuousFactor", 1.2);
+user_pref("general.smoothScroll.msdPhysics.slowdownMinDeltaMS", 25);
+user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant", 400);
+user_pref("general.smoothScroll.msdPhysics.regularSpringConstant", 600);
+user_pref("mousewheel.min_line_scroll_amount", 18);
+
+// Memory Management & Tab Discarding
+user_pref("browser.tabs.unloadOnLowMemory", true);
+user_pref("browser.cache.memory.enable", true);
 
 // Verified against docs.zen-browser.app/guides/about-config-flags
 user_pref("zen.theme.content-element-separation", 0);
