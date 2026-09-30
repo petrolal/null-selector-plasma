@@ -16,10 +16,10 @@ Rows=1
 [Effect-better-blur-dx]
 BlurMatching=true
 BlurNonMatching=false
-BlurStrength=3
+BlurStrength=4
 Brightness=25
 Contrast=105
-NoiseStrength=3
+NoiseStrength=5
 Saturation=0
 WindowClasses=zen
 
@@ -37,7 +37,6 @@ Contrast=105
 MatchingClasses=zen
 NoiseStrength=3
 Saturation=0
-
 
 [NightColor]
 Active=false

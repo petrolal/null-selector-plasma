@@ -31,6 +31,12 @@
       (nil? repo-path)
       {:path rel-path :status :untracked-in-repo :live-path live-path :repo-path nil}
 
+      ;; Fast-path: active symlink targeting the repo template
+      (and (fs/sym-link? live-path)
+           (= (try (str (fs/real-path live-path)) (catch Exception _ ""))
+              (try (str (fs/real-path repo-path)) (catch Exception _ ""))))
+      {:path rel-path :status :synced :live-path live-path :repo-path repo-path}
+
       :else
       (let [live-h (file-hash live-path)
             repo-h (file-hash repo-path)]
@@ -42,9 +48,10 @@
   "Evaluates drift state across all :backup-targets in the manifest."
   [manifest]
   (let [root (rfs/repo-root)
-        home (fs/expand-home "~")
+        home (rfs/home-dir)
         targets (:backup-targets manifest)]
     (mapv #(check-target-drift root home %) targets)))
+
 
 (defn print-drift-report [results]
   (println "Configuration Drift Sentinel Report:")

@@ -93,10 +93,35 @@
                            :cmd  final-cmd}))
           result)))))
 
+(defn is-root?
+  "Checks if the current process is running as root (UID 0)."
+  []
+  (= "0" (try (str/trim (:out (sh! ["id" "-u"] {:throw? false}))) (catch Exception _ ""))))
+
+(defn sudo-authenticated?
+  "Checks if root privileges are active or sudo is authenticated without password."
+  []
+  (or (is-root?)
+      (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))))
+
 (defn sudo-validate! []
   (when (command-exists? "sudo")
     (log-step "Requesting Administrator (sudo) Privileges")
     (sh! ["sudo" "-v"] {:inherit true :throw? false})))
+
+(defn systemctl-user!
+  "Executes a systemctl --user command."
+  [action unit & [opts]]
+  (if (command-exists? "systemctl")
+    (sh! (into ["systemctl" "--user" (name action)] (when unit [(name unit)])) (merge {:throw? false} opts))
+    {:exit 1 :out "" :err "systemctl not available"}))
+
+(defn systemctl-system!
+  "Executes a systemctl command with sudo."
+  [action unit & [opts]]
+  (if (command-exists? "systemctl")
+    (sh! (into ["systemctl" (name action)] (when unit [(name unit)])) (merge {:sudo true :throw? false} opts))
+    {:exit 1 :out "" :err "systemctl not available"}))
 
 (defn exec!
   "Convenience wrapper around sh! with variable arguments or sequence."
@@ -107,3 +132,4 @@
                    (first cmd-args)
                    cmd-args)]
     (sh! flat-cmd (merge {:throw? false} opts))))
+

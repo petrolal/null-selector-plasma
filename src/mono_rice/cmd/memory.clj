@@ -5,7 +5,7 @@
             [clojure.string :as str]
             [mono-rice.fs :as rfs]
             [mono-rice.kde :as kde]
-            [mono-rice.proc :refer [ask-confirm? command-exists? log-info log-step log-success log-warn sh!]]))
+            [mono-rice.proc :refer [ask-confirm? command-exists? log-info log-step log-success log-warn sh! sudo-authenticated?]]))
 
 (defn get-memory-cfg [manifest]
   (get manifest :memory
@@ -120,7 +120,7 @@
         (log-info "[DRY-RUN] Content:\n" (str/trim target-content))
         (log-info "[DRY-RUN] Would restart systemd-zram-setup@zram0.service via sudo"))
       (if (or auto-yes yes
-              (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+              (sudo-authenticated?)
               (ask-confirm? "Configure ZRAM 50% RAM swap in /etc/systemd/zram-generator.conf (requires sudo)?"
                             {:auto-yes (or auto-yes yes)}))
         (let [tmp-file (str (fs/create-temp-file {:prefix "zram_gen_" :suffix ".conf"}))]
@@ -145,7 +145,7 @@
   (if dry-run
     (log-info "[DRY-RUN] Would enable and start systemd-oomd.service via: sudo systemctl enable --now systemd-oomd")
     (if (or auto-yes yes
-            (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+            (sudo-authenticated?)
             (ask-confirm? "Enable systemd-oomd daemon to prevent desktop freezing (requires sudo)?"
                           {:auto-yes (or auto-yes yes)}))
       (let [res (sh! ["systemctl" "enable" "--now" "systemd-oomd.service"] {:sudo true :throw? false})]
@@ -153,6 +153,7 @@
           (log-success "systemd-oomd is now enabled and active.")
           (log-warn "Failed to enable systemd-oomd.service.")))
       (log-warn "Skipped systemd-oomd configuration (sudo access declined)."))))
+
 
 (defn tune-baloo!
   "Configures KDE Baloo file search to prevent memory exhaustion and high CPU spikes."

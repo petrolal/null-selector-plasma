@@ -1,0 +1,11 @@
+[Desktop Entry]
+DefaultProfile=NullSector.profile
+
+[Favorite Profiles]
+Favorites=NullSector.profile
+
+[MainWindow]
+MenuBar=Disabled
+ShowMenuBarByDefault=false
+StatusBar=Disabled
+ToolBarsMovable=Disabled

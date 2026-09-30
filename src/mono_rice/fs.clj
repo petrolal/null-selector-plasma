@@ -3,7 +3,8 @@
             [cheshire.core :as json]
             [clojure.edn :as edn]
             [clojure.string :as str]
-            [mono-rice.proc :refer [command-exists? log-info log-success log-warn log-step sh! ask-confirm?]]))
+            [mono-rice.proc :refer [ask-confirm? command-exists? log-info log-step log-success log-warn sh! sudo-authenticated?]]))
+
 
 (defn home-dir []
   (fs/expand-home "~"))
@@ -189,7 +190,7 @@
                         (fs/path home ".local" "share" "plasma" "plasmoids")
                         {:dry-run dry-run})
 
-    ;; 2. Colorschemes, Desktop themes, Aurorae themes
+    ;; 2. Colorschemes, Desktop themes, Aurorae themes, Konsole profiles
     (link-dir-children! (fs/path root "plasma" ".local" "share" "color-schemes")
                         (fs/path home ".local" "share" "color-schemes")
                         {:dry-run dry-run})
@@ -199,6 +200,10 @@
     (link-dir-children! (fs/path root "plasma" ".local" "share" "aurorae" "themes")
                         (fs/path home ".local" "share" "aurorae" "themes")
                         {:dry-run dry-run})
+    (when (fs/exists? (fs/path root "plasma" ".local" "share" "konsole"))
+      (link-dir-children! (fs/path root "plasma" ".local" "share" "konsole")
+                          (fs/path home ".local" "share" "konsole")
+                          {:dry-run dry-run}))
 
     ;; 3. Panel Colorizer Presets
     (link-dir-children! (fs/path root "plasma" ".config" "panel-colorizer" "presets")
@@ -216,12 +221,12 @@
           wp-src     (fs/path root "assets" "wallpapers")]
       (if dry-run
         (log-info "[DRY-RUN] Would sync rice wallpapers to /usr/share/wallpapers (for system login greeter/lockscreen)")
-        (when (or (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
-                  (zero? (:exit (sh! ["id" "-u"] {:throw? false}))))
+        (when (sudo-authenticated?)
           (sh! ["mkdir" "-p" sys-wp-dir] {:sudo true :throw? false})
           (sh! ["cp" "-rf" (str (fs/path wp-src ".")) sys-wp-dir] {:sudo true :throw? false})
           (sh! ["chmod" "-R" "644" sys-wp-dir] {:sudo true :throw? false})
           (sh! ["find" sys-wp-dir "-type" "d" "-exec" "chmod" "755" "{}" "+"] {:sudo true :throw? false}))))
+
 
     ;; 5. YAMIS Icon Fallback
     (let [yamis-sys (fs/path "/usr/share/icons/yet-another-monochrome-icon-set")]
@@ -241,6 +246,12 @@
               (fs/path home ".config" "kglobalshortcutsrc") {:dry-run dry-run})
     (symlink! (fs/path root "plasma" ".config" "kwinrc")
               (fs/path home ".config" "kwinrc") {:dry-run dry-run})
+    (when (fs/exists? (fs/path root "plasma" ".config" "konsolerc"))
+      (symlink! (fs/path root "plasma" ".config" "konsolerc")
+                (fs/path home ".config" "konsolerc") {:dry-run dry-run}))
+    (when (fs/exists? (fs/path root "plasma" ".config" "krunnerrc"))
+      (symlink! (fs/path root "plasma" ".config" "krunnerrc")
+                (fs/path home ".config" "krunnerrc") {:dry-run dry-run}))
     (when (fs/exists? (fs/path root "plasma" ".config" "kscreenlockerrc"))
       (symlink! (fs/path root "plasma" ".config" "kscreenlockerrc")
                 (fs/path home ".config" "kscreenlockerrc") {:dry-run dry-run}))
@@ -255,6 +266,10 @@
     (when (fs/exists? (fs/path root "fastfetch" ".config" "fastfetch" "config.jsonc"))
       (symlink! (fs/path root "fastfetch" ".config" "fastfetch" "config.jsonc")
                 (fs/path home ".config" "fastfetch" "config.jsonc") {:dry-run dry-run}))
+    (when (fs/exists? (fs/path root "fastfetch" ".config" "fastfetch" "null_sector.txt"))
+      (symlink! (fs/path root "fastfetch" ".config" "fastfetch" "null_sector.txt")
+                (fs/path home ".config" "fastfetch" "null_sector.txt") {:dry-run dry-run}))
+
 
     ;; Starship
     (when (fs/exists? (fs/path root "starship" ".config" "starship.toml"))
@@ -307,7 +322,7 @@
         (log-info "[DRY-RUN] Would configure /etc/plasmalogin.conf and /etc/xdg/kscreenlockerrc with lockscreen settings")
         (log-info "[DRY-RUN] Would disable sddm.service and enable plasmalogin.service"))
       (if (or auto-yes
-              (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+              (sudo-authenticated?)
               (ask-confirm? "Configure Plasma Login Screen to match Lock Screen (requires sudo)?" {:auto-yes auto-yes}))
         (do
           (sh! ["mkdir" "-p" "/usr/share/wallpapers"] {:sudo true :throw? false})
@@ -346,7 +361,7 @@
           (log-info (format "[DRY-RUN] Would configure %s setting [Theme] Current=%s" conf-file theme-name))
           (log-info "[DRY-RUN] Would disable plasmalogin.service and enable sddm.service"))
         (if (or auto-yes
-                (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+                (sudo-authenticated?)
                 (ask-confirm? (format "Install SDDM %s Theme & enable SDDM service (requires sudo)?" theme-name) {:auto-yes auto-yes}))
           (do
             (sh! ["mkdir" "-p" target-dir "/etc/sddm.conf.d"] {:sudo true})
@@ -377,8 +392,9 @@
       (if dry-run
         (log-info "[DRY-RUN] Would install dotLock Plymouth theme to /usr/share/plymouth/themes/dotLock")
         (if (or auto-yes
-                (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+                (sudo-authenticated?)
                 (ask-confirm? "Install dotLock Plymouth Boot Splash (requires sudo)?" {:auto-yes auto-yes}))
+
           (do
             (sh! ["mkdir" "-p" "/usr/share/plymouth/themes/dotLock" "/etc/plymouth"] {:sudo true})
             (sh! ["cp" "-rf" (str (fs/path src-dir "*")) "/usr/share/plymouth/themes/dotLock/"] {:sudo true :throw? false})

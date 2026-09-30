@@ -1,11 +1,12 @@
 (ns mono-rice.cmd.events
   "DBus desktop event listener & dynamic display sentinel."
-  (:require [clojure.string :as str]
+  (:require [babashka.process :as p]
             [clojure.java.io :as io]
+            [clojure.string :as str]
+            [mono-rice.cmd.panel :as panel]
             [mono-rice.fs :as fs]
-            [mono-rice.proc :as proc]
             [mono-rice.layout.scaling :as scaling]
-            [mono-rice.cmd.panel :as panel]))
+            [mono-rice.proc :as proc]))
 
 (defn handle-event
   "Process a detected DBus desktop event."
@@ -88,14 +89,23 @@
         false)
       (do
         (proc/log-info "Starting dbus-monitor background stream (Press Ctrl+C to stop)...")
-        (let [filter-arg "type='signal',interface='org.kde.KScreen'"]
-          (try
-            (let [p (.exec (Runtime/getRuntime) (into-array String ["dbus-monitor" "--session" filter-arg]))
-                  reader (io/reader (.getInputStream p))]
-              (doseq [line (line-seq reader)]
-                (handle-event line opts)
-                (when once (throw (Exception. "Single event cycle complete"))))
-              true)
-            (catch Exception e
-              (proc/log-info (format "DBus listener stopped: %s" (.getMessage e)))
-              true)))))))
+        (let [filter-arg "type='signal',interface='org.kde.KScreen'"
+              proc-handle (try (p/process ["dbus-monitor" "--session" filter-arg] {:out :stream :err :string})
+                               (catch Exception _ nil))]
+          (if-not proc-handle
+            (do
+              (proc/log-warn "Failed to launch dbus-monitor process.")
+              false)
+            (try
+              (with-open [rdr (io/reader (:out proc-handle))]
+                (doseq [line (line-seq rdr)]
+                  (handle-event line opts)
+                  (when once
+                    (throw (ex-info "Single event cycle complete" {})))))
+              true
+              (catch Exception e
+                (proc/log-info (format "DBus listener stopped: %s" (.getMessage e)))
+                true)
+              (finally
+                (p/destroy proc-handle)))))))))
+

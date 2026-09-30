@@ -18,8 +18,16 @@ raw_target = /dev/stdout
 data_format = ascii
 ascii_max_range = 32
 
+[color]
+gradient = 1
+gradient_count = 2
+gradient_color_1 = '#444444'
+gradient_color_2 = '#ffffff'
+
 [smoothing]
-integral = 75
+integral = 85
 monstercat = 1
 waves = 0
-gravity = 100
+gravity = 110
+noise_reduction = 0.77
+

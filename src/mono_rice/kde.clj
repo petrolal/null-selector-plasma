@@ -2,7 +2,9 @@
   (:require [babashka.fs :as fs]
             [cheshire.core :as json]
             [clojure.string :as str]
-            [mono-rice.proc :refer [command-exists? log-info log-success log-warn log-step sh! ask-confirm?]]))
+            [mono-rice.fs :as rfs]
+            [mono-rice.proc :refer [ask-confirm? command-exists? log-info log-step log-success log-warn sh! sudo-authenticated?]]))
+
 
 ;; -----------------------------------------------------------------------------
 ;; System Compatibility Check
@@ -55,7 +57,8 @@
   [manifest & [{:keys [dry-run]}]]
   (log-step "Applying KDE Plasma Look-and-Feel Settings")
   (let [{:keys [theme terminal editor file-manager browser lockscreen]} manifest
-        home (fs/expand-home "~")]
+        home (rfs/home-dir)]
+
 
     ;; 1. Apply Colorscheme & Cursor Theme
     (if (command-exists? "plasma-apply-colorscheme")
@@ -173,7 +176,7 @@
         ;; 2. System-wide Plasma Login Manager & XDG Lockscreen Greeter Sync
         (if dry-run
           (log-info "[DRY-RUN] Would sync lockscreen wallpaper to /etc/plasmalogin.conf and /etc/xdg/kscreenlockerrc")
-          (when (zero? (:exit (sh! ["sudo" "-n" "true"] {:throw? false})))
+          (when (sudo-authenticated?)
             (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--key" "WallpaperPluginId" plugin] {:sudo true :throw? false})
             (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
             (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
@@ -182,10 +185,13 @@
             (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--key" "WallpaperPlugin" plugin] {:sudo true :throw? false})
             (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
             (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
-            (sh! ["chmod" "644" "/etc/plasmalogin.conf" "/etc/xdg/kscreenlockerrc"] {:sudo true :throw? false}))))
+            (sh! ["chmod" "644" "/etc/plasmalogin.conf" "/etc/xdg/kscreenlockerrc"] {:sudo true :throw? false})))))
 
       ;; Reconfigure KWin
       (when (command-exists? "qdbus6")
         (sh! ["qdbus6" "org.kde.KWin" "/KWin" "reconfigure"] {:dry-run dry-run :throw? false}))
 
-      (log-success "KDE system settings registered and active."))))
+      (log-success "KDE system settings registered and active.")))
+
+
+

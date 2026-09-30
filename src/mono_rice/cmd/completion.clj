@@ -1,12 +1,14 @@
 (ns mono-rice.cmd.completion
   "Shell auto-completion generator for Zsh, Bash, and Fish shells."
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io]
+  (:require [clojure.java.io :as io]
+            [clojure.string :as str]
             [mono-rice.fs :as fs]
             [mono-rice.proc :as proc]))
 
 (def commands
-  [{:cmd "install"       :desc "Full idempotent deployment of configs, themes, and extensions"}
+  [{:cmd "tui"           :desc "Launch interactive Cyberpunk terminal dashboard menu"}
+   {:cmd "doctor"        :desc "Deep system diagnostic health checks & auto-repair (--fix)"}
+   {:cmd "install"       :desc "Full idempotent deployment of configs, themes, and extensions"}
    {:cmd "harvest"       :desc "Scrape live configurations from $HOME into repo tree"}
    {:cmd "backup"        :desc "Create timestamped configuration snapshot in ~/.config/mono-rice/backups"}
    {:cmd "rollback"      :desc "Inspect snapshots and restore live configuration states"}
@@ -19,22 +21,23 @@
    {:cmd "kwin"          :desc "KWin window rules, transparency, borderless, and blur tuning"}
    {:cmd "fetch"         :desc "Fastfetch ASCII aesthetic logo selector"}
    {:cmd "profile"       :desc "Hardware profiler and form factor optimization tuner"}
+   {:cmd "rclone"        :desc "Google Drive cloud bisync & systemd timer manager"}
    {:cmd "sync"          :desc "Remote Git dotfile hub for pull/push synchronization"}
    {:cmd "memory"        :desc "System memory stability, ZRAM swap, systemd-oomd, and Baloo optimizer"}
    {:cmd "boot"          :desc "SDDM display manager & Plymouth boot splash theme orchestrator"}
+   {:cmd "completion"    :desc "Generate shell auto-completions (zsh, bash, fish)"}
+   {:cmd "vault"         :desc "Security audit, secret scanner & dotfile sanitizer"}
+   {:cmd "event"         :desc "DBus desktop event listener & dynamic display sentinel"}
    {:cmd "wallpaper"     :desc "Wallpaper & 4K video lockscreen wallpaper synchronizer"}
    {:cmd "audio"         :desc "CAVA audio visualizer equalizer presets manager"}
    {:cmd "watch"         :desc "Configuration drift sentinel daemon"}
    {:cmd "daemon"        :desc "Manage systemd user service for background drift monitoring"}
    {:cmd "bundle"        :desc "Export or import portable compressed dotfile bundles"}
    {:cmd "plasmoid"      :desc "Inspect and install custom KDE Plasma 6 desktop applets"}
-   {:cmd "doctor"        :desc "Deep diagnostic health checks & auto-repair engine"}
-   {:cmd "tui"           :desc "Launch interactive Cyberpunk terminal dashboard"}
-   {:cmd "completion"    :desc "Generate shell auto-completions (zsh, bash, fish)"}
-   {:cmd "vault"         :desc "Security audit, secret scanner & dotfile sanitizer"}
-   {:cmd "event"         :desc "DBus desktop event listener & dynamic display sentinel"}
    {:cmd "dump-widgets"  :desc "Dump active desktop applets containment tree"}
    {:cmd "open-zen-mods" :desc "Open all Zen Mod install URLs in browser"}])
+
+
 
 (defn generate-zsh-completion []
   (let [entries (map (fn [{:keys [cmd desc]}]
