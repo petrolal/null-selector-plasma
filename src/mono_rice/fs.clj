@@ -288,7 +288,7 @@
 (defn install-plasma-login-manager! [root & [{:keys [dry-run auto-yes]}]]
   (let [manifest (read-manifest)
         lockscreen (:lockscreen manifest)
-        video-file (:video-file lockscreen "digital-gaze.mp4")
+        video-file (:video-file lockscreen "infernal_eyes.mp4")
         plugin (:wallpaper-plugin lockscreen "luisbocanegra.smart.video.wallpaper.reborn")
         sys-video-path (str "file:///usr/share/wallpapers/" video-file)
         video-data [{:filename sys-video-path

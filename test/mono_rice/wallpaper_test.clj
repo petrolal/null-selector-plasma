@@ -10,5 +10,5 @@
       (is (seq (filter #(clojure.string/ends-with? % ".png") wallpapers)))))
 
   (testing "apply-wallpaper! dry-run succeeds for valid wallpaper"
-    (is (true? (wallpaper/apply-wallpaper! "digital-gaze" {:dry-run true})))
+    (is (true? (wallpaper/apply-wallpaper! "infernal_eyes" {:dry-run true})))
     (is (false? (wallpaper/apply-wallpaper! "nonexistent-wallpaper-test" {:dry-run true})))))
