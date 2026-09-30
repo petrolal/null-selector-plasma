@@ -33,7 +33,7 @@
   <path id="shadow-topleft" d="m150 65v10h5c0-2.77 2.23-5 5-5v-5z" fill="url(#radialGradient905)"/>
   <rect id="shadow-left" transform="rotate(-90)" x="-125" y="150" width="50" height="5" fill="url(#linearGradient929-5-9-8)"/>
  </g>
- <g transform="translate(0 -1132.5)" fill="#1e1e20">
+ <g transform="translate(0 -1132.5)" fill="#0e0c0e">
   <rect id="center" x="15" y="1147.5" width="50" height="50" opacity=".9"/>
   <path id="topright" d="m65 1147.5h5c0-2.77-2.23-5-5-5z" opacity=".9"/>
   <path id="bottomright" d="m65 1197.5v5c2.77 0 5-2.23 5-5z" opacity=".9"/>
