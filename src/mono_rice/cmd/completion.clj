@@ -20,6 +20,7 @@
    {:cmd "fetch"         :desc "Fastfetch ASCII aesthetic logo selector"}
    {:cmd "profile"       :desc "Hardware profiler and form factor optimization tuner"}
    {:cmd "sync"          :desc "Remote Git dotfile hub for pull/push synchronization"}
+   {:cmd "memory"        :desc "System memory stability, ZRAM swap, systemd-oomd, and Baloo optimizer"}
    {:cmd "boot"          :desc "SDDM display manager & Plymouth boot splash theme orchestrator"}
    {:cmd "wallpaper"     :desc "Wallpaper & 4K video lockscreen wallpaper synchronizer"}
    {:cmd "audio"         :desc "CAVA audio visualizer equalizer presets manager"}

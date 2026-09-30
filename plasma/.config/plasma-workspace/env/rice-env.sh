@@ -12,7 +12,10 @@ export QT_QPA_PLATFORMTHEME="kde"
 export MOZ_ENABLE_WAYLAND=1
 export ELECTRON_OZONE_PLATFORM_HINT="auto"
 export GDK_BACKEND="wayland,x11,*"
+export GST_VAAPI_ALL_DRIVERS=1
+export NVD_BACKEND="direct"
 
 # Default text editor
 export EDITOR="emacs"
 export VISUAL="emacs"
+

@@ -165,7 +165,8 @@
            "kdenlive"
            "gwenview"
            "haruna"
-           "rclone"]
+           "rclone"
+           "zram-generator"]
   :aur    ["yamis-icon-theme-git"
            "bibata-cursor-git"
            "plasma6-applets-panel-colorizer"
@@ -179,6 +180,18 @@
             :url    "https://github.com/bouteillerAlan/kuro.git"
             :target ".local/share/plasma/look-and-feel/a2n.kuro"}]}
 
+ :memory
+ {:zram  {:enabled               true
+          :zram-size             "ram / 2"
+          :compression-algorithm "zstd"
+          :swap-priority         100
+          :config-file           "/etc/systemd/zram-generator.conf"}
+  :oomd  {:enabled      true
+          :service-name "systemd-oomd.service"}
+  :baloo {:indexing-file-content false
+          :only-basic-indexing   true
+          :exclude-hidden        true}}
+
  :backup-targets
  [".config/kdeglobals"
   ".config/kwinrc"
@@ -186,11 +199,13 @@
   ".config/plasma-org.kde.plasma.desktop-appletsrc"
   ".config/kscreenlockerrc"
   ".config/panel-colorizer"
+  ".config/klassy"
   ".config/Kvantum"
   ".config/fastfetch"
   ".config/starship.toml"
   ".config/fish/config.fish"
-  ".config/fish/conf.d/aliases.fish"]
+  ".config/fish/conf.d/aliases.fish"
+  ".config/plasma-workspace/env/rice-env.sh"]
 
  :boot
  {:sddm     {:theme-name "null-sector-sddm"

@@ -1,6 +1,7 @@
 (ns mono-rice.cmd.doctor
   (:require [babashka.fs :as fs]
             [clojure.string :as str]
+            [mono-rice.cmd.memory :as memory]
             [mono-rice.cmd.rclone :as rclone]
             [mono-rice.cmd.verify :as verify]
             [mono-rice.fs :as rfs]
@@ -70,7 +71,10 @@
                  (check-fonts)
                  (check-audio-pipewire)
                  (check-gpu-compositor)
-                 (check-rclone manifest)]]
+                 (check-rclone manifest)
+                 (memory/check-zram-status)
+                 (memory/check-oomd-status)
+                 (memory/check-baloo-status)]]
     results))
 
 (defn auto-repair! [manifest & [{:keys [dry-run]}]]
@@ -97,6 +101,9 @@
     (let [cfg (rclone/get-rclone-cfg manifest)]
       (when (and (rclone/rclone-installed?) (rclone/remote-configured? (:remote cfg "gdrive")))
         (rclone/deploy-service-and-timer! manifest {:dry-run dry-run})))
+
+    ;; 7. Apply System Memory & Anti-Freeze Stability Suite
+    (memory/apply-memory-tuning! manifest {:dry-run dry-run :auto-yes true})
 
     (log-success "Auto-repair procedures executed successfully.")))
 

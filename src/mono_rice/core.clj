@@ -15,6 +15,7 @@
             [mono-rice.cmd.harvest :as cmd-harvest]
             [mono-rice.cmd.install :as cmd-install]
             [mono-rice.cmd.kwin :as cmd-kwin]
+            [mono-rice.cmd.memory :as cmd-memory]
             [mono-rice.cmd.panel :as cmd-panel]
             [mono-rice.cmd.plasmoid :as cmd-plasmoid]
             [mono-rice.cmd.profile :as cmd-profile]
@@ -62,6 +63,7 @@
   (println "  profile       Hardware environment detector and form-factor profile tuner")
   (println "  rclone        Google Drive cloud bisync & systemd timer manager (status | setup | sync | enable | disable)")
   (println "  sync          Two-way remote Git synchronization and dotfile hub (status | pull | push)")
+  (println "  memory        System memory stability, ZRAM swap, systemd-oomd, and Baloo optimizer")
   (println "  boot          SDDM display manager & Plymouth boot splash theme orchestrator")
   (println "  completion    Generate shell auto-completions (fish | zsh | bash) [--install]")
   (println "  vault         Security audit, secret scanner & dotfile sanitizer (scan | sanitize | restore)")
@@ -87,6 +89,7 @@
   (println "      --no-backup      Skip backing up existing configuration files")
   (println "      --no-layout      Skip applying desktop and panel layout")
   (println "      --no-rclone      Skip configuring rclone Google Drive cloud sync")
+  (println "      --no-memory      Skip system memory, ZRAM, and OOM stability tuning")
   (println "      --sddm           Install SDDM Monochrome theme")
   (println "      --plymouth       Install dotLock Plymouth boot splash theme")
   (println "      --open-zen-mods  Open Zen Mod pages after installation")
@@ -109,6 +112,7 @@
     :no-backup     {:coerce :boolean :desc "Skip backing up existing configs"}
     :no-layout     {:coerce :boolean :desc "Skip panel layout"}
     :no-rclone     {:coerce :boolean :desc "Skip rclone cloud sync setup"}
+    :no-memory     {:coerce :boolean :desc "Skip memory, ZRAM, and OOM tuning"}
     :sddm          {:coerce :boolean :desc "Install SDDM theme"}
     :plymouth      {:coerce :boolean :desc "Install Plymouth theme"}
     :open-zen-mods    {:coerce :boolean :desc "Open Zen Mod pages"}
@@ -171,6 +175,7 @@
           "profile"       (cmd-profile/run-profile-cmd! rest-args opts)
           "rclone"        (cmd-rclone/run-rclone-cmd! manifest rest-args opts)
           "sync"          (cmd-sync/run-sync-cmd! manifest rest-args opts)
+          "memory"        (cmd-memory/run-memory-cmd! manifest rest-args opts)
           "boot"          (run-boot-cmd! rest-args opts)
           "completion"    (cmd-comp/generate (first rest-args) opts)
           "vault"         (run-vault-cmd! rest-args opts)

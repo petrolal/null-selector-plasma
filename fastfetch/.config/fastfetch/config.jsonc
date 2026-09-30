@@ -9,97 +9,96 @@
     }
   },
   "display": {
-    "separator": " 󰄾 "
+    "separator": "  󰄾  "
   },
   "modules": [
     "title",
-    "separator",
+    {
+      "type": "custom",
+      "format": "───────────────────────────────────────"
+    },
     {
       "type": "os",
       "key": "󰣇 OS",
-      "keyColor": "34"
+      "keyColor": "97"
     },
     {
       "type": "host",
       "key": "󰌢 Host",
-      "keyColor": "34"
+      "keyColor": "90"
     },
     {
       "type": "kernel",
       "key": "󰒋 Kernel",
-      "keyColor": "34"
+      "keyColor": "90"
     },
     {
       "type": "uptime",
       "key": "󰔚 Uptime",
-      "keyColor": "34"
+      "keyColor": "90"
     },
     {
       "type": "packages",
       "key": "󰏖 Packages",
-      "keyColor": "34"
+      "keyColor": "90"
     },
     {
       "type": "shell",
       "key": "󰞷 Shell",
-      "keyColor": "35"
+      "keyColor": "97"
     },
     {
       "type": "display",
       "key": "󰍹 Display",
-      "keyColor": "35"
+      "keyColor": "90"
     },
     {
       "type": "de",
       "key": "󰧨 DE",
-      "keyColor": "35"
+      "keyColor": "97"
     },
     {
       "type": "wm",
       "key": "󱂬 WM",
-      "keyColor": "35"
-    },
-    {
-      "type": "wmtheme",
-      "key": "󰉼 Decoration",
-      "keyColor": "36"
+      "keyColor": "90"
     },
     {
       "type": "theme",
       "key": "󰉼 Theme",
-      "keyColor": "36"
+      "keyColor": "90"
     },
     {
       "type": "icons",
       "key": "󰀻 Icons",
-      "keyColor": "36"
+      "keyColor": "90"
     },
     {
       "type": "font",
       "key": "󰛖 Font",
-      "keyColor": "36"
+      "keyColor": "90"
     },
     {
       "type": "terminal",
       "key": "󰆍 Terminal",
-      "keyColor": "36"
+      "keyColor": "97"
     },
     {
       "type": "cpu",
       "key": "󰍛 CPU",
-      "keyColor": "33"
+      "keyColor": "90"
     },
     {
       "type": "gpu",
       "key": "󰢮 GPU",
-      "keyColor": "33"
+      "keyColor": "90"
     },
     {
       "type": "memory",
       "key": "󰑭 Memory",
-      "keyColor": "33"
+      "keyColor": "90"
     },
     "break",
     "colors"
   ]
 }
+

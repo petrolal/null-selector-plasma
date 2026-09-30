@@ -26,6 +26,8 @@ user_pref("zen.view.grey-out-inactive-windows", false);
 user_pref("layout.css.prefers-color-scheme.content", 0);
 user_pref("browser.theme.toolbar-theme", 0);
 user_pref("browser.theme.content-theme", 0);
+user_pref("browser.display.background_color", "#000000");
+
 
 // Verified against docs.zen-browser.app/guides/about-config-flags
 user_pref("zen.theme.content-element-separation", 0);

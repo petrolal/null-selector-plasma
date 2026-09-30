@@ -2,6 +2,7 @@
   (:require [babashka.fs :as fs]
             [clojure.string :as str]
             [mono-rice.cmd.completion :as rcomp]
+            [mono-rice.cmd.memory :as rmem]
             [mono-rice.cmd.rclone :as rclone]
             [mono-rice.deps :as rdeps]
             [mono-rice.fs :as rfs]
@@ -168,6 +169,10 @@
         ;; 12. Configure Rclone Google Drive Cloud Synchronization
         (when-not (or (:symlinks-only opts) (:no-rclone opts))
           (rclone/initial-setup! manifest opts))
+
+        ;; 13. System Memory, ZRAM Swap & OOM Daemon Optimization
+        (when-not (or (:symlinks-only opts) (:no-memory opts))
+          (rmem/apply-memory-tuning! manifest opts))
 
         (log-step "Installation Completed Successfully!")
         (println)

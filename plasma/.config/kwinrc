@@ -1,3 +1,10 @@
+[Compositing]
+AnimationSpeed=3
+LatencyPolicy=High
+MaxFPS=0
+RenderTimeEstimator=true
+WindowsBlockCompositing=true
+
 [Desktops]
 Id_1=91debd89-caff-4d37-872b-81e1aea2c691
 Id_2=aa7f572e-a437-4c22-94c2-8c54eb6d9823
@@ -9,27 +16,28 @@ Rows=1
 [Effect-better-blur-dx]
 BlurMatching=true
 BlurNonMatching=false
-BlurStrength=4
+BlurStrength=3
 Brightness=25
 Contrast=105
-NoiseStrength=5
+NoiseStrength=3
 Saturation=0
 WindowClasses=zen
 
 [Effect-blur]
-BlurStrength=4
-NoiseStrength=5
+BlurStrength=3
+NoiseStrength=3
 
 [Effect-forceblur]
 BlurDecorations=false
 BlurDocks=false
 BlurMenus=false
-BlurStrength=4
+BlurStrength=3
 Brightness=25
 Contrast=105
 MatchingClasses=zen
-NoiseStrength=5
+NoiseStrength=3
 Saturation=0
+
 
 [NightColor]
 Active=false

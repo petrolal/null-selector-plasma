@@ -20,9 +20,15 @@ if test -d "$HOME/.sdkman"
     set -gx SDKMAN_DIR "$HOME/.sdkman"
 end
 
-# Starship Prompt Initialization
+# High-Performance Starship Prompt Initialization (Cached)
 if type -q starship
-    starship init fish | source
+    set -l cache_dir "$HOME/.cache/starship"
+    set -l cache_file "$cache_dir/init.fish"
+    if not test -f "$cache_file"
+        mkdir -p "$cache_dir"
+        starship init fish --print-full-init > "$cache_file"
+    end
+    source "$cache_file"
 end
 
 # Fastfetch Banner (Interactive login shell only, avoiding duplicate banners in subshells)
@@ -34,3 +40,4 @@ if status is-interactive
         end
     end
 end
+

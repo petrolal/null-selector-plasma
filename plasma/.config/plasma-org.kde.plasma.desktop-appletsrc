@@ -150,7 +150,9 @@ FillMode=2
 LastVideo=file://{{HOME}}/.local/share/wallpapers/infernal_naked_girl_biopunk.mp4
 LastVideoPosition=0
 MuteMode=5
+PauseMode=1
 VideoUrls=[{"filename":"file://{{HOME}}/.local/share/wallpapers/infernal_naked_girl_biopunk.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0,"alternativePlaybackRate":0,"loop":false,"dayNightPhase":4}]
+
 
 [Containments][196][Applets][201][Configuration]
 popupHeight=400
@@ -478,7 +480,9 @@ FillMode=2
 LastVideo=file://{{HOME}}/.local/share/wallpapers/infernal_naked_girl_biopunk.mp4
 LastVideoPosition=0
 MuteMode=5
+PauseMode=1
 VideoUrls=[{"filename":"file://{{HOME}}/.local/share/wallpapers/infernal_naked_girl_biopunk.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0,"alternativePlaybackRate":0,"loop":false,"dayNightPhase":4}]
+
 
 [Containments][2000]
 activityId=
