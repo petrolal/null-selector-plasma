@@ -1,5 +1,5 @@
 [Compositing]
-AnimationSpeed=3
+AnimationSpeed=2
 LatencyPolicy=High
 MaxFPS=0
 RenderTimeEstimator=true
@@ -111,3 +111,4 @@ BorderSizeAuto=false
 ButtonsOnLeft=M
 ButtonsOnRight=IAX
 CloseOnDoubleClickOnMenu=false
+plugin=org.kde.klassy

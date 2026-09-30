@@ -4,34 +4,34 @@
 # ==============================================================================
 
 format = """
-[ ](#1c1c1f)\
+[ ](#141416)\
 $os\
-[](fg:#1c1c1f bg:#2b2b30)\
+[](fg:#141416 bg:#221518)\
 $directory\
-[](fg:#2b2b30 bg:#3d3d45)\
+[](fg:#221518 bg:#3b1e24)\
 $git_branch\
 $git_status\
-[](fg:#3d3d45 bg:#242429)\
+[](fg:#3b1e24 bg:#1c181a)\
 $cmd_duration\
 $nodejs\
 $rust\
 $golang\
 $python\
-[](fg:#242429 bg:#18181c)\
+[](fg:#1c181a bg:#100e10)\
 $time\
-[ ](fg:#18181c)\
+[ ](fg:#100e10)\
 $character"""
 
 add_newline = true
 
 [username]
 show_always = false
-style_user = "bg:#1c1c1f fg:#ffffff"
-style_root = "bg:#1c1c1f fg:#ff4444"
+style_user = "bg:#141416 fg:#ffffff"
+style_root = "bg:#141416 fg:#ff2233"
 format = '[$user ]($style)'
 
 [os]
-style = "bg:#1c1c1f fg:#ffffff"
+style = "bg:#141416 fg:#f0e6e6"
 disabled = false
 
 [os.symbols]
@@ -40,7 +40,7 @@ CachyOS = "󰣇 "
 Linux = "󰌽 "
 
 [directory]
-style = "bg:#2b2b30 fg:#ffffff bold"
+style = "bg:#221518 fg:#f5f0f0 bold"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -53,11 +53,11 @@ truncation_symbol = "…/"
 
 [git_branch]
 symbol = ""
-style = "bg:#3d3d45 fg:#ffffff"
+style = "bg:#3b1e24 fg:#ffffff"
 format = '[ $symbol $branch ]($style)'
 
 [git_status]
-style = "bg:#3d3d45 fg:#ff4444"
+style = "bg:#3b1e24 fg:#ff3344"
 format = '[$all_status$ahead_behind ]($style)'
 
 [time]
@@ -93,7 +93,7 @@ style = "bg:#242429 fg:#e0e0e0"
 format = '[ $symbol($version )]($style)'
 
 [character]
-success_symbol = "[❯](bold #ffffff)"
-error_symbol = "[❯](bold #ff4444)"
-vicmd_symbol = "[❮](bold #888888)"
+success_symbol = "[❯](bold #e60026)"
+error_symbol = "[❯](bold #ff1122)"
+vicmd_symbol = "[❮](bold #772233)"
 

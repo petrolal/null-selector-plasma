@@ -21,8 +21,8 @@ ascii_max_range = 32
 [color]
 gradient = 1
 gradient_count = 2
-gradient_color_1 = '#444444'
-gradient_color_2 = '#ffffff'
+gradient_color_1 = '#660000'
+gradient_color_2 = '#e0e0e0'
 
 [smoothing]
 integral = 85

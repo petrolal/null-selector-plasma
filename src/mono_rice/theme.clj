@@ -23,6 +23,7 @@
 
 (defn- sync-starship-accent! [profile-key & [{:keys [dry-run]}]]
   (let [accent (case profile-key
+                 :biopunk-horror "#e60026"
                  :amber-crt "#ffb000"
                  :cyberpunk-red "#ff0055"
                  :monochrome-light "#000000"

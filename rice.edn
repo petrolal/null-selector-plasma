@@ -27,7 +27,20 @@
    :windowTitleFont     "JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold"}}
 
  :theme-profiles
- {:monochrome-dark
+ {:biopunk-horror
+  {:name             "Biopunk Horror"
+   :description      "Junji Ito / Uzumaki cosmic horror monochrome with sinister crimson accents"
+   :color-scheme     "Monochrome"
+   :fallback-scheme  "BreezeDark"
+   :look-and-feel    "org.kde.breezedark.desktop"
+   :widget-style     "kvantum-dark"
+   :icon-theme       "yet-another-monochrome-icon-set"
+   :cursor-theme     "Bibata-Modern-Ice"
+   :splash-theme     "a2n.kuro"
+   :gtk-color-scheme "prefer-dark"
+   :gtk-theme        "Breeze-Dark"}
+
+  :monochrome-dark
   {:name             "Monochrome Dark"
    :description      "Cyberpunk NieR: Automata high-contrast dark palette"
    :color-scheme     "Monochrome"
@@ -87,10 +100,10 @@
   :krunner     ["Alt+Space"]}
 
  :panel-presets
- {:main-setup  {:name "Main Setup (Capsules)" :desc "Floating segmented capsule island preset"}
-  :main-blur   {:name "Main Blur (Translucent)" :desc "Frosted blur bar for maximized windows"}
-  :cyber-hud   {:name "Cyber HUD (NieR)" :desc "High-contrast segmented cyberpunk borders"}
-  :minimal-dock {:name "Minimal Centered Dock" :desc "Compact centered panel dock aesthetic"}}
+ {:main-setup  {:name "Main Setup (Capsules)" :folder "Main Setup" :desc "Floating segmented capsule island preset"}
+  :main-blur   {:name "Main Blur (Translucent)" :folder "Main Blur" :desc "Frosted blur bar for maximized windows"}
+  :cyber-hud   {:name "Cyber HUD (NieR)" :folder "Main Setup" :desc "High-contrast segmented cyberpunk borders"}
+  :minimal-dock {:name "Minimal Centered Dock" :folder "Main Blur" :desc "Compact centered panel dock aesthetic"}}
 
  :terminal
  {:default    "konsole"

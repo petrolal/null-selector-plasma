@@ -35,22 +35,29 @@
         (sh! ["systemctl" "--user" "restart" "plasma-plasmashell"] {:throw? false}))
       (log-success "Panel refresh signaled."))))
 
-(defn apply-panel-preset! [preset-name & [{:keys [dry-run]}]]
-  (log-step (str "Activating Panel Colorizer Preset -> " preset-name))
-  (let [root (rfs/repo-root)
-        home (rfs/home-dir)
-        target-file (fs/path root "plasma" ".config" "panel-colorizer" "presets" preset-name)
-        live-file   (fs/path home ".config" "panel-colorizer" "presets" preset-name)]
-    (if-not (or (fs/exists? target-file) (fs/exists? live-file))
-      (do
-        (log-warn "Preset file not found:" preset-name)
-        false)
-      (do
-        (if dry-run
-          (log-info "[DRY-RUN] Would activate preset" preset-name "and reload panel colorizer")
-          (reload-panels! {:dry-run dry-run}))
-        (log-success "Panel Colorizer preset activated:" preset-name)
-        true))))
+(defn apply-panel-preset! [preset-name & [{:keys [dry-run manifest]}]]
+  (let [declared (:panel-presets manifest)
+        k (when (or (keyword? preset-name) (string? preset-name))
+            (keyword (str/replace (str/lower-case (name preset-name)) #"^:" "")))
+        preset-info (when declared (get declared k))
+        resolved-name (or (:folder preset-info)
+                          (:name preset-info)
+                          preset-name)]
+    (log-step (str "Activating Panel Colorizer Preset -> " resolved-name))
+    (let [root (rfs/repo-root)
+          home (rfs/home-dir)
+          target-dir (fs/path root "plasma" ".config" "panel-colorizer" "presets" resolved-name)
+          live-dir   (fs/path home ".config" "panel-colorizer" "presets" resolved-name)]
+      (if-not (or (fs/exists? target-dir) (fs/exists? live-dir))
+        (do
+          (log-warn "Preset file not found:" resolved-name)
+          false)
+        (do
+          (if dry-run
+            (log-info "[DRY-RUN] Would activate preset" resolved-name "and reload panel colorizer")
+            (reload-panels! {:dry-run dry-run}))
+          (log-success "Panel Colorizer preset activated:" resolved-name)
+          true)))))
 
 (defn run-panel-cmd!
   "Handles the panel CLI subcommand."
@@ -66,12 +73,12 @@
         (do
           (log-warn "Please specify preset name to activate.")
           (println "Usage: mono-rice panel set <preset-name>"))
-        (apply-panel-preset! param opts))
+        (apply-panel-preset! param (assoc opts :manifest manifest)))
 
       ("reload" "refresh")
       (reload-panels! opts)
 
-      (if (apply-panel-preset! subcmd opts)
+      (if (apply-panel-preset! subcmd (assoc opts :manifest manifest))
         true
         (do
           (log-warn "Unknown panel command:" subcmd)

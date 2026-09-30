@@ -9,12 +9,12 @@ OutlineColorMode=AccentColor
 OutlineWidth=1
 RoundBottomCorners=true
 RoundTopCorners=true
-WindowCornerRadius=10
+WindowCornerRadius=6
 
 [ButtonColors]
-ActiveCloseButtonColor=243,139,168
-ActiveMaximizeButtonColor=166,227,161
-ActiveMinimizeButtonColor=250,179,135
+ActiveCloseButtonColor=230,0,38
+ActiveMaximizeButtonColor=120,120,120
+ActiveMinimizeButtonColor=70,70,70
 
 [ButtonSizing]
 ButtonIconScale=100
@@ -34,7 +34,7 @@ TitlebarOpacity=88
 
 [Fonts]
 TitleAlignment=Center
-TitleFont=Inter,10,-1,5,70,0,0,0,0,0,Bold
+TitleFont=JetBrainsMono Nerd Font,10,-1,5,70,0,0,0,0,0,Bold
 
 [Global]
 LookAndFeelSet=org.kde.breezedark.desktop

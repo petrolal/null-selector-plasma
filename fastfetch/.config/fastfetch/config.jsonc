@@ -26,7 +26,7 @@
     {
       "type": "os",
       "key": "󰣇 OS",
-      "keyColor": "97"
+      "keyColor": "31"
     },
     {
       "type": "host",
@@ -51,7 +51,7 @@
     {
       "type": "shell",
       "key": "󰞷 Shell",
-      "keyColor": "97"
+      "keyColor": "31"
     },
     {
       "type": "display",
@@ -61,7 +61,7 @@
     {
       "type": "de",
       "key": "󰧨 DE",
-      "keyColor": "97"
+      "keyColor": "31"
     },
     {
       "type": "wm",
@@ -86,7 +86,7 @@
     {
       "type": "terminal",
       "key": "󰆍 Terminal",
-      "keyColor": "97"
+      "keyColor": "31"
     },
     {
       "type": "cpu",
