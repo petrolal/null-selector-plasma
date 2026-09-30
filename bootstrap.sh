@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# null-sector-plasma - One-Liner Bootstrap Entrypoint (Clojure / Babashka)
-# Repository: https://github.com/petrolal/null-sector-plasma
+# sanguine-node-rice - One-Liner Bootstrap Entrypoint (Clojure / Babashka)
+# Repository: https://github.com/petrolal/sanguine-node-rice
 # ==============================================================================
 
 set -euo pipefail
 
-REPO_URL="https://github.com/petrolal/null-sector-plasma.git"
-TARGET_DIR="${HOME}/null-sector-plasma"
+REPO_URL="https://github.com/petrolal/sanguine-node-rice.git"
+TARGET_DIR="${HOME}/sanguine-node-rice"
 
 if [[ ! -d "$TARGET_DIR" ]]; then
-    echo "[INFO] Cloning null-sector-plasma into $TARGET_DIR..."
+    echo "[INFO] Cloning sanguine-node-rice into $TARGET_DIR..."
     git clone "$REPO_URL" "$TARGET_DIR"
 fi
 
@@ -28,5 +28,5 @@ if ! command -v bb &>/dev/null; then
     fi
 fi
 
-echo "[INFO] Launching null-sector-plasma deployment via Babashka..."
+echo "[INFO] Launching sanguine-node-rice deployment via Babashka..."
 exec bb install "$@"

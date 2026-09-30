@@ -66,16 +66,21 @@
         (log-info "Missing AUR packages:" (str/join " " missing))
         (if dry-run
           (log-info "[DRY-RUN] Would install via AUR helper (" (or aur-helper "none") "):" (str/join " " missing))
-          (if aur-helper
-            (do
-              ;; Remove conflicting kwin-effects-forceblur-git if installing better-blur-dx
-              (when (and (some #(str/includes? % "better-blur-dx") missing)
-                         (installed-pacman? "kwin-effects-forceblur-git"))
-                (log-info "Removing superseded kwin-effects-forceblur-git (conflicts with better-blur-dx)...")
-                (sh! ["pacman" "-R" "--noconfirm" "kwin-effects-forceblur-git"] {:sudo true :throw? false}))
-              (sh! (into [aur-helper "-S" "--needed" "--noconfirm"] missing) {:throw? false})
-              (log-success "AUR packages installed."))
-            (log-warn "No AUR helper found (yay/paru). Please install:" (str/join " " missing)))))
+          (let [helper (or aur-helper
+                           (do
+                             (log-info "No AUR helper detected. Bootstrapping 'yay' from pacman/AUR...")
+                             (sh! ["pacman" "-S" "--needed" "--noconfirm" "yay"] {:sudo true :throw? false})
+                             (if (command-exists? "yay") "yay" nil)))]
+            (if helper
+              (do
+                ;; Remove conflicting kwin-effects-forceblur-git if installing better-blur-dx
+                (when (and (some #(str/includes? % "better-blur-dx") missing)
+                           (installed-pacman? "kwin-effects-forceblur-git"))
+                  (log-info "Removing superseded kwin-effects-forceblur-git (conflicts with better-blur-dx)...")
+                  (sh! ["pacman" "-R" "--noconfirm" "kwin-effects-forceblur-git"] {:sudo true :throw? false}))
+                (sh! (into [helper "-S" "--needed" "--noconfirm"] missing) {:throw? false})
+                (log-success "AUR packages installed."))
+              (log-warn "Could not auto-install AUR helper. Please install yay or paru manually, then re-run.")))))
       (log-success "All AUR enhancements & Plasma extensions are installed."))))
 
 (defn install-git-deps! [git-deps & [{:keys [dry-run]}]]
