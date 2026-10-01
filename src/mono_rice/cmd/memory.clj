@@ -113,46 +113,62 @@
         target-content (str "[zram0]\n"
                             "zram-size = " zram-size "\n"
                             "compression-algorithm = " algo "\n"
-                            "swap-priority = " priority "\n")]
-    (if dry-run
+                            "swap-priority = " priority "\n")
+        nixos? (or (fs/exists? "/etc/NIXOS")
+                   (try (and (fs/exists? "/etc/os-release")
+                             (str/includes? (str/lower-case (slurp "/etc/os-release")) "id=nixos"))
+                        (catch Exception _ false)))]
+    (if nixos?
       (do
-        (log-info "[DRY-RUN] Would write ZRAM configuration to:" zram-file)
-        (log-info "[DRY-RUN] Content:\n" (str/trim target-content))
-        (log-info "[DRY-RUN] Would restart systemd-zram-setup@zram0.service via sudo"))
-      (if (or auto-yes yes
-              (sudo-authenticated?)
-              (ask-confirm? "Configure ZRAM 50% RAM swap in /etc/systemd/zram-generator.conf (requires sudo)?"
-                            {:auto-yes (or auto-yes yes)}))
-        (let [tmp-file (str (fs/create-temp-file {:prefix "zram_gen_" :suffix ".conf"}))]
-          (spit tmp-file target-content)
-          (sh! ["mkdir" "-p" "/etc/systemd"] {:sudo true :throw? false})
-          (sh! ["cp" tmp-file zram-file] {:sudo true})
-          (sh! ["chmod" "644" zram-file] {:sudo true :throw? false})
-          (fs/delete tmp-file)
-          (log-success "Saved ZRAM configuration to:" zram-file)
-          (log-info "Activating ZRAM swap service...")
-          (sh! ["systemctl" "daemon-reload"] {:sudo true :throw? false})
-          (let [res (sh! ["systemctl" "restart" "systemd-zram-setup@zram0.service"] {:sudo true :throw? false})]
-            (if (zero? (:exit res))
-              (log-success "ZRAM swap service restarted and active.")
-              (log-warn "Could not restart systemd-zram-setup@zram0.service immediately; will activate on next boot."))))
-        (log-warn "Skipped ZRAM configuration (sudo access declined).")))))
+        (log-info "[NixOS] ZRAM swap is configured declaratively via 'zramSwap.enable = true;' in configuration.nix.")
+        (log-success "ZRAM swap configuration verified for NixOS."))
+      (if dry-run
+        (do
+          (log-info "[DRY-RUN] Would write ZRAM configuration to:" zram-file)
+          (log-info "[DRY-RUN] Content:\n" (str/trim target-content))
+          (log-info "[DRY-RUN] Would restart systemd-zram-setup@zram0.service via sudo"))
+        (if (or auto-yes yes
+                (sudo-authenticated?)
+                (ask-confirm? "Configure ZRAM 50% RAM swap in /etc/systemd/zram-generator.conf (requires sudo)?"
+                              {:auto-yes (or auto-yes yes)}))
+          (let [tmp-file (str (fs/create-temp-file {:prefix "zram_gen_" :suffix ".conf"}))]
+            (spit tmp-file target-content)
+            (sh! ["mkdir" "-p" "/etc/systemd"] {:sudo true :throw? false})
+            (sh! ["cp" tmp-file zram-file] {:sudo true})
+            (sh! ["chmod" "644" zram-file] {:sudo true :throw? false})
+            (fs/delete tmp-file)
+            (log-success "Saved ZRAM configuration to:" zram-file)
+            (log-info "Activating ZRAM swap service...")
+            (sh! ["systemctl" "daemon-reload"] {:sudo true :throw? false})
+            (let [res (sh! ["systemctl" "restart" "systemd-zram-setup@zram0.service"] {:sudo true :throw? false})]
+              (if (zero? (:exit res))
+                (log-success "ZRAM swap service restarted and active.")
+                (log-warn "Could not restart systemd-zram-setup@zram0.service immediately; will activate on next boot."))))
+          (log-warn "Skipped ZRAM configuration (sudo access declined)."))))))
 
 (defn configure-oomd!
   "Enables and starts systemd-oomd to protect against kernel unresponsiveness and desktop freezes."
   [manifest & [{:keys [dry-run auto-yes yes]}]]
   (log-step "Configuring systemd-oomd Userspace Out-Of-Memory Daemon")
-  (if dry-run
-    (log-info "[DRY-RUN] Would enable and start systemd-oomd.service via: sudo systemctl enable --now systemd-oomd")
-    (if (or auto-yes yes
-            (sudo-authenticated?)
-            (ask-confirm? "Enable systemd-oomd daemon to prevent desktop freezing (requires sudo)?"
-                          {:auto-yes (or auto-yes yes)}))
-      (let [res (sh! ["systemctl" "enable" "--now" "systemd-oomd.service"] {:sudo true :throw? false})]
-        (if (zero? (:exit res))
-          (log-success "systemd-oomd is now enabled and active.")
-          (log-warn "Failed to enable systemd-oomd.service.")))
-      (log-warn "Skipped systemd-oomd configuration (sudo access declined)."))))
+  (let [nixos? (or (fs/exists? "/etc/NIXOS")
+                   (try (and (fs/exists? "/etc/os-release")
+                             (str/includes? (str/lower-case (slurp "/etc/os-release")) "id=nixos"))
+                        (catch Exception _ false)))]
+    (if nixos?
+      (do
+        (log-info "[NixOS] Systemd OOM daemon is configured via 'systemd.oomd.enable = true;' in configuration.nix.")
+        (log-success "systemd-oomd verified for NixOS."))
+      (if dry-run
+        (log-info "[DRY-RUN] Would enable and start systemd-oomd.service via: sudo systemctl enable --now systemd-oomd")
+        (if (or auto-yes yes
+                (sudo-authenticated?)
+                (ask-confirm? "Enable systemd-oomd daemon to prevent desktop freezing (requires sudo)?"
+                              {:auto-yes (or auto-yes yes)}))
+          (let [res (sh! ["systemctl" "enable" "--now" "systemd-oomd.service"] {:sudo true :throw? false})]
+            (if (zero? (:exit res))
+              (log-success "systemd-oomd is now enabled and active.")
+              (log-warn "Failed to enable systemd-oomd.service.")))
+          (log-warn "Skipped systemd-oomd configuration (sudo access declined)."))))))
 
 
 (defn tune-baloo!

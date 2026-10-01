@@ -317,93 +317,123 @@
                      :alternativePlaybackRate 0.0
                      :loop false
                      :dayNightPhase 4}]
-        video-json (json/generate-string video-data)]
+        video-json (json/generate-string video-data)
+        nixos? (or (fs/exists? "/etc/NIXOS")
+                   (try (and (fs/exists? "/etc/os-release")
+                             (str/includes? (str/lower-case (slurp "/etc/os-release")) "id=nixos"))
+                        (catch Exception _ false)))]
     (log-step "Configuring Native Plasma Login Screen (Identical to Lock Screen)")
-    (if dry-run
+    (if nixos?
       (do
-        (log-info "[DRY-RUN] Would sync rice wallpapers to /usr/share/wallpapers")
-        (log-info "[DRY-RUN] Would configure /etc/plasmalogin.conf and /etc/xdg/kscreenlockerrc with lockscreen settings")
-        (log-info "[DRY-RUN] Would disable sddm.service and enable plasmalogin.service"))
-      (if (or auto-yes
-              (sudo-authenticated?)
-              (ask-confirm? "Configure Plasma Login Screen to match Lock Screen (requires sudo)?" {:auto-yes auto-yes}))
+        (link-dir-children! (fs/path root "assets" "wallpapers")
+                            (fs/path (home-dir) ".local" "share" "wallpapers")
+                            {:dry-run dry-run
+                             :filter-fn (fn [p] (let [s (str p)]
+                                                  (or (str/ends-with? s ".png")
+                                                      (str/ends-with? s ".mp4"))))})
+        (log-info "[NixOS] System login/SDDM is managed declaratively via 'programs.sanguine-node-rice.enableSddm = true;' in configuration.nix.")
+        (log-success "Lockscreen & desktop wallpapers prepared for NixOS."))
+      (if dry-run
         (do
-          (sh! ["mkdir" "-p" "/usr/share/wallpapers"] {:sudo true :throw? false})
-          (sh! ["cp" "-rf" (str (fs/path root "assets" "wallpapers" ".")) "/usr/share/wallpapers/"] {:sudo true :throw? false})
-          (sh! ["chmod" "-R" "644" "/usr/share/wallpapers"] {:sudo true :throw? false})
-          (sh! ["find" "/usr/share/wallpapers" "-type" "d" "-exec" "chmod" "755" "{}" "+"] {:sudo true :throw? false})
-          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--key" "WallpaperPluginId" plugin] {:sudo true :throw? false})
-          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
-          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
-          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "FillMode" (str (:fill-mode lockscreen 2))] {:sudo true :throw? false})
-          (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "MuteMode" (str (:mute-mode lockscreen 5))] {:sudo true :throw? false})
-          (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--key" "WallpaperPlugin" plugin] {:sudo true :throw? false})
-          (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
-          (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
-          (sh! ["chmod" "644" "/etc/plasmalogin.conf" "/etc/xdg/kscreenlockerrc"] {:sudo true :throw? false})
-          (when (zero? (:exit (sh! ["systemctl" "is-enabled" "sddm.service"] {:throw? false})))
-            (log-info "Disabling sddm.service...")
-            (sh! ["systemctl" "disable" "sddm.service"] {:sudo true :throw? false}))
-          (log-info "Enabling plasmalogin.service (native lock screen greeter)...")
-          (sh! ["systemctl" "enable" "plasmalogin.service" "--force"] {:sudo true :throw? false})
-          (log-success "Plasma Login Screen configured and set to match Lock Screen."))
-        (log-warn "Skipped Plasma Login configuration (sudo access declined).")))))
+          (log-info "[DRY-RUN] Would sync rice wallpapers to /usr/share/wallpapers")
+          (log-info "[DRY-RUN] Would configure /etc/plasmalogin.conf and /etc/xdg/kscreenlockerrc with lockscreen settings")
+          (log-info "[DRY-RUN] Would disable sddm.service and enable plasmalogin.service"))
+        (if (or auto-yes
+                (sudo-authenticated?)
+                (ask-confirm? "Configure Plasma Login Screen to match Lock Screen (requires sudo)?" {:auto-yes auto-yes}))
+          (do
+            (sh! ["mkdir" "-p" "/usr/share/wallpapers"] {:sudo true :throw? false})
+            (sh! ["cp" "-rf" (str (fs/path root "assets" "wallpapers" ".")) "/usr/share/wallpapers/"] {:sudo true :throw? false})
+            (sh! ["chmod" "-R" "644" "/usr/share/wallpapers"] {:sudo true :throw? false})
+            (sh! ["find" "/usr/share/wallpapers" "-type" "d" "-exec" "chmod" "755" "{}" "+"] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--key" "WallpaperPluginId" plugin] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "FillMode" (str (:fill-mode lockscreen 2))] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/plasmalogin.conf" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "MuteMode" (str (:mute-mode lockscreen 5))] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--key" "WallpaperPlugin" plugin] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "VideoUrls" video-json] {:sudo true :throw? false})
+            (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
+            (sh! ["chmod" "644" "/etc/plasmalogin.conf" "/etc/xdg/kscreenlockerrc"] {:sudo true :throw? false})
+            (when (zero? (:exit (sh! ["systemctl" "is-enabled" "sddm.service"] {:throw? false})))
+              (log-info "Disabling sddm.service...")
+              (sh! ["systemctl" "disable" "sddm.service"] {:sudo true :throw? false}))
+            (log-info "Enabling plasmalogin.service (native lock screen greeter)...")
+            (sh! ["systemctl" "enable" "plasmalogin.service" "--force"] {:sudo true :throw? false})
+            (log-success "Plasma Login Screen configured and set to match Lock Screen."))
+          (log-warn "Skipped Plasma Login configuration (sudo access declined)."))))))
 
-(defn install-sddm-theme! [root & [{:keys [dry-run auto-yes]}]]
+(defn install-sddm-theme! [root & [{:keys [dry-run auto-yes] :as opts}]]
   (let [manifest (read-manifest)
         boot-cfg (:boot manifest)
         theme-name (get-in boot-cfg [:sddm :theme-name] "null-sector-sddm")
         src-dir (fs/path root (get-in boot-cfg [:sddm :source] "assets/sddm-theme"))
         target-dir (str "/usr/share/sddm/themes/" theme-name)
-        conf-file (get-in boot-cfg [:sddm :config] "/etc/sddm.conf.d/kde_settings.conf")]
+        conf-file (get-in boot-cfg [:sddm :config] "/etc/sddm.conf.d/kde_settings.conf")
+        nixos? (or (fs/exists? "/etc/NIXOS")
+                   (try (and (fs/exists? "/etc/os-release")
+                             (str/includes? (str/lower-case (slurp "/etc/os-release")) "id=nixos"))
+                        (catch Exception _ false)))]
     (log-step (format "Installing SDDM Login Theme (%s)" theme-name))
-    (if (fs/exists? src-dir)
-      (if dry-run
-        (do
-          (log-info (format "[DRY-RUN] Would install SDDM theme to %s" target-dir))
-          (log-info (format "[DRY-RUN] Would configure %s setting [Theme] Current=%s" conf-file theme-name))
-          (log-info "[DRY-RUN] Would disable plasmalogin.service and enable sddm.service"))
-        (if (or auto-yes
-                (sudo-authenticated?)
-                (ask-confirm? (format "Install SDDM %s Theme & enable SDDM service (requires sudo)?" theme-name) {:auto-yes auto-yes}))
+    (if nixos?
+      (do
+        (log-info "[NixOS] SDDM theme is managed declaratively via 'programs.sanguine-node-rice.enableSddm = true;' in configuration.nix.")
+        (log-success "SDDM module ready for NixOS."))
+      (if (fs/exists? src-dir)
+        (if dry-run
           (do
-            (sh! ["mkdir" "-p" target-dir "/etc/sddm.conf.d"] {:sudo true})
-            (sh! ["cp" "-rf" (str (fs/path src-dir ".")) (str target-dir "/")] {:sudo true :throw? false})
-            (sh! ["chmod" "-R" "755" target-dir] {:sudo true :throw? false})
-            (sh! ["kwriteconfig6" "--file" conf-file "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
-            (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf" "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
-            (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf.d/theme.conf" "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
-            (sh! ["chmod" "644" conf-file "/etc/sddm.conf" "/etc/sddm.conf.d/theme.conf"] {:sudo true :throw? false})
-            (when (zero? (:exit (sh! ["systemctl" "is-enabled" "plasmalogin.service"] {:throw? false})))
-              (log-info "Disabling conflicting plasmalogin.service...")
-              (sh! ["systemctl" "disable" "plasmalogin.service"] {:sudo true :throw? false}))
-            (log-info "Enabling sddm.service display manager...")
-            (sh! ["systemctl" "enable" "sddm.service" "--force"] {:sudo true :throw? false})
-            (log-success (format "SDDM %s theme installed and enabled as default display manager." theme-name)))
-          (log-warn "Skipped SDDM installation (sudo access declined).")))
-      (log-warn "SDDM theme directory not found at assets/sddm-theme"))))
+            (log-info (format "[DRY-RUN] Would install SDDM theme to %s" target-dir))
+            (log-info (format "[DRY-RUN] Would configure %s setting [Theme] Current=%s" conf-file theme-name))
+            (log-info "[DRY-RUN] Would disable plasmalogin.service and enable sddm.service"))
+          (if (or auto-yes
+                  (sudo-authenticated?)
+                  (ask-confirm? (format "Install SDDM %s Theme & enable SDDM service (requires sudo)?" theme-name) {:auto-yes auto-yes}))
+            (do
+              (sh! ["mkdir" "-p" target-dir "/etc/sddm.conf.d"] {:sudo true})
+              (sh! ["cp" "-rf" (str (fs/path src-dir ".")) (str target-dir "/")] {:sudo true :throw? false})
+              (sh! ["chmod" "-R" "755" target-dir] {:sudo true :throw? false})
+              (sh! ["kwriteconfig6" "--file" conf-file "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
+              (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf" "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
+              (sh! ["kwriteconfig6" "--file" "/etc/sddm.conf.d/theme.conf" "--group" "Theme" "--key" "Current" theme-name] {:sudo true :throw? false})
+              (sh! ["chmod" "644" conf-file "/etc/sddm.conf" "/etc/sddm.conf.d/theme.conf"] {:sudo true :throw? false})
+              (when (zero? (:exit (sh! ["systemctl" "is-enabled" "plasmalogin.service"] {:throw? false})))
+                (log-info "Disabling conflicting plasmalogin.service...")
+                (sh! ["systemctl" "disable" "plasmalogin.service"] {:sudo true :throw? false}))
+              (log-info "Enabling sddm.service display manager...")
+              (sh! ["systemctl" "enable" "sddm.service" "--force"] {:sudo true :throw? false})
+              (log-success (format "SDDM %s theme installed and enabled as default display manager." theme-name)))
+            (log-warn "Skipped SDDM installation (sudo access declined).")))
+        (log-warn "SDDM theme directory not found at assets/sddm-theme")))))
 
 (defn install-login-manager! [root & [{:keys [sddm] :as opts}]]
   (if sddm
     (install-sddm-theme! root opts)
     (install-plasma-login-manager! root opts)))
 
-(defn install-plymouth-theme! [root & [{:keys [dry-run auto-yes]}]]
+(defn install-plymouth-theme! [root & [{:keys [dry-run auto-yes] :as opts}]]
   (log-step "Installing dotLock Plymouth Boot Splash Theme")
-  (let [src-dir (fs/path root "assets" "plymouth-theme" "dotLock")]
-    (if (fs/exists? src-dir)
-      (if dry-run
-        (log-info "[DRY-RUN] Would install dotLock Plymouth theme to /usr/share/plymouth/themes/dotLock")
-        (if (or auto-yes
-                (sudo-authenticated?)
-                (ask-confirm? "Install dotLock Plymouth Boot Splash (requires sudo)?" {:auto-yes auto-yes}))
+  (let [src-dir (fs/path root "assets" "plymouth-theme" "dotLock")
+        nixos? (or (fs/exists? "/etc/NIXOS")
+                   (try (and (fs/exists? "/etc/os-release")
+                             (str/includes? (str/lower-case (slurp "/etc/os-release")) "id=nixos"))
+                        (catch Exception _ false)))]
+    (if nixos?
+      (do
+        (log-info "[NixOS] Plymouth theme is managed declaratively via 'programs.sanguine-node-rice.enablePlymouth = true;' in configuration.nix.")
+        (log-success "Plymouth module ready for NixOS."))
+      (if (fs/exists? src-dir)
+        (if dry-run
+          (log-info "[DRY-RUN] Would install dotLock Plymouth theme to /usr/share/plymouth/themes/dotLock")
+          (if (or auto-yes
+                  (sudo-authenticated?)
+                  (ask-confirm? "Install dotLock Plymouth Boot Splash (requires sudo)?" {:auto-yes auto-yes}))
 
-          (do
-            (sh! ["mkdir" "-p" "/usr/share/plymouth/themes/dotLock" "/etc/plymouth"] {:sudo true})
-            (sh! ["cp" "-rf" (str (fs/path src-dir "*")) "/usr/share/plymouth/themes/dotLock/"] {:sudo true :throw? false})
-            (when (command-exists? "plymouth-set-default-theme")
-              (sh! ["plymouth-set-default-theme" "dotLock"] {:sudo true :throw? false}))
-            (sh! ["kwriteconfig6" "--file" "/etc/plymouth/plymouthd.conf" "--group" "Daemon" "--key" "Theme" "dotLock"] {:sudo true :throw? false})
-            (log-success "dotLock Plymouth theme installed and configured."))
-          (log-warn "Skipped Plymouth installation (sudo access declined).")))
-      (log-warn "Plymouth theme directory not found at assets/plymouth-theme/dotLock"))))
+            (do
+              (sh! ["mkdir" "-p" "/usr/share/plymouth/themes/dotLock" "/etc/plymouth"] {:sudo true})
+              (sh! ["cp" "-rf" (str (fs/path src-dir "*")) "/usr/share/plymouth/themes/dotLock/"] {:sudo true :throw? false})
+              (when (command-exists? "plymouth-set-default-theme")
+                (sh! ["plymouth-set-default-theme" "dotLock"] {:sudo true :throw? false}))
+              (sh! ["kwriteconfig6" "--file" "/etc/plymouth/plymouthd.conf" "--group" "Daemon" "--key" "Theme" "dotLock"] {:sudo true :throw? false})
+              (log-success "dotLock Plymouth theme installed and configured."))
+            (log-warn "Skipped Plymouth installation (sudo access declined).")))
+        (log-warn "Plymouth theme directory not found at assets/plymouth-theme/dotLock")))))
