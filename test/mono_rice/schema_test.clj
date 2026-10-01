@@ -5,9 +5,10 @@
 (deftest test-valid-manifest
   (testing "Valid minimal manifest passes validation"
     (let [manifest {:rice/name "test-rice"
-                    :system {:desktop :plasma-6 :compatibility [:arch]}
+                    :system {:desktop :plasma-6 :compatibility [:arch :nixos]}
                     :theme {:color-scheme "Monochrome" :fonts {:font "JetBrainsMono Nerd Font"}}
-                    :dependencies {:pacman ["base-devel"]}}]
+                    :dependencies {:pacman ["base-devel"]
+                                   :nix ["babashka" "fastfetch"]}}]
       (is (empty? (schema/validate-manifest manifest)))
       (is (= manifest (schema/validate! manifest))))))
 

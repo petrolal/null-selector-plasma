@@ -4,7 +4,7 @@
  :rice/repo    "https://github.com/petrolal/sanguine-node-rice"
 
  :system
- {:compatibility [:arch :cachyos]
+ {:compatibility [:arch :cachyos :nixos]
   :desktop       :plasma-6
   :session       [:wayland :x11]}
 
@@ -189,6 +189,26 @@
            "kwin-effects-better-blur-dx"
            "klassy"
            "zen-browser-bin"]
+  :nix    ["babashka"
+           "git"
+           "cmake"
+           "extra-cmake-modules"
+           "stow"
+           "kdePackages.kvantum"
+           "nerd-fonts.jetbrains-mono"
+           "kdePackages.konsole"
+           "cava"
+           "ffmpeg"
+           "starship"
+           "fastfetch"
+           "fish"
+           "kdePackages.dolphin"
+           "discord"
+           "emacs"
+           "kdePackages.kdenlive"
+           "kdePackages.gwenview"
+           "haruna"
+           "rclone"]
   :git    [{:name   "kuro-splash"
             :url    "https://github.com/bouteillerAlan/kuro.git"
             :target ".local/share/plasma/look-and-feel/a2n.kuro"}]}

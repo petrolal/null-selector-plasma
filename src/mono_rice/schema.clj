@@ -38,7 +38,9 @@
     (let [deps (:dependencies manifest)]
       (when (map? deps)
         (when-not (vector? (:pacman deps))
-          (swap! errors conj ":dependencies :pacman must be a vector of package strings"))))
+          (swap! errors conj ":dependencies :pacman must be a vector of package strings"))
+        (when (and (contains? deps :nix) (not (vector? (:nix deps))))
+          (swap! errors conj ":dependencies :nix must be a vector of package strings"))))
 
     @errors))
 

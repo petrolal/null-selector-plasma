@@ -36,15 +36,21 @@
     (rkde/check-system! opts)
 
     ;; 2. Dependencies check
-    (let [deps     (:dependencies manifest)
-          miss-pac (rdeps/missing-pacman-packages (:pacman deps))
-          miss-aur (rdeps/missing-aur-packages (:aur deps))]
-      (if (empty? miss-pac)
-        (log-success "All official pacman dependencies installed.")
-        (log-warn "Missing pacman packages:" (str/join ", " miss-pac)))
-      (if (empty? miss-aur)
-        (log-success "All AUR extensions and packages installed.")
-        (log-warn "Missing AUR packages:" (str/join ", " miss-aur))))
+    (let [distro   (rkde/detect-distro)
+          deps     (:dependencies manifest)]
+      (if (= distro :nixos)
+        (let [miss-nix (rdeps/missing-nix-packages (or (:nix deps) []))]
+          (if (empty? miss-nix)
+            (log-success "All Nix environment tools are installed and present in PATH.")
+            (log-warn "Missing Nix tools:" (str/join ", " miss-nix))))
+        (let [miss-pac (rdeps/missing-pacman-packages (:pacman deps))
+              miss-aur (rdeps/missing-aur-packages (:aur deps))]
+          (if (empty? miss-pac)
+            (log-success "All official pacman dependencies installed.")
+            (log-warn "Missing pacman packages:" (str/join ", " miss-pac)))
+          (if (empty? miss-aur)
+            (log-success "All AUR extensions and packages installed.")
+            (log-warn "Missing AUR packages:" (str/join ", " miss-aur))))))
 
     ;; 3. Appletsrc widget verification
     (let [live-appletsrc (fs/path home ".config" "plasma-org.kde.plasma.desktop-appletsrc")]

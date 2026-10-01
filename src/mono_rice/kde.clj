@@ -10,16 +10,39 @@
 ;; System Compatibility Check
 ;; -----------------------------------------------------------------------------
 
+(defn detect-distro []
+  (cond
+    (or (fs/exists? "/etc/NIXOS")
+        (try (and (fs/exists? "/etc/os-release")
+                  (str/includes? (str/lower-case (slurp "/etc/os-release")) "id=nixos"))
+             (catch Exception _ false))
+        (command-exists? "nixos-version"))
+    :nixos
+
+    (fs/exists? "/etc/cachyos-release")
+    :cachyos
+
+    (fs/exists? "/etc/arch-release")
+    :arch
+
+    (try (and (fs/exists? "/etc/os-release")
+              (str/includes? (str/lower-case (slurp "/etc/os-release")) "id=fedora"))
+         (catch Exception _ false))
+    :fedora
+
+    :else :generic-linux))
+
 (defn check-system! [& [{:keys [auto-yes yes prompt? dry-run]}]]
   (log-step "Verifying Host System Compatibility")
-  (let [arch-release?    (fs/exists? "/etc/arch-release")
-        cachyos-release? (fs/exists? "/etc/cachyos-release")
-        desktop          (System/getenv "XDG_CURRENT_DESKTOP")
-        session          (System/getenv "DESKTOP_SESSION")]
-    (if (or arch-release? cachyos-release?)
-      (log-success "Arch Linux / CachyOS base system detected.")
+  (let [distro  (detect-distro)
+        desktop (System/getenv "XDG_CURRENT_DESKTOP")
+        session (System/getenv "DESKTOP_SESSION")]
+    (case distro
+      :nixos   (log-success "NixOS base system detected.")
+      :cachyos (log-success "Arch Linux / CachyOS base system detected.")
+      :arch    (log-success "Arch Linux / CachyOS base system detected.")
       (do
-        (log-warn "This installer is tailored for Arch Linux and CachyOS.")
+        (log-warn "Host system is not officially verified (Arch, CachyOS, NixOS).")
         (when (and prompt? (not (or auto-yes yes dry-run)))
           (when-not (ask-confirm? "Proceed anyway?" {:auto-yes (or auto-yes yes)})
             (throw (ex-info "Installation aborted by user." {}))))))

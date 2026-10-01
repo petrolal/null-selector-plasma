@@ -7,6 +7,7 @@
 
 [![Arch Linux](https://img.shields.io/badge/Arch_Linux-1793D1?logo=arch-linux&logoColor=white&style=for-the-badge)](https://archlinux.org/)
 [![CachyOS](https://img.shields.io/badge/CachyOS-00A389?logo=linux&logoColor=white&style=for-the-badge)](https://cachyos.org/)
+[![NixOS](https://img.shields.io/badge/NixOS-5277C3?logo=nixos&logoColor=white&style=for-the-badge)](https://nixos.org/)
 [![KDE Plasma 6](https://img.shields.io/badge/KDE_Plasma_6-1D99F3?logo=kde&logoColor=white&style=for-the-badge)](https://kde.org/plasma-desktop/)
 [![Wayland](https://img.shields.io/badge/Wayland-Native-brightgreen?logo=wayland&logoColor=white&style=for-the-badge)](https://wayland.freedesktop.org/)
 [![Babashka / Clojure](https://img.shields.io/badge/Babashka-Clojure-5f9ea0?logo=clojure&logoColor=white&style=for-the-badge)](https://babashka.org/)
@@ -18,7 +19,7 @@
   Driven by a declarative <b>Clojure (EDN) & Babashka</b> automation engine.
 </p>
 
-[Quick Start](#-quick-start) • [Design Specifications](#-design-specifications) • [Architecture](#-directory-tree--architecture) • [Post-Install Guides](#-component-configuration-guides) • [CLI Commands](#-cli-commands--babashka-tasks)
+[Quick Start](#-quick-start) • [NixOS Guide](#-nixos-native-setup) • [Design Specifications](#-design-specifications) • [Architecture](#-directory-tree--architecture) • [CLI Commands](#-cli-commands--babashka-tasks)
 
 </div>
 
@@ -47,7 +48,7 @@
 
 | Component | Technology | Configuration Details |
 | :--- | :--- | :--- |
-| **Base System** | Arch Linux / CachyOS | KDE Plasma 6.7+, Wayland native, Linux Zen kernel |
+| **Base System** | Arch Linux / CachyOS / NixOS | KDE Plasma 6.7+, Wayland native |
 | **Engine** | Babashka / Clojure (EDN) | Pure functional layout sanitization, sub-10ms startup |
 | **Live Wallpaper** | [Smart Video Wallpaper Reborn](https://github.com/adhec/smart-video-wallpaper-reborn) | `infernal_naked_girl_biopunk.mp4` on Desktop & `infernal_eyes.mp4` on Lockscreen / Login Screen (with static PNG fallbacks) |
 | **Theme & Colors** | [Monochrome KDE](https://github.com/pwyde/monochrome-kde) | Minimal high-contrast black & white palette |
@@ -141,31 +142,84 @@ sanguine-node-rice/
 
 ---
 
+---
+
 ## ⚡ Quick Start
 
-### 1. Interactive TUI Menu
-```bash
-bb tui (or ./mono-rice tui)
-```
-
-### 2. One-Liner Bootstrap
+### 1. One-Liner Multi-Distro Bootstrap (Arch / CachyOS / NixOS)
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/petrolal/sanguine-node-rice/main/bootstrap.sh)
 ```
+The bootstrap script presents an interactive menu to choose your distro / installation method:
+* **`[1] Auto-Install`**: Detects system and installs natively via Babashka.
+* **`[2] Arch / CachyOS`**: Native Pacman, AUR, and KDE look-and-feel.
+* **`[3] NixOS Quick Shell`**: Runs deployment inside `nix-shell` or `nix develop`.
+* **`[4] NixOS System Flake Guide`**: Outputs declarative `configuration.nix` module snippet.
+* **`[5] NixOS Home Manager Guide`**: Outputs declarative `home.nix` module snippet.
+* **`[6] Dry-Run Simulation`**: Simulates full deployment without changing system files.
 
-### 3. Manual Clone & Deployment
+Non-interactive flags are also supported:
 ```bash
-git clone git@github.com:petrolal/sanguine-node-rice.git
-cd sanguine-node-rice
+./bootstrap.sh --arch          # Arch Linux / CachyOS mode
+./bootstrap.sh --nixos         # Run via nix-shell
+./bootstrap.sh --flake         # Output NixOS flake module guide
+./bootstrap.sh --home-manager  # Output Home Manager module guide
+./bootstrap.sh --dry-run       # Dry-run validation
+```
 
-# Preview deployment without modifications:
-bb install --dry-run
+---
 
-# Run complete deployment:
-bb install
+## ❄️ NixOS Native Setup
 
-# Run diagnostic verification & health check:
-bb doctor
+`sanguine-node-rice` provides 100% native support for NixOS via Flakes, standard `nix-shell`, and Home Manager.
+
+### Option A: NixOS System Flake (`configuration.nix`)
+Add the flake input and import the module:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    sanguine-node-rice.url = "github:petrolal/sanguine-node-rice";
+  };
+
+  outputs = { self, nixpkgs, sanguine-node-rice, ... }: {
+    nixosConfigurations.myhostname = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        sanguine-node-rice.nixosModules.default
+        {
+          programs.sanguine-node-rice = {
+            enable = true;
+            enablePlymouth = true;   # dotLock boot splash theme
+            enableSddm = true;       # null-sector-sddm theme
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+### Option B: Home Manager Module (`home.nix`)
+```nix
+{ inputs, ... }: {
+  imports = [
+    inputs.sanguine-node-rice.homeManagerModules.default
+  ];
+
+  programs.sanguine-node-rice.enable = true;
+}
+```
+
+### Option C: Standalone Nix Shell
+```bash
+# In the cloned repository:
+nix develop
+# or with classic nix:
+nix-shell
+./mono-rice install
 ```
 
 ---
@@ -192,7 +246,8 @@ bb doctor
 | `bb panel list` / `bb panel set <name>` | Panel Colorizer segmented capsule preset selector and hot-reloader |
 | `bb kwin rules` / `bb kwin apply-rules` | Declarative window rules manager (Zen, Konsole, Discord, Spotify translucency) |
 | `bb kwin set-blur <val>` | Adjusts KWin background blur shader strength (1-10) |
-| `bb fetch list` / `bb fetch set <name>` | Fastfetch ASCII logo emblem switcher (NieR, Cyberpunk, Null-Sector, Arch) |
+| `bb fetch list` / `bb fetch set <name>` | Fastfetch ASCII logo switcher (`arch`, `cachyos`, `nixos`, `fedora`, `nier-automata`, `null-sector`, `cyberpunk-skull`, `minimal-arch`) |
+| `bb fetch preview <name>` | Previews any Fastfetch ASCII logo directly in your terminal |
 | `bb profile detect` / `bb profile apply` | Hardware profiler detecting CPU/GPU/Form-factor with adaptive widget tuning |
 | `bb sync status` / `bb sync pull` / `bb sync push` | Remote Git dotfile synchronization hub |
 | `bb boot status` / `bb boot apply-sddm` | SDDM display manager & Plymouth boot splash theme orchestrator |

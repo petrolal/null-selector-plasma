@@ -35,6 +35,52 @@
   (filterv (complement installed-aur?) packages))
 
 ;; -----------------------------------------------------------------------------
+;; NixOS / Nix Package Detection
+;; -----------------------------------------------------------------------------
+
+(def nix-binary-map
+  {"babashka" "bb"
+   "git" "git"
+   "cmake" "cmake"
+   "stow" "stow"
+   "kvantum" "kvantummanager"
+   "kdePackages.kvantum" "kvantummanager"
+   "kdePackages.konsole" "konsole"
+   "cava" "cava"
+   "ffmpeg" "ffmpeg"
+   "starship" "starship"
+   "fastfetch" "fastfetch"
+   "fish" "fish"
+   "kdePackages.dolphin" "dolphin"
+   "discord" "discord"
+   "emacs" "emacs"
+   "kdePackages.kdenlive" "kdenlive"
+   "kdePackages.gwenview" "gwenview"
+   "haruna" "haruna"
+   "rclone" "rclone"})
+
+(defn missing-nix-packages [packages]
+  (filterv (fn [pkg]
+             (if-let [bin (get nix-binary-map pkg)]
+               (not (command-exists? bin))
+               false))
+           packages))
+
+(defn install-nix-deps! [packages & [{:keys [dry-run]}]]
+  (log-step "Resolving Nix / NixOS Dependencies")
+  (let [missing (missing-nix-packages packages)]
+    (if (seq missing)
+      (do
+        (log-warn "Missing Nix tools in current environment:" (str/join ", " missing))
+        (log-info "To provide dependencies declaratively, include the sanguine-node-rice NixOS/Home Manager module,")
+        (log-info "or run inside the provided development shell: nix develop (or nix-shell)")
+        (if dry-run
+          (log-info "[DRY-RUN] Missing Nix tools detected:" (str/join " " missing))
+          (when (command-exists? "nix-env")
+            (log-info "You can also install tools imperatively to your user profile via: nix-env -iA" (str/join " " missing)))))
+      (log-success "All core CLI and desktop tools are available in current Nix environment."))))
+
+;; -----------------------------------------------------------------------------
 ;; Package Installation
 ;; -----------------------------------------------------------------------------
 
@@ -103,7 +149,16 @@
                   (fs/delete-tree tmp-dir))))))))))
 
 (defn install-all-deps! [manifest & [opts]]
-  (let [deps (:dependencies manifest)]
-    (install-pacman-deps! (:pacman deps) opts)
-    (install-aur-deps! (:aur deps) opts)
-    (install-git-deps! (:git deps) opts)))
+  (let [deps   (:dependencies manifest)
+        nixos? (or (fs/exists? "/etc/NIXOS")
+                   (try (and (fs/exists? "/etc/os-release")
+                             (str/includes? (str/lower-case (slurp "/etc/os-release")) "id=nixos"))
+                        (catch Exception _ false)))]
+    (if nixos?
+      (do
+        (install-nix-deps! (or (:nix deps) []) opts)
+        (install-git-deps! (:git deps) opts))
+      (do
+        (install-pacman-deps! (:pacman deps) opts)
+        (install-aur-deps! (:aur deps) opts)
+        (install-git-deps! (:git deps) opts)))))
