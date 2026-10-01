@@ -4,19 +4,29 @@
             [mono-rice.fs :as rfs]
             [mono-rice.proc :refer [command-exists? log-info log-success log-warn log-step sh!]]))
 
+(defn zen-binary []
+  (first (filter command-exists? ["zen-browser" "zen" "zen-bin" "zen-twilight"])))
+
 (defn zen-config-dir []
-  (fs/path (rfs/home-dir) ".config" "zen"))
+  (let [home (rfs/home-dir)
+        candidates [(fs/path home ".config" "zen")
+                    (fs/path home ".zen")
+                    (fs/path home ".var" "app" "app.zen_browser.zen" ".zen")
+                    (fs/path home ".var" "app" "app.zen_browser.zen" ".config" "zen")]]
+    (or (first (filter fs/exists? candidates))
+        (first candidates))))
 
 (defn bootstrap-profile! [& [{:keys [dry-run]}]]
-  (let [zen-dir (zen-config-dir)]
-    (when (and (not (fs/exists? zen-dir))
-               (command-exists? "zen-browser"))
+  (let [zen-dir (zen-config-dir)
+        bin     (zen-binary)]
+    (when (and (not (fs/exists? (fs/path zen-dir "profiles.ini")))
+               bin)
       (log-info "No Zen Browser profile found; bootstrapping one non-interactively...")
       (if dry-run
-        (log-info "[DRY-RUN] Would create directory" (str zen-dir) "and run: zen-browser --headless -CreateProfile default ...")
+        (log-info "[DRY-RUN] Would create directory" (str zen-dir) "and run:" bin "--headless -CreateProfile default ...")
         (do
           (fs/create-dirs zen-dir)
-          (sh! ["timeout" "--signal=KILL" "15" "zen-browser" "--headless" "-CreateProfile"
+          (sh! ["timeout" "--signal=KILL" "15" bin "--headless" "-CreateProfile"
                 (str "default " (fs/path zen-dir "default"))]
                {:throw? false})
           (if (fs/exists? (fs/path zen-dir "default"))

@@ -13,7 +13,7 @@
 
 (defn configure-extensions! [manifest & [{:keys [dry-run auto-yes]}]]
   (log-step "Force-Installing Zen Browser Extensions (Bonjourr, Dark Reader, Zen Internet)")
-  (if-not (command-exists? "zen-browser")
+  (if-not (some command-exists? ["zen-browser" "zen" "zen-bin" "zen-twilight"])
     (log-warn "Zen Browser not found in PATH; skipping enterprise extension policies.")
     (if-let [policies-path (find-policy-path)]
       (if dry-run
