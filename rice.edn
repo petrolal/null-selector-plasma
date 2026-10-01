@@ -12,6 +12,8 @@
  {:color-scheme      "Monochrome"
   :fallback-scheme   "BreezeDark"
   :look-and-feel     "org.kde.breezedark.desktop"
+  :desktop-theme     "Monochrome"
+  :accent-color      "230,0,38"
   :widget-style      "kvantum-dark"
   :icon-theme        "yet-another-monochrome-icon-set"
   :cursor-theme      "Bibata-Modern-Ice"
@@ -32,6 +34,8 @@
    :description      "Junji Ito / Uzumaki cosmic horror monochrome with sinister crimson accents"
    :color-scheme     "Monochrome"
    :fallback-scheme  "BreezeDark"
+   :desktop-theme    "Monochrome"
+   :accent-color     "230,0,38"
    :look-and-feel    "org.kde.breezedark.desktop"
    :widget-style     "kvantum-dark"
    :icon-theme       "yet-another-monochrome-icon-set"
@@ -45,6 +49,8 @@
    :description      "Cyberpunk NieR: Automata high-contrast dark palette"
    :color-scheme     "Monochrome"
    :fallback-scheme  "BreezeDark"
+   :desktop-theme    "Monochrome"
+   :accent-color     "230,0,38"
    :look-and-feel    "org.kde.breezedark.desktop"
    :widget-style     "kvantum-dark"
    :icon-theme       "yet-another-monochrome-icon-set"
@@ -58,6 +64,8 @@
    :description      "High-clarity clean light monochrome palette"
    :color-scheme     "BreezeLight"
    :fallback-scheme  "Breeze"
+   :desktop-theme    "Monochrome"
+   :accent-color     "0,0,0"
    :look-and-feel    "org.kde.breeze.desktop"
    :widget-style     "kvantum"
    :icon-theme       "yet-another-monochrome-icon-set"
@@ -71,6 +79,8 @@
    :description      "Retro phosphor glow monochrome amber profile"
    :color-scheme     "Monochrome"
    :fallback-scheme  "BreezeDark"
+   :desktop-theme    "Monochrome"
+   :accent-color     "255,176,0"
    :look-and-feel    "org.kde.breezedark.desktop"
    :widget-style     "kvantum-dark"
    :icon-theme       "yet-another-monochrome-icon-set"
@@ -84,6 +94,8 @@
    :description      "High-contrast crimson and onyx cyberpunk theme"
    :color-scheme     "Monochrome"
    :fallback-scheme  "BreezeDark"
+   :desktop-theme    "Monochrome"
+   :accent-color     "255,0,85"
    :look-and-feel    "org.kde.breezedark.desktop"
    :widget-style     "kvantum-dark"
    :icon-theme       "yet-another-monochrome-icon-set"
@@ -91,6 +103,10 @@
    :splash-theme     "a2n.kuro"
    :gtk-color-scheme "prefer-dark"
    :gtk-theme        "Breeze-Dark"}}
+
+ :fetch
+ {:preset :auto
+  :key-color "31"}
 
  :shortcuts
  {:terminal    ["Ctrl+Alt+T" "Meta+Return"]

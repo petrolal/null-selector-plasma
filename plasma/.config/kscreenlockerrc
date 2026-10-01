@@ -5,6 +5,6 @@ WallpaperPlugin=luisbocanegra.smart.video.wallpaper.reborn
 DarkLightScheduleState=AAAAAQAAAAgAAAGg8iZuQAAAAAAAAAGg8MbWcAAAAaDw2coAAAAAAQAAAaDzcxKAAAABoPOGBhAAAAGg90x8IAAAAAAAAAGg9ezkUAAAAaD1/9fgAAAAAQAAAaD4mSRIAAABoPisF9gAAAGg/HKN6AAAAAAAAAGg+xLyMAAAAaD7JemoAAAAAQAAAaD9vzIoAAABoP3SKaAAAAGhAZifsAAAAAAAAAGhADkAEAAAAaEAS/twAAAAAQAAAaEC5UPwAAABoQL4P1AAAAGhBr6xeAAAAAAAAAGhBV8R2AAAAaEFcg04AAAAAQAAAaEIC1mgAAABoQgeVQAAAAGhC+THKAAAAAAAAAGhCoUjoAAAAaEKmB8AAAAAAQAAAaENMW9QAAABoQ1EarAAAAGhEQrc2AAAAAAAAAGhD6s1aAAAAaEPvjSwAAAAAQAAAaESV4UAAAABoRJqhEgAAAGhFjDyiAAAAAAAAAGhFNFLGAAAAaEU5E5IAAAAAQAAAaEXfZqwAAABoReQneA=
 FillMode=2
 LastVideo=file:///usr/share/wallpapers/infernal_eyes.mp4
-LastVideoPosition=20553
+LastVideoPosition=5916
 MuteMode=5
 VideoUrls=[{"filename":"file:///usr/share/wallpapers/infernal_eyes.mp4","enabled":true,"duration":0,"customDuration":0,"playbackRate":0.0,"alternativePlaybackRate":0.0,"loop":false,"dayNightPhase":4}]

@@ -2,6 +2,7 @@
   (:require [babashka.fs :as fs]
             [clojure.string :as str]
             [mono-rice.cmd.completion :as rcomp]
+            [mono-rice.cmd.fetch :as rfetch]
             [mono-rice.cmd.memory :as rmem]
             [mono-rice.cmd.rclone :as rclone]
             [mono-rice.deps :as rdeps]
@@ -137,16 +138,29 @@
         ;; 5. Apply Modular Config Symlinks
         (rfs/apply-dotfile-symlinks! root opts)
 
-        ;; 6. Apply KDE Look and Feel Settings
+        ;; 6. Fastfetch Logo Configuration
+        (let [distro (rkde/detect-distro)
+              fetch-preset (get-in manifest [:fetch :preset] :auto)
+              resolved-preset (if (= fetch-preset :auto)
+                                (case distro
+                                  :arch :arch
+                                  :cachyos :cachyos
+                                  :nixos :nixos
+                                  :fedora :fedora
+                                  :sanguine)
+                                fetch-preset)]
+          (rfetch/apply-fetch-preset! resolved-preset opts))
+
+        ;; 7. Apply KDE Look and Feel Settings
         (rkde/apply-theme! manifest opts)
 
-        ;; 7. Login Manager & Plymouth
+        ;; 8. Login Manager & Plymouth
         (when (or (:sddm opts) (not (:symlinks-only opts)))
           (rfs/install-login-manager! root opts))
         (when (or (:plymouth opts) (not (:symlinks-only opts)))
           (rfs/install-plymouth-theme! root opts))
 
-        ;; 8. Zen Browser Configurations
+        ;; 9. Zen Browser Configurations
         (zprof/link-profile-styles! root opts)
         (when-not (:symlinks-only opts)
           (zpol/configure-extensions! manifest opts))
@@ -154,23 +168,26 @@
         (zmods/seed-mods-registry! manifest opts)
         (zmods/decolorize-workspace-theme! opts)
 
-        ;; 9. Deploy Plasma Panel Layout
+        ;; 10. Deploy Plasma Panel Layout
         (if (:no-layout opts)
           (log-info "Skipping panel layout deployment (--no-layout).")
           (apply-panel-layout! root opts))
 
-        ;; 10. Install Fish completions
+        ;; 11. Clear Prompt Cache & Install Fish completions
+        (let [starship-cache (str (rfs/home-dir) "/.cache/starship/init.fish")]
+          (when (fs/exists? starship-cache)
+            (fs/delete starship-cache)))
         (rcomp/install-completion :fish opts)
 
-        ;; 11. Configure Fish as default user shell
+        ;; 12. Configure Fish as default user shell
         (when-not (:no-shell-change opts)
           (set-default-shell-fish! opts))
 
-        ;; 12. Configure Rclone Google Drive Cloud Synchronization
+        ;; 13. Configure Rclone Google Drive Cloud Synchronization
         (when-not (or (:symlinks-only opts) (:no-rclone opts))
           (rclone/initial-setup! manifest opts))
 
-        ;; 13. System Memory, ZRAM Swap & OOM Daemon Optimization
+        ;; 14. System Memory, ZRAM Swap & OOM Daemon Optimization
         (when-not (or (:symlinks-only opts) (:no-memory opts))
           (rmem/apply-memory-tuning! manifest opts))
 

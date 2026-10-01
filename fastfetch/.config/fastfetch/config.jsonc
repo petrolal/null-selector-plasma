@@ -4,8 +4,8 @@
     "type": "file",
     "source": "~/.config/fastfetch/null_sector.txt",
     "color": {
-      "1": "white",
-      "2": "bright_black"
+      "1": "red",
+      "2": "white"
     },
     "padding": {
       "top": 1,

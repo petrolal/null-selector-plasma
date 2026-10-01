@@ -83,12 +83,20 @@
         home (rfs/home-dir)]
 
 
-    ;; 1. Apply Colorscheme & Cursor Theme
+    ;; 1. Apply Colorscheme, Desktop Theme & Cursor Theme
     (if (command-exists? "plasma-apply-colorscheme")
-      (let [res (sh! ["plasma-apply-colorscheme" (:color-scheme theme)] {:dry-run dry-run :throw? false})]
-        (when (and (not dry-run) (not (zero? (:exit res))))
-          (sh! ["plasma-apply-colorscheme" (:fallback-scheme theme)] {:dry-run dry-run :throw? false})))
+      (do
+        (when (:fallback-scheme theme)
+          (sh! ["plasma-apply-colorscheme" (:fallback-scheme theme)] {:dry-run dry-run :throw? false}))
+        (let [res (sh! ["plasma-apply-colorscheme" (:color-scheme theme)] {:dry-run dry-run :throw? false})]
+          (when (and (not dry-run) (not (zero? (:exit res))))
+            (sh! ["plasma-apply-colorscheme" (:fallback-scheme theme)] {:dry-run dry-run :throw? false}))))
       (log-warn "plasma-apply-colorscheme not found."))
+
+    (let [desktop-theme (or (:desktop-theme theme) "Monochrome")]
+      (if (command-exists? "plasma-apply-desktoptheme")
+        (sh! ["plasma-apply-desktoptheme" desktop-theme] {:dry-run dry-run :throw? false})
+        (set-kconfig! {:file "plasmarc" :group "Theme" :key "name" :value desktop-theme :dry-run dry-run})))
 
     (if (command-exists? "plasma-apply-cursortheme")
       (sh! ["plasma-apply-cursortheme" (:cursor-theme theme)] {:dry-run dry-run :throw? false})
@@ -104,6 +112,9 @@
     ;; 3. KDE Globals, Fonts, & Styles via kwriteconfig6
     (when (command-exists? "kwriteconfig6")
       ;; Colors & Styles
+      (let [accent (or (:accent-color theme) "230,0,38")]
+        (set-kconfig! {:file "kdeglobals" :group "General" :key "AccentColor" :value accent :dry-run dry-run})
+        (set-kconfig! {:file "kdeglobals" :group "General" :key "LastUsedCustomAccentColor" :value accent :dry-run dry-run}))
       (set-kconfig! {:file "kdeglobals" :group "General" :key "ColorScheme" :value (:color-scheme theme) :dry-run dry-run})
       (set-kconfig! {:file "kdeglobals" :group "General" :key "Name" :value (:color-scheme theme) :dry-run dry-run})
       (set-kconfig! {:file "kdeglobals" :group "KDE" :key "LookAndFeelPackage" :value (:look-and-feel theme) :dry-run dry-run})
@@ -113,6 +124,7 @@
       (set-kconfig! {:file "kdeglobals" :group "Icons" :key "Theme" :value (:icon-theme theme) :dry-run dry-run})
       (set-kconfig! {:file "kdeglobals" :group "Mouse" :key "cursorTheme" :value (:cursor-theme theme) :dry-run dry-run})
       (set-kconfig! {:file "ksplashrc" :group "KSplash" :key "Theme" :value (:splash-theme theme) :dry-run dry-run})
+      (set-kconfig! {:file "plasmarc" :group "Theme" :key "name" :value (or (:desktop-theme theme) "Monochrome") :dry-run dry-run})
 
       ;; Fonts
       (doseq [[font-key font-val] (:fonts theme)]
@@ -210,9 +222,10 @@
             (sh! ["kwriteconfig6" "--file" "/etc/xdg/kscreenlockerrc" "--group" "Greeter" "--group" "Wallpaper" "--group" plugin "--group" "General" "--key" "LastVideo" sys-video-path] {:sudo true :throw? false})
             (sh! ["chmod" "644" "/etc/plasmalogin.conf" "/etc/xdg/kscreenlockerrc"] {:sudo true :throw? false})))))
 
-      ;; Reconfigure KWin
+      ;; Reconfigure KWin & Refresh Panels
       (when (command-exists? "qdbus6")
-        (sh! ["qdbus6" "org.kde.KWin" "/KWin" "reconfigure"] {:dry-run dry-run :throw? false}))
+        (sh! ["qdbus6" "org.kde.KWin" "/KWin" "reconfigure"] {:dry-run dry-run :throw? false})
+        (sh! ["qdbus6" "org.kde.plasmashell" "/PlasmaShell" "refreshCurrentShell"] {:dry-run dry-run :throw? false}))
 
       (log-success "KDE system settings registered and active.")))
 

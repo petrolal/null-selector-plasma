@@ -131,7 +131,9 @@ ForegroundPositive=140,200,140
 ForegroundVisited=140,80,90
 
 [General]
+AccentColor=230,0,38
 ColorScheme=Monochrome
+LastUsedCustomAccentColor=230,0,38
 Name=Monochrome
 shadeSortColumn=true
 

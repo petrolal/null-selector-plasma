@@ -266,12 +266,9 @@
                 (fs/path home ".config" "plasma-workspace" "env" "rice-env.sh") {:dry-run dry-run}))
 
     ;; Fastfetch
-    (when (fs/exists? (fs/path root "fastfetch" ".config" "fastfetch" "config.jsonc"))
-      (symlink! (fs/path root "fastfetch" ".config" "fastfetch" "config.jsonc")
-                (fs/path home ".config" "fastfetch" "config.jsonc") {:dry-run dry-run}))
-    (when (fs/exists? (fs/path root "fastfetch" ".config" "fastfetch" "null_sector.txt"))
-      (symlink! (fs/path root "fastfetch" ".config" "fastfetch" "null_sector.txt")
-                (fs/path home ".config" "fastfetch" "null_sector.txt") {:dry-run dry-run}))
+    (link-dir-children! (fs/path root "fastfetch" ".config" "fastfetch")
+                        (fs/path home ".config" "fastfetch")
+                        {:dry-run dry-run})
 
 
     ;; Starship
