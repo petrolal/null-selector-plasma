@@ -12,6 +12,9 @@ set -gx VISUAL emacs
 set -gx PAGER less
 set -gx LESS -R
 
+# Hellmacs Default Profile
+set -gx HELLMACS_PROFILE prod
+
 # Path configurations
 fish_add_path -g -p $HOME/hellmacs/bin $HOME/.local/bin
 
